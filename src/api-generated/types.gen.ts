@@ -4,6 +4,24 @@ export type ClientOptions = {
     baseUrl: `${string}://openapi.json` | (string & {});
 };
 
+export type ActivateRuleDefinitionVersionRequest = {
+    version?: number;
+    expectedRevision?: number;
+};
+
+export type AxisBrowserSessionDto = {
+    authenticated?: boolean;
+    csrfToken?: string;
+    user?: AxisBrowserSessionUserDto;
+};
+
+export type AxisBrowserSessionUserDto = {
+    userId?: string;
+    workspaceId?: string | null;
+    email?: string;
+    name?: string;
+};
+
 export type BusinessObjectChoiceFieldConfigurationDto = {
     selectionMode?: BusinessObjectChoiceSelectionMode;
     options?: Array<BusinessObjectChoiceOptionDto>;
@@ -206,6 +224,13 @@ export type BusinessObjectRecordSubmitResultDto = {
     ruleEvaluations: Array<BusinessObjectRecordRuleEvaluationDto>;
 };
 
+export type CompleteRuleAuthoringRequest = {
+    text?: string | null;
+    cursor?: number;
+    inputs?: Array<RuleInputDefinitionDto>;
+    expressionLanguageVersion?: number;
+};
+
 export type CreateBusinessObjectDefinitionRequest = {
     name?: string;
 };
@@ -245,6 +270,15 @@ export type CurrentUserProfileDto = {
     theme?: string | null;
     workspaceId?: string | null;
     workspaces?: Array<UserWorkspaceDto>;
+};
+
+export type DeleteRuleBindingRequest = {
+    expectedRevision?: number;
+};
+
+export type EvaluateRuleBindingRequest = {
+    context?: RuleContext;
+    bindingRevision?: number | null;
 };
 
 export type HttpValidationProblemDetails = {
@@ -301,6 +335,13 @@ export type ProblemDetails = {
     [key: string]: unknown;
 };
 
+export type ProjectRuleAuthoringRequest = {
+    source?: RuleAuthoringSourceDto;
+    inputs?: Array<RuleInputDefinitionDto>;
+    expressionLanguageVersion?: number;
+    language?: string | null;
+};
+
 export type ProjectRuleConditionRequest = {
     expressionLanguageVersion?: number;
     inputs?: Array<RuleDraftInputDefinitionDto>;
@@ -324,6 +365,34 @@ export type RegisterUserRequest = {
 
 export type ResendVerificationRequest = {
     email?: string;
+};
+
+export type RuleAuthoringCompletionDto = {
+    label?: string;
+    insertText?: string;
+    kind?: string;
+    start?: number;
+    length?: number;
+};
+
+export type RuleAuthoringDiagnosticDto = {
+    code?: string;
+    message?: string;
+    start?: number;
+    length?: number;
+};
+
+export type RuleAuthoringProjectionDto = {
+    condition?: RuleConditionNodeDto;
+    formattedDsl?: string | null;
+    explanation?: RuleExpressionDisplayNodeDto;
+    diagnostics?: Array<RuleAuthoringDiagnosticDto>;
+    readonly isValid?: boolean;
+};
+
+export type RuleAuthoringSourceDto = {
+    text?: string | null;
+    ast?: RuleConditionNodeDto;
 };
 
 export type RuleBindingDto = {
@@ -357,6 +426,7 @@ export type RuleBindingUsageDto = {
     priority?: number;
     enabled?: boolean;
     failureBehavior?: RuleBindingFailureBehavior;
+    revision?: number;
 };
 
 export type RuleConditionNodeDto = {
@@ -373,6 +443,25 @@ export type RuleConditionProjectionDto = {
     display?: RuleExpressionDisplayNodeDto;
 };
 
+export type RuleContext = {
+    values?: {
+        [key: string]: RuleContextValue;
+    };
+};
+
+export type RuleContextValue = {
+    type?: RuleValueType;
+    values?: Array<string>;
+};
+
+export type RuleDefinitionActionsDto = {
+    canEditDraft?: boolean;
+    canCreateVersion?: boolean;
+    canActivateVersion?: boolean;
+    canDeactivate?: boolean;
+    canArchive?: boolean;
+};
+
 export type RuleDefinitionDetailDto = {
     definitionKey?: string;
     name?: string;
@@ -381,7 +470,8 @@ export type RuleDefinitionDetailDto = {
     status?: RuleLifecycleStatus;
     expressionLanguageVersion?: number;
     revision?: number | null;
-    latestPublishedVersion?: number | null;
+    latestVersion?: number | null;
+    activeVersion?: number | null;
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
     condition?: RuleConditionNodeDto;
@@ -389,6 +479,7 @@ export type RuleDefinitionDetailDto = {
     createdAt?: string | null;
     updatedAt?: string | null;
     archivedAt?: string | null;
+    actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
 
@@ -400,10 +491,12 @@ export type RuleDefinitionSummaryDto = {
     status?: RuleLifecycleStatus;
     expressionLanguageVersion?: number;
     revision?: number | null;
-    latestPublishedVersion?: number | null;
+    latestVersion?: number | null;
+    activeVersion?: number | null;
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
     updatedAt?: string | null;
+    actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
 
@@ -422,16 +515,32 @@ export type RuleDefinitionVersionDto = {
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
     condition?: RuleConditionNodeDto;
-    publishedByUserId?: string;
-    publishedAt?: string;
+    createdByUserId?: string;
+    createdAt?: string;
 };
 
 export type RuleDraftInputDefinitionDto = {
+    key?: string;
     label?: string;
     types?: Array<RuleValueType>;
     isRequired?: boolean;
     allowMultiple?: boolean;
     allowedValues?: Array<string>;
+};
+
+export type RuleEvaluationItemDto = {
+    definitionKey?: string;
+    definitionVersion?: number;
+    isMatch?: boolean;
+    diagnostics?: Array<RuleNodeDiagnosticDto>;
+};
+
+export type RuleEvaluationResult = {
+    isSuccess?: boolean;
+    items?: Array<RuleEvaluationItemDto>;
+    correlationId?: string;
+    errorCode?: string | null;
+    error?: string | null;
 };
 
 export type RuleExpressionCardinality = 'Scalar' | 'Multiple' | 'Any';
@@ -542,7 +651,7 @@ export type RuleInputMappingDto = {
 
 export type RuleInputMappingKind = 'Context' | 'Literal';
 
-export type RuleLifecycleStatus = 'Draft' | 'Published' | 'Archived';
+export type RuleLifecycleStatus = 'Draft' | 'Inactive' | 'Active' | 'Archived';
 
 export type RuleLogicalOperator = 'All' | 'Any' | 'Not';
 
@@ -573,7 +682,7 @@ export type RuleOperandKindDefinitionDto = {
     documentation?: RuleReferenceDocumentationDto;
 };
 
-export type RuleOrigin = 'System' | 'Workspace';
+export type RuleOrigin = 'BuiltIn' | 'Workspace';
 
 export type RuleOutputContractDto = {
     type?: RuleValueType;
@@ -678,12 +787,16 @@ export type SignInUserRequest = {
     password?: string;
 };
 
-export type SimulateRuleRequest = {
-    definitionVersion?: number | null;
+export type SimulateRuleDraftRequest = {
     inputs?: {
         [key: string]: RuleValueDto;
     };
-    correlationId?: string;
+};
+
+export type SimulateRuleVersionRequest = {
+    inputs?: {
+        [key: string]: RuleValueDto;
+    };
 };
 
 export type SubmitBusinessObjectRecordRequest = {
@@ -734,6 +847,13 @@ export type VerifyEmailRequest = {
 export type VerifyEmailSessionEstablishedDto = {
     sessionEstablished?: boolean;
     nextStep?: VerifyEmailNextStep;
+};
+
+export type RuleAuthoringProjectionDtoWritable = {
+    condition?: RuleConditionNodeDto;
+    formattedDsl?: string | null;
+    explanation?: RuleExpressionDisplayNodeDto;
+    diagnostics?: Array<RuleAuthoringDiagnosticDto>;
 };
 
 export type ListBusinessObjectRecordsData = {
@@ -1160,6 +1280,22 @@ export type GetLegalVersionsResponses = {
 };
 
 export type GetLegalVersionsResponse = GetLegalVersionsResponses[keyof GetLegalVersionsResponses];
+
+export type GetBrowserSessionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/auth/session';
+};
+
+export type GetBrowserSessionResponses = {
+    /**
+     * OK
+     */
+    200: AxisBrowserSessionDto;
+};
+
+export type GetBrowserSessionResponse = GetBrowserSessionResponses[keyof GetBrowserSessionResponses];
 
 export type SignInUserData = {
     body: SignInUserRequest;
@@ -1628,49 +1764,6 @@ export type GetRuleDefinitionResponses = {
 
 export type GetRuleDefinitionResponse = GetRuleDefinitionResponses[keyof GetRuleDefinitionResponses];
 
-export type StartRuleDefinitionDraftData = {
-    body: RuleRevisionRequest;
-    path: {
-        definitionKey: string;
-    };
-    query?: never;
-    url: '/api/rules/{definitionKey}/draft';
-};
-
-export type StartRuleDefinitionDraftErrors = {
-    /**
-     * Bad Request
-     */
-    400: ProblemDetails;
-    /**
-     * Unauthorized
-     */
-    401: ProblemDetails;
-    /**
-     * Forbidden
-     */
-    403: ProblemDetails;
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-    /**
-     * Conflict
-     */
-    409: ProblemDetails;
-};
-
-export type StartRuleDefinitionDraftError = StartRuleDefinitionDraftErrors[keyof StartRuleDefinitionDraftErrors];
-
-export type StartRuleDefinitionDraftResponses = {
-    /**
-     * OK
-     */
-    200: RuleDefinitionDetailDto;
-};
-
-export type StartRuleDefinitionDraftResponse = StartRuleDefinitionDraftResponses[keyof StartRuleDefinitionDraftResponses];
-
 export type SaveRuleDefinitionDraftData = {
     body: SaveRuleDefinitionDraftRequest;
     path: {
@@ -1714,16 +1807,16 @@ export type SaveRuleDefinitionDraftResponses = {
 
 export type SaveRuleDefinitionDraftResponse = SaveRuleDefinitionDraftResponses[keyof SaveRuleDefinitionDraftResponses];
 
-export type PublishRuleDefinitionData = {
+export type CreateRuleDefinitionVersionData = {
     body: RuleRevisionRequest;
     path: {
         definitionKey: string;
     };
     query?: never;
-    url: '/api/rules/{definitionKey}/publish';
+    url: '/api/rules/{definitionKey}/versions';
 };
 
-export type PublishRuleDefinitionErrors = {
+export type CreateRuleDefinitionVersionErrors = {
     /**
      * Bad Request
      */
@@ -1746,16 +1839,102 @@ export type PublishRuleDefinitionErrors = {
     409: ProblemDetails;
 };
 
-export type PublishRuleDefinitionError = PublishRuleDefinitionErrors[keyof PublishRuleDefinitionErrors];
+export type CreateRuleDefinitionVersionError = CreateRuleDefinitionVersionErrors[keyof CreateRuleDefinitionVersionErrors];
 
-export type PublishRuleDefinitionResponses = {
+export type CreateRuleDefinitionVersionResponses = {
     /**
      * OK
      */
     200: RuleDefinitionDetailDto;
 };
 
-export type PublishRuleDefinitionResponse = PublishRuleDefinitionResponses[keyof PublishRuleDefinitionResponses];
+export type CreateRuleDefinitionVersionResponse = CreateRuleDefinitionVersionResponses[keyof CreateRuleDefinitionVersionResponses];
+
+export type DeactivateRuleDefinitionData = {
+    body: RuleRevisionRequest;
+    path: {
+        definitionKey: string;
+    };
+    query?: never;
+    url: '/api/rules/{definitionKey}/active-version';
+};
+
+export type DeactivateRuleDefinitionErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+};
+
+export type DeactivateRuleDefinitionError = DeactivateRuleDefinitionErrors[keyof DeactivateRuleDefinitionErrors];
+
+export type DeactivateRuleDefinitionResponses = {
+    /**
+     * OK
+     */
+    200: RuleDefinitionDetailDto;
+};
+
+export type DeactivateRuleDefinitionResponse = DeactivateRuleDefinitionResponses[keyof DeactivateRuleDefinitionResponses];
+
+export type ActivateRuleDefinitionVersionData = {
+    body: ActivateRuleDefinitionVersionRequest;
+    path: {
+        definitionKey: string;
+    };
+    query?: never;
+    url: '/api/rules/{definitionKey}/active-version';
+};
+
+export type ActivateRuleDefinitionVersionErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+};
+
+export type ActivateRuleDefinitionVersionError = ActivateRuleDefinitionVersionErrors[keyof ActivateRuleDefinitionVersionErrors];
+
+export type ActivateRuleDefinitionVersionResponses = {
+    /**
+     * OK
+     */
+    200: RuleDefinitionDetailDto;
+};
+
+export type ActivateRuleDefinitionVersionResponse = ActivateRuleDefinitionVersionResponses[keyof ActivateRuleDefinitionVersionResponses];
 
 export type ArchiveRuleDefinitionData = {
     body: RuleRevisionRequest;
@@ -1800,16 +1979,16 @@ export type ArchiveRuleDefinitionResponses = {
 
 export type ArchiveRuleDefinitionResponse = ArchiveRuleDefinitionResponses[keyof ArchiveRuleDefinitionResponses];
 
-export type SimulateRuleDefinitionData = {
-    body: SimulateRuleRequest;
+export type SimulateRuleDefinitionDraftData = {
+    body: SimulateRuleDraftRequest;
     path: {
         definitionKey: string;
     };
     query?: never;
-    url: '/api/rules/{definitionKey}/simulate';
+    url: '/api/rules/{definitionKey}/draft/simulate';
 };
 
-export type SimulateRuleDefinitionErrors = {
+export type SimulateRuleDefinitionDraftErrors = {
     /**
      * Bad Request
      */
@@ -1828,16 +2007,118 @@ export type SimulateRuleDefinitionErrors = {
     404: ProblemDetails;
 };
 
-export type SimulateRuleDefinitionError = SimulateRuleDefinitionErrors[keyof SimulateRuleDefinitionErrors];
+export type SimulateRuleDefinitionDraftError = SimulateRuleDefinitionDraftErrors[keyof SimulateRuleDefinitionDraftErrors];
 
-export type SimulateRuleDefinitionResponses = {
+export type SimulateRuleDefinitionDraftResponses = {
     /**
      * OK
      */
     200: RuleSimulationResultDto;
 };
 
-export type SimulateRuleDefinitionResponse = SimulateRuleDefinitionResponses[keyof SimulateRuleDefinitionResponses];
+export type SimulateRuleDefinitionDraftResponse = SimulateRuleDefinitionDraftResponses[keyof SimulateRuleDefinitionDraftResponses];
+
+export type SimulateRuleDefinitionVersionData = {
+    body: SimulateRuleVersionRequest;
+    path: {
+        definitionKey: string;
+        version: number;
+    };
+    query?: never;
+    url: '/api/rules/{definitionKey}/versions/{version}/simulate';
+};
+
+export type SimulateRuleDefinitionVersionErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type SimulateRuleDefinitionVersionError = SimulateRuleDefinitionVersionErrors[keyof SimulateRuleDefinitionVersionErrors];
+
+export type SimulateRuleDefinitionVersionResponses = {
+    /**
+     * OK
+     */
+    200: RuleSimulationResultDto;
+};
+
+export type SimulateRuleDefinitionVersionResponse = SimulateRuleDefinitionVersionResponses[keyof SimulateRuleDefinitionVersionResponses];
+
+export type ProjectRuleAuthoringData = {
+    body: ProjectRuleAuthoringRequest;
+    path?: never;
+    query?: never;
+    url: '/api/rules/authoring/project';
+};
+
+export type ProjectRuleAuthoringErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type ProjectRuleAuthoringError = ProjectRuleAuthoringErrors[keyof ProjectRuleAuthoringErrors];
+
+export type ProjectRuleAuthoringResponses = {
+    /**
+     * OK
+     */
+    200: RuleAuthoringProjectionDto;
+};
+
+export type ProjectRuleAuthoringResponse = ProjectRuleAuthoringResponses[keyof ProjectRuleAuthoringResponses];
+
+export type CompleteRuleAuthoringData = {
+    body: CompleteRuleAuthoringRequest;
+    path?: never;
+    query?: never;
+    url: '/api/rules/authoring/complete';
+};
+
+export type CompleteRuleAuthoringErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type CompleteRuleAuthoringError = CompleteRuleAuthoringErrors[keyof CompleteRuleAuthoringErrors];
+
+export type CompleteRuleAuthoringResponses = {
+    /**
+     * OK
+     */
+    200: Array<RuleAuthoringCompletionDto>;
+};
+
+export type CompleteRuleAuthoringResponse = CompleteRuleAuthoringResponses[keyof CompleteRuleAuthoringResponses];
 
 export type CreateRuleBindingData = {
     body: CreateRuleBindingRequest;
@@ -1881,7 +2162,7 @@ export type CreateRuleBindingResponses = {
 export type CreateRuleBindingResponse = CreateRuleBindingResponses[keyof CreateRuleBindingResponses];
 
 export type DeleteRuleBindingData = {
-    body?: never;
+    body: DeleteRuleBindingRequest;
     path: {
         bindingId: string;
     };
@@ -1890,6 +2171,10 @@ export type DeleteRuleBindingData = {
 };
 
 export type DeleteRuleBindingErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
     /**
      * Unauthorized
      */
@@ -1902,6 +2187,10 @@ export type DeleteRuleBindingErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
 };
 
 export type DeleteRuleBindingError = DeleteRuleBindingErrors[keyof DeleteRuleBindingErrors];
@@ -1992,3 +2281,46 @@ export type UpdateRuleBindingResponses = {
 };
 
 export type UpdateRuleBindingResponse = UpdateRuleBindingResponses[keyof UpdateRuleBindingResponses];
+
+export type EvaluateRuleBindingData = {
+    body: EvaluateRuleBindingRequest;
+    path: {
+        bindingId: string;
+    };
+    query?: never;
+    url: '/api/rule-bindings/{bindingId}/evaluate';
+};
+
+export type EvaluateRuleBindingErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Unprocessable Content
+     */
+    422: ProblemDetails;
+};
+
+export type EvaluateRuleBindingError = EvaluateRuleBindingErrors[keyof EvaluateRuleBindingErrors];
+
+export type EvaluateRuleBindingResponses = {
+    /**
+     * OK
+     */
+    200: RuleEvaluationResult;
+};
+
+export type EvaluateRuleBindingResponse = EvaluateRuleBindingResponses[keyof EvaluateRuleBindingResponses];

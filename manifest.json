@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "solutionKey": "reference_application",
   "solutionVersion": "0.1.0",
-  "axisOpenApiSha256": "83953f61754fba5216b760f47b6323b76efd8600f6d4d2df30de9cee5ef25b54",
+  "axisOpenApiSha256": "75a5f9c2dce97c1b534ce29a378179c32e5d2a4d8df065215c31c84dfaac1cb2",
   "content": { "locale": "en", "applicationTitle": "Reference applications" },
   "bindings": [
     { "definitionKey": "field.required", "definitionVersion": 1, "targetType": "business-object-field", "targetId": "loan_application.applicant_name", "useCaseOrTrigger": "field-validation", "inputMappings": { "value": { "kind": "Context", "contextKey": "record.value", "literalValues": [] } }, "priority": 0, "enabled": true, "failureBehavior": "FailClosed" },
