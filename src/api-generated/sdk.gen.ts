@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ArchiveRuleDefinitionData, ArchiveRuleDefinitionErrors, ArchiveRuleDefinitionResponses, CreateBusinessObjectDefinitionData, CreateBusinessObjectDefinitionErrors, CreateBusinessObjectDefinitionResponses, CreateBusinessObjectRecordData, CreateBusinessObjectRecordErrors, CreateBusinessObjectRecordResponses, CreateRuleBindingData, CreateRuleBindingErrors, CreateRuleBindingResponses, CreateRuleDefinitionData, CreateRuleDefinitionErrors, CreateRuleDefinitionResponses, DeleteRuleBindingData, DeleteRuleBindingErrors, DeleteRuleBindingResponses, GetBusinessObjectDefinitionData, GetBusinessObjectDefinitionErrors, GetBusinessObjectDefinitionResponses, GetBusinessObjectRecordData, GetBusinessObjectRecordErrors, GetBusinessObjectRecordResponses, GetLegalVersionsData, GetLegalVersionsResponses, GetMeData, GetMeErrors, GetMeResponses, GetRuleBindingData, GetRuleBindingErrors, GetRuleBindingResponses, GetRuleDefinitionData, GetRuleDefinitionErrors, GetRuleDefinitionResponses, GetRuleExpressionLanguageData, GetRuleExpressionLanguageErrors, GetRuleExpressionLanguageResponses, ListBusinessObjectDefinitionsData, ListBusinessObjectDefinitionsErrors, ListBusinessObjectDefinitionsResponses, ListBusinessObjectRecordsData, ListBusinessObjectRecordsErrors, ListBusinessObjectRecordsResponses, ListRuleBindingUsageData, ListRuleBindingUsageErrors, ListRuleBindingUsageResponses, ListRuleDefinitionsData, ListRuleDefinitionsErrors, ListRuleDefinitionsResponses, ProjectRuleConditionData, ProjectRuleConditionErrors, ProjectRuleConditionResponses, PublishBusinessObjectDefinitionData, PublishBusinessObjectDefinitionErrors, PublishBusinessObjectDefinitionResponses, PublishRuleDefinitionData, PublishRuleDefinitionErrors, PublishRuleDefinitionResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, ResendEmailVerificationData, ResendEmailVerificationErrors, ResendEmailVerificationResponses, SaveBusinessObjectRecordData, SaveBusinessObjectRecordErrors, SaveBusinessObjectRecordResponses, SaveRuleDefinitionDraftData, SaveRuleDefinitionDraftErrors, SaveRuleDefinitionDraftResponses, SaveUnpublishedBusinessObjectDefinitionData, SaveUnpublishedBusinessObjectDefinitionErrors, SaveUnpublishedBusinessObjectDefinitionResponses, SearchRuleExpressionGuideData, SearchRuleExpressionGuideErrors, SearchRuleExpressionGuideResponses, SignInUserData, SignInUserErrors, SignInUserResponses, SignOutUserData, SignOutUserResponses, SimulateRuleDefinitionData, SimulateRuleDefinitionErrors, SimulateRuleDefinitionResponses, StartRuleDefinitionDraftData, StartRuleDefinitionDraftErrors, StartRuleDefinitionDraftResponses, SubmitBusinessObjectRecordData, SubmitBusinessObjectRecordErrors, SubmitBusinessObjectRecordResponses, UpdateLanguagePreferenceData, UpdateLanguagePreferenceErrors, UpdateLanguagePreferenceResponses, UpdateRuleBindingData, UpdateRuleBindingErrors, UpdateRuleBindingResponses, UpdateThemePreferenceData, UpdateThemePreferenceErrors, UpdateThemePreferenceResponses, VerifyEmailData, VerifyEmailErrors, VerifyEmailResponses } from './types.gen';
+import type { ActivateRuleDefinitionVersionData, ActivateRuleDefinitionVersionErrors, ActivateRuleDefinitionVersionResponses, ArchiveRuleDefinitionData, ArchiveRuleDefinitionErrors, ArchiveRuleDefinitionResponses, CompleteRuleAuthoringData, CompleteRuleAuthoringErrors, CompleteRuleAuthoringResponses, CreateBusinessObjectDefinitionData, CreateBusinessObjectDefinitionErrors, CreateBusinessObjectDefinitionResponses, CreateBusinessObjectRecordData, CreateBusinessObjectRecordErrors, CreateBusinessObjectRecordResponses, CreateRuleBindingData, CreateRuleBindingErrors, CreateRuleBindingResponses, CreateRuleDefinitionData, CreateRuleDefinitionErrors, CreateRuleDefinitionResponses, CreateRuleDefinitionVersionData, CreateRuleDefinitionVersionErrors, CreateRuleDefinitionVersionResponses, DeactivateRuleDefinitionData, DeactivateRuleDefinitionErrors, DeactivateRuleDefinitionResponses, DeleteRuleBindingData, DeleteRuleBindingErrors, DeleteRuleBindingResponses, EvaluateRuleBindingData, EvaluateRuleBindingErrors, EvaluateRuleBindingResponses, GetBrowserSessionData, GetBrowserSessionResponses, GetBusinessObjectDefinitionData, GetBusinessObjectDefinitionErrors, GetBusinessObjectDefinitionResponses, GetBusinessObjectRecordData, GetBusinessObjectRecordErrors, GetBusinessObjectRecordResponses, GetLegalVersionsData, GetLegalVersionsResponses, GetMeData, GetMeErrors, GetMeResponses, GetRuleBindingData, GetRuleBindingErrors, GetRuleBindingResponses, GetRuleDefinitionData, GetRuleDefinitionErrors, GetRuleDefinitionResponses, GetRuleExpressionLanguageData, GetRuleExpressionLanguageErrors, GetRuleExpressionLanguageResponses, ListBusinessObjectDefinitionsData, ListBusinessObjectDefinitionsErrors, ListBusinessObjectDefinitionsResponses, ListBusinessObjectRecordsData, ListBusinessObjectRecordsErrors, ListBusinessObjectRecordsResponses, ListRuleBindingUsageData, ListRuleBindingUsageErrors, ListRuleBindingUsageResponses, ListRuleDefinitionsData, ListRuleDefinitionsErrors, ListRuleDefinitionsResponses, ProjectRuleAuthoringData, ProjectRuleAuthoringErrors, ProjectRuleAuthoringResponses, ProjectRuleConditionData, ProjectRuleConditionErrors, ProjectRuleConditionResponses, PublishBusinessObjectDefinitionData, PublishBusinessObjectDefinitionErrors, PublishBusinessObjectDefinitionResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, ResendEmailVerificationData, ResendEmailVerificationErrors, ResendEmailVerificationResponses, SaveBusinessObjectRecordData, SaveBusinessObjectRecordErrors, SaveBusinessObjectRecordResponses, SaveRuleDefinitionDraftData, SaveRuleDefinitionDraftErrors, SaveRuleDefinitionDraftResponses, SaveUnpublishedBusinessObjectDefinitionData, SaveUnpublishedBusinessObjectDefinitionErrors, SaveUnpublishedBusinessObjectDefinitionResponses, SearchRuleExpressionGuideData, SearchRuleExpressionGuideErrors, SearchRuleExpressionGuideResponses, SignInUserData, SignInUserErrors, SignInUserResponses, SignOutUserData, SignOutUserResponses, SimulateRuleDefinitionDraftData, SimulateRuleDefinitionDraftErrors, SimulateRuleDefinitionDraftResponses, SimulateRuleDefinitionVersionData, SimulateRuleDefinitionVersionErrors, SimulateRuleDefinitionVersionResponses, SubmitBusinessObjectRecordData, SubmitBusinessObjectRecordErrors, SubmitBusinessObjectRecordResponses, UpdateLanguagePreferenceData, UpdateLanguagePreferenceErrors, UpdateLanguagePreferenceResponses, UpdateRuleBindingData, UpdateRuleBindingErrors, UpdateRuleBindingResponses, UpdateThemePreferenceData, UpdateThemePreferenceErrors, UpdateThemePreferenceResponses, VerifyEmailData, VerifyEmailErrors, VerifyEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -138,6 +138,11 @@ export const publishBusinessObjectDefinition = <ThrowOnError extends boolean = f
 export const getLegalVersions = <ThrowOnError extends boolean = false>(options?: Options<GetLegalVersionsData, ThrowOnError>): RequestResult<GetLegalVersionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetLegalVersionsResponses, unknown, ThrowOnError>({ url: '/api/legal/versions', ...options });
 
 /**
+ * Resolve the current same-origin browser session
+ */
+export const getBrowserSession = <ThrowOnError extends boolean = false>(options?: Options<GetBrowserSessionData, ThrowOnError>): RequestResult<GetBrowserSessionResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetBrowserSessionResponses, unknown, ThrowOnError>({ url: '/api/auth/session', ...options });
+
+/**
  * Sign in a standalone user account
  */
 export const signInUser = <ThrowOnError extends boolean = false>(options: Options<SignInUserData, ThrowOnError>): RequestResult<SignInUserResponses, SignInUserErrors, ThrowOnError> => (options.client ?? client).post<SignInUserResponses, SignInUserErrors, ThrowOnError>({
@@ -235,7 +240,7 @@ export const listRuleBindingUsage = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
- * List system and workspace rule definitions
+ * List built-in and workspace rule definitions
  */
 export const listRuleDefinitions = <ThrowOnError extends boolean = false>(options?: Options<ListRuleDefinitionsData, ThrowOnError>): RequestResult<ListRuleDefinitionsResponses, ListRuleDefinitionsErrors, ThrowOnError> => (options?.client ?? client).get<ListRuleDefinitionsResponses, ListRuleDefinitionsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -292,25 +297,12 @@ export const searchRuleExpressionGuide = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Get a system or workspace rule definition
+ * Get a built-in or workspace rule definition
  */
 export const getRuleDefinition = <ThrowOnError extends boolean = false>(options: Options<GetRuleDefinitionData, ThrowOnError>): RequestResult<GetRuleDefinitionResponses, GetRuleDefinitionErrors, ThrowOnError> => (options.client ?? client).get<GetRuleDefinitionResponses, GetRuleDefinitionErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/rules/{definitionKey}',
     ...options
-});
-
-/**
- * Start the next draft from a published workspace rule
- */
-export const startRuleDefinitionDraft = <ThrowOnError extends boolean = false>(options: Options<StartRuleDefinitionDraftData, ThrowOnError>): RequestResult<StartRuleDefinitionDraftResponses, StartRuleDefinitionDraftErrors, ThrowOnError> => (options.client ?? client).post<StartRuleDefinitionDraftResponses, StartRuleDefinitionDraftErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/rules/{definitionKey}/draft',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
@@ -327,11 +319,37 @@ export const saveRuleDefinitionDraft = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Publish an immutable workspace rule version
+ * Create an immutable workspace rule version from the current draft
  */
-export const publishRuleDefinition = <ThrowOnError extends boolean = false>(options: Options<PublishRuleDefinitionData, ThrowOnError>): RequestResult<PublishRuleDefinitionResponses, PublishRuleDefinitionErrors, ThrowOnError> => (options.client ?? client).post<PublishRuleDefinitionResponses, PublishRuleDefinitionErrors, ThrowOnError>({
+export const createRuleDefinitionVersion = <ThrowOnError extends boolean = false>(options: Options<CreateRuleDefinitionVersionData, ThrowOnError>): RequestResult<CreateRuleDefinitionVersionResponses, CreateRuleDefinitionVersionErrors, ThrowOnError> => (options.client ?? client).post<CreateRuleDefinitionVersionResponses, CreateRuleDefinitionVersionErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/rules/{definitionKey}/publish',
+    url: '/api/rules/{definitionKey}/versions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Deactivate the workspace rule definition for new bindings
+ */
+export const deactivateRuleDefinition = <ThrowOnError extends boolean = false>(options: Options<DeactivateRuleDefinitionData, ThrowOnError>): RequestResult<DeactivateRuleDefinitionResponses, DeactivateRuleDefinitionErrors, ThrowOnError> => (options.client ?? client).delete<DeactivateRuleDefinitionResponses, DeactivateRuleDefinitionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/{definitionKey}/active-version',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Activate one exact immutable workspace rule version
+ */
+export const activateRuleDefinitionVersion = <ThrowOnError extends boolean = false>(options: Options<ActivateRuleDefinitionVersionData, ThrowOnError>): RequestResult<ActivateRuleDefinitionVersionResponses, ActivateRuleDefinitionVersionErrors, ThrowOnError> => (options.client ?? client).put<ActivateRuleDefinitionVersionResponses, ActivateRuleDefinitionVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/{definitionKey}/active-version',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -353,11 +371,50 @@ export const archiveRuleDefinition = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Simulate a workspace rule draft or exact published version
+ * Simulate the current workspace rule draft
  */
-export const simulateRuleDefinition = <ThrowOnError extends boolean = false>(options: Options<SimulateRuleDefinitionData, ThrowOnError>): RequestResult<SimulateRuleDefinitionResponses, SimulateRuleDefinitionErrors, ThrowOnError> => (options.client ?? client).post<SimulateRuleDefinitionResponses, SimulateRuleDefinitionErrors, ThrowOnError>({
+export const simulateRuleDefinitionDraft = <ThrowOnError extends boolean = false>(options: Options<SimulateRuleDefinitionDraftData, ThrowOnError>): RequestResult<SimulateRuleDefinitionDraftResponses, SimulateRuleDefinitionDraftErrors, ThrowOnError> => (options.client ?? client).post<SimulateRuleDefinitionDraftResponses, SimulateRuleDefinitionDraftErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/rules/{definitionKey}/simulate',
+    url: '/api/rules/{definitionKey}/draft/simulate',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Simulate one exact immutable rule version
+ */
+export const simulateRuleDefinitionVersion = <ThrowOnError extends boolean = false>(options: Options<SimulateRuleDefinitionVersionData, ThrowOnError>): RequestResult<SimulateRuleDefinitionVersionResponses, SimulateRuleDefinitionVersionErrors, ThrowOnError> => (options.client ?? client).post<SimulateRuleDefinitionVersionResponses, SimulateRuleDefinitionVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/{definitionKey}/versions/{version}/simulate',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Project one rule authoring source to canonical rule logic
+ */
+export const projectRuleAuthoring = <ThrowOnError extends boolean = false>(options: Options<ProjectRuleAuthoringData, ThrowOnError>): RequestResult<ProjectRuleAuthoringResponses, ProjectRuleAuthoringErrors, ThrowOnError> => (options.client ?? client).post<ProjectRuleAuthoringResponses, ProjectRuleAuthoringErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/authoring/project',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Complete the rule authoring language at a cursor position
+ */
+export const completeRuleAuthoring = <ThrowOnError extends boolean = false>(options: Options<CompleteRuleAuthoringData, ThrowOnError>): RequestResult<CompleteRuleAuthoringResponses, CompleteRuleAuthoringErrors, ThrowOnError> => (options.client ?? client).post<CompleteRuleAuthoringResponses, CompleteRuleAuthoringErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/authoring/complete',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -384,7 +441,11 @@ export const createRuleBinding = <ThrowOnError extends boolean = false>(options:
 export const deleteRuleBinding = <ThrowOnError extends boolean = false>(options: Options<DeleteRuleBindingData, ThrowOnError>): RequestResult<DeleteRuleBindingResponses, DeleteRuleBindingErrors, ThrowOnError> => (options.client ?? client).delete<DeleteRuleBindingResponses, DeleteRuleBindingErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/rule-bindings/{bindingId}',
-    ...options
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -402,6 +463,19 @@ export const getRuleBinding = <ThrowOnError extends boolean = false>(options: Op
 export const updateRuleBinding = <ThrowOnError extends boolean = false>(options: Options<UpdateRuleBindingData, ThrowOnError>): RequestResult<UpdateRuleBindingResponses, UpdateRuleBindingErrors, ThrowOnError> => (options.client ?? client).put<UpdateRuleBindingResponses, UpdateRuleBindingErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/rule-bindings/{bindingId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Evaluate one rule binding against a transient consumer context
+ */
+export const evaluateRuleBinding = <ThrowOnError extends boolean = false>(options: Options<EvaluateRuleBindingData, ThrowOnError>): RequestResult<EvaluateRuleBindingResponses, EvaluateRuleBindingErrors, ThrowOnError> => (options.client ?? client).post<EvaluateRuleBindingResponses, EvaluateRuleBindingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rule-bindings/{bindingId}/evaluate',
     ...options,
     headers: {
         'Content-Type': 'application/json',
