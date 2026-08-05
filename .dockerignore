@@ -1,0 +1,9 @@
+.git
+.env.local
+dist
+node_modules
+playwright-report
+test-results
+server/**/bin
+server/**/obj
+server/**/wwwroot

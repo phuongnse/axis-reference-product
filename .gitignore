@@ -1,0 +1,8 @@
+node_modules/
+dist/
+server/**/bin/
+server/**/obj/
+server/**/wwwroot/
+playwright-report/
+test-results/
+.env.local

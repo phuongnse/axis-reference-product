@@ -1,0 +1,57 @@
+{
+  "name": "axis-reference-product",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@11.16.0",
+  "type": "module",
+  "engines": {
+    "node": "24.18.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "generate:api": "openapi-ts",
+    "build": "tsc --noEmit && vite build",
+    "sync:dotnet-lock": "dotnet restore server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --force-evaluate",
+    "restore": "dotnet restore server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --locked-mode",
+    "audit:dependencies": "npm audit --audit-level=high && dotnet restore server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --locked-mode --force-evaluate",
+    "check": "npm run generate:api && node --test scripts/*.test.mjs && npm run build && dotnet test server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --no-restore",
+    "test:health-probe": "dotnet test server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --no-restore --filter FullyQualifiedName~HealthProbeTests",
+    "test:local-dev-wrapper": "node --test scripts/local-dev.test.mjs",
+    "test:frontend": "vitest run --config vitest.config.ts",
+    "test:unit": "npm run test:frontend && node --test scripts/*.test.mjs",
+    "test:e2e": "node scripts/local-dev.mjs e2e",
+    "test:e2e:container": "playwright test",
+    "local-dev:up": "node scripts/local-dev.mjs up",
+    "local-dev:down": "node scripts/local-dev.mjs down",
+    "local-dev:status": "node scripts/local-dev.mjs status",
+    "local-dev:logs": "node scripts/local-dev.mjs logs",
+    "local-dev:recreate": "node scripts/local-dev.mjs recreate"
+  },
+  "dependencies": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "@playwright/test": "1.58.2",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.7.0",
+    "jsdom": "28.1.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.0"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "js-yaml": "4.3.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true
+  }
+}

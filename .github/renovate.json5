@@ -1,0 +1,95 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "dependencyDashboard": true,
+  "configMigration": true,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "schedule": [
+    "before 5am on monday"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "branchPrefix": "renovate/",
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "commitMessageLowerCase": "never",
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "enabledManagers": [
+    "dockerfile",
+    "github-actions",
+    "npm",
+    "nuget"
+  ],
+  "rangeStrategy": "pin",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 5am on monday"
+    ]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "security"
+    ],
+    "vulnerabilityFixStrategy": "lowest"
+  },
+  "packageRules": [
+    {
+      "description": "Keep the approved SDK and Node baselines explicit.",
+      "matchFileNames": [
+        "global.json",
+        ".nvmrc"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Do not update bundled npm independently from the Node baseline.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "packageManager"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Group .NET package updates.",
+      "matchManagers": [
+        "nuget"
+      ],
+      "groupName": ".NET packages",
+      "groupSlug": "dotnet-packages"
+    },
+    {
+      "description": "Group frontend tooling updates.",
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "frontend dependencies",
+      "groupSlug": "frontend-dependencies"
+    },
+    {
+      "description": "Group container digest updates.",
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "groupName": "container images",
+      "groupSlug": "container-images"
+    },
+    {
+      "description": "Require dashboard approval before proposing major updates.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    }
+  ]
+}

@@ -1,0 +1,4920 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Axis Platform API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/business-object-records": {
+      "get": {
+        "tags": [
+          "Business Object Records"
+        ],
+        "summary": "List business object records for the current workspace",
+        "operationId": "ListBusinessObjectRecords",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "objectKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectRecordListItemDtoPagedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-records/{objectKey}": {
+      "post": {
+        "tags": [
+          "Business Object Records"
+        ],
+        "summary": "Create a draft record from the latest published business object version",
+        "operationId": "CreateBusinessObjectRecord",
+        "parameters": [
+          {
+            "name": "objectKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBusinessObjectRecordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectRecordDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-records/{recordId}": {
+      "get": {
+        "tags": [
+          "Business Object Records"
+        ],
+        "summary": "Get a business object record",
+        "operationId": "GetBusinessObjectRecord",
+        "parameters": [
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectRecordDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Business Object Records"
+        ],
+        "summary": "Save a draft business object record",
+        "operationId": "SaveBusinessObjectRecord",
+        "parameters": [
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveBusinessObjectRecordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectRecordDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-records/{recordId}/submit": {
+      "post": {
+        "tags": [
+          "Business Object Records"
+        ],
+        "summary": "Run published field rules and submit a draft business object record",
+        "operationId": "SubmitBusinessObjectRecord",
+        "parameters": [
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitBusinessObjectRecordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectRecordSubmitResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-definitions": {
+      "get": {
+        "tags": [
+          "Business Objects"
+        ],
+        "summary": "List business object definitions for the current workspace",
+        "operationId": "ListBusinessObjectDefinitions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectDefinitionListItemDtoPagedResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Business Objects"
+        ],
+        "summary": "Create an unpublished business object definition",
+        "operationId": "CreateBusinessObjectDefinition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBusinessObjectDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-definitions/{id}": {
+      "get": {
+        "tags": [
+          "Business Objects"
+        ],
+        "summary": "Get a business object definition",
+        "operationId": "GetBusinessObjectDefinition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-definitions/{id}/unpublished": {
+      "put": {
+        "tags": [
+          "Business Objects"
+        ],
+        "summary": "Save an unpublished business object definition",
+        "operationId": "SaveUnpublishedBusinessObjectDefinition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUnpublishedBusinessObjectDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/business-object-definitions/{id}/publish": {
+      "post": {
+        "tags": [
+          "Business Objects"
+        ],
+        "summary": "Publish an unpublished business object definition",
+        "operationId": "PublishBusinessObjectDefinition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishBusinessObjectDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessObjectDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/legal/versions": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Current Terms of Service and Privacy Policy versions",
+        "operationId": "GetLegalVersions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegalVersionsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/sign-in": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Sign in a standalone user account",
+        "operationId": "SignInUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInSessionEstablishedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Verify an email token and establish the registration session",
+        "operationId": "VerifyEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyEmailSessionEstablishedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Resend email verification link",
+        "operationId": "ResendEmailVerification",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/sign-out": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Sign out the current browser session",
+        "operationId": "SignOutUser",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Register a standalone user account",
+        "operationId": "RegisterUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Get the current user's profile",
+        "operationId": "GetMe",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/users/me/preferences/language": {
+      "put": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Update the current user's language preference",
+        "operationId": "UpdateLanguagePreference",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserLanguagePreferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LanguagePreferenceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/users/me/preferences/theme": {
+      "put": {
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Update the current user's theme preference",
+        "operationId": "UpdateThemePreference",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserThemePreferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThemePreferenceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}/bindings": {
+      "get": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Show where an exact rule version is currently used",
+        "operationId": "ListRuleBindingUsage",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RuleBindingUsageDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules": {
+      "get": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "List system and workspace rule definitions",
+        "operationId": "ListRuleDefinitions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "origin",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RuleOrigin"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RuleLifecycleStatus"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionSummaryDtoPagedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Create a workspace rule draft",
+        "operationId": "CreateRuleDefinition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/expression-language": {
+      "get": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Get the versioned typed-expression capabilities available for rule authoring",
+        "operationId": "GetRuleExpressionLanguage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleExpressionLanguageDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/condition/project": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Validate and present a visual rule condition",
+        "operationId": "ProjectRuleCondition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectRuleConditionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleConditionProjectionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/expression-language/guide": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Browse and search the contextual rule expression guide",
+        "operationId": "SearchRuleExpressionGuide",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRuleExpressionGuideRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleExpressionGuideDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}": {
+      "get": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Get a system or workspace rule definition",
+        "operationId": "GetRuleDefinition",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}/draft": {
+      "put": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Save a workspace rule draft",
+        "operationId": "SaveRuleDefinitionDraft",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRuleDefinitionDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Start the next draft from a published workspace rule",
+        "operationId": "StartRuleDefinitionDraft",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleRevisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}/publish": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Publish an immutable workspace rule version",
+        "operationId": "PublishRuleDefinition",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleRevisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}/archive": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Archive a workspace rule definition",
+        "operationId": "ArchiveRuleDefinition",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleRevisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDefinitionDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rules/{definitionKey}/simulate": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Simulate a workspace rule draft or exact published version",
+        "operationId": "SimulateRuleDefinition",
+        "parameters": [
+          {
+            "name": "definitionKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRuleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSimulationResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rule-bindings": {
+      "post": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Bind an exact rule version to a consumer target",
+        "operationId": "CreateRuleBinding",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleBindingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleBindingDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/rule-bindings/{bindingId}": {
+      "get": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Get a rule binding",
+        "operationId": "GetRuleBinding",
+        "parameters": [
+          {
+            "name": "bindingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleBindingDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Update a rule binding without changing the rule definition",
+        "operationId": "UpdateRuleBinding",
+        "parameters": [
+          {
+            "name": "bindingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRuleBindingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleBindingDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Remove a rule binding without removing its rule definition",
+        "operationId": "DeleteRuleBinding",
+        "parameters": [
+          {
+            "name": "bindingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BusinessObjectChoiceFieldConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "selectionMode": {
+            "$ref": "#/components/schemas/BusinessObjectChoiceSelectionMode"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectChoiceOptionDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectChoiceFieldConfigurationInput": {
+        "type": "object",
+        "properties": {
+          "selectionMode": {
+            "$ref": "#/components/schemas/BusinessObjectChoiceSelectionMode"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectChoiceOptionInput"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectChoiceOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectChoiceOptionInput": {
+        "type": "object",
+        "properties": {
+          "optionKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectChoiceSelectionMode": {
+        "enum": [
+          "Single",
+          "Multiple"
+        ],
+        "type": "string"
+      },
+      "BusinessObjectDefinitionDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BusinessObjectDefinitionStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestPublishedVersionNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectFieldDefinitionDto"
+            }
+          },
+          "latestPublishedVersion": {
+            "$ref": "#/components/schemas/BusinessObjectDefinitionVersionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BusinessObjectDefinitionStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latestPublishedVersionNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionListItemDtoPagedResult": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionListItemDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionStatus": {
+        "enum": [
+          "Unpublished",
+          "Published"
+        ],
+        "type": "string"
+      },
+      "BusinessObjectDefinitionVersionChoiceFieldConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "selectionMode": {
+            "$ref": "#/components/schemas/BusinessObjectChoiceSelectionMode"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionVersionChoiceOptionDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionVersionChoiceOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceChoiceOptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionVersionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceDefinitionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "versionNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "publishedByUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionVersionFieldDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionVersionFieldDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceFieldDefinitionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fieldType": {
+            "$ref": "#/components/schemas/BusinessObjectFieldType"
+          },
+          "choiceConfiguration": {
+            "$ref": "#/components/schemas/BusinessObjectDefinitionVersionChoiceFieldConfigurationDto"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionVersionFieldRuleDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectDefinitionVersionFieldRuleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceFieldRuleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bindingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bindingRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectFieldDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fieldType": {
+            "$ref": "#/components/schemas/BusinessObjectFieldType"
+          },
+          "choiceConfiguration": {
+            "$ref": "#/components/schemas/BusinessObjectChoiceFieldConfigurationDto"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectFieldRuleDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectFieldDefinitionInput": {
+        "type": "object",
+        "properties": {
+          "fieldKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "fieldType": {
+            "$ref": "#/components/schemas/BusinessObjectFieldType"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectFieldRuleInput"
+            },
+            "nullable": true
+          },
+          "choiceConfiguration": {
+            "$ref": "#/components/schemas/BusinessObjectChoiceFieldConfigurationInput"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectFieldRuleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bindingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bindingRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectFieldRuleInput": {
+        "type": "object",
+        "properties": {
+          "bindingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectFieldType": {
+        "enum": [
+          "Text",
+          "Integer",
+          "Decimal",
+          "Date",
+          "DateTime",
+          "Boolean",
+          "Choice"
+        ],
+        "type": "string"
+      },
+      "BusinessObjectRecordDetailDto": {
+        "required": [
+          "createdAt",
+          "createdByUserId",
+          "definitionVersion",
+          "definitionVersionId",
+          "fields",
+          "id",
+          "objectKey",
+          "revision",
+          "ruleEvaluations",
+          "status",
+          "updatedAt",
+          "updatedByUserId",
+          "values",
+          "workspaceId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "objectKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "definitionVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BusinessObjectRecordStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectRecordFieldContractDto"
+            }
+          },
+          "ruleEvaluations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectRecordRuleEvaluationDto"
+            }
+          },
+          "createdByUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedByUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedByUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordFieldContractDto": {
+        "required": [
+          "fieldKey",
+          "fieldType",
+          "label",
+          "order",
+          "rules"
+        ],
+        "type": "object",
+        "properties": {
+          "fieldKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fieldType": {
+            "$ref": "#/components/schemas/BusinessObjectFieldType"
+          },
+          "choiceConfiguration": {
+            "$ref": "#/components/schemas/BusinessObjectDefinitionVersionChoiceFieldConfigurationDto"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionVersionFieldRuleDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordListItemDto": {
+        "required": [
+          "definitionVersion",
+          "id",
+          "objectKey",
+          "revision",
+          "status",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "objectKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BusinessObjectRecordStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordListItemDtoPagedResult": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectRecordListItemDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordRuleDiagnosticDto": {
+        "required": [
+          "isMatch",
+          "nodeId"
+        ],
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "isMatch": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordRuleEvaluationDto": {
+        "required": [
+          "bindingId",
+          "bindingRevision",
+          "definitionKey",
+          "definitionVersion",
+          "diagnostics",
+          "fieldKey",
+          "isMatch"
+        ],
+        "type": "object",
+        "properties": {
+          "fieldKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "bindingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bindingRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "definitionKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isMatch": {
+            "type": "boolean"
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectRecordRuleDiagnosticDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessObjectRecordStatus": {
+        "enum": [
+          "Draft",
+          "Submitted"
+        ],
+        "type": "string"
+      },
+      "BusinessObjectRecordSubmitResultDto": {
+        "required": [
+          "isSubmitted",
+          "record",
+          "ruleEvaluations"
+        ],
+        "type": "object",
+        "properties": {
+          "isSubmitted": {
+            "type": "boolean"
+          },
+          "record": {
+            "$ref": "#/components/schemas/BusinessObjectRecordDetailDto"
+          },
+          "ruleEvaluations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectRecordRuleEvaluationDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateBusinessObjectDefinitionRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateBusinessObjectRecordRequest": {
+        "required": [
+          "idempotencyKey"
+        ],
+        "type": "object",
+        "properties": {
+          "idempotencyKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRuleBindingRequest": {
+        "type": "object",
+        "properties": {
+          "definitionKey": {
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "useCaseOrTrigger": {
+            "type": "string"
+          },
+          "inputMappings": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RuleInputMappingDto"
+            }
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "failureBehavior": {
+            "$ref": "#/components/schemas/RuleBindingFailureBehavior"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRuleDefinitionRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CurrentUserProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "theme": {
+            "type": "string",
+            "nullable": true
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "workspaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserWorkspaceDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable machine-readable problem code for client behavior and localization.",
+            "nullable": true
+          },
+          "errorCodes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Optional field-level machine-readable validation codes keyed by JSON field name.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "LanguagePreferenceDto": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LegalVersionsDto": {
+        "type": "object",
+        "properties": {
+          "termsVersion": {
+            "type": "string"
+          },
+          "privacyVersion": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable machine-readable problem code for client behavior and localization.",
+            "nullable": true
+          },
+          "errorCodes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Optional field-level machine-readable validation codes keyed by JSON field name.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "ProjectRuleConditionRequest": {
+        "type": "object",
+        "properties": {
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleDraftInputDefinitionDto"
+            }
+          },
+          "condition": {
+            "$ref": "#/components/schemas/RuleConditionNodeDto"
+          },
+          "language": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublishBusinessObjectDefinitionRequest": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterUserRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "passwordConfirmation": {
+            "type": "string"
+          },
+          "acceptedTermsVersion": {
+            "type": "string"
+          },
+          "acceptedPrivacyVersion": {
+            "type": "string"
+          },
+          "preferredLanguage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResendVerificationRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleBindingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "definitionKey": {
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "useCaseOrTrigger": {
+            "type": "string"
+          },
+          "inputMappings": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RuleInputMappingDto"
+            }
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "failureBehavior": {
+            "$ref": "#/components/schemas/RuleBindingFailureBehavior"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleBindingFailureBehavior": {
+        "enum": [
+          "FailClosed",
+          "FailOpen"
+        ],
+        "type": "string"
+      },
+      "RuleBindingUsageDto": {
+        "type": "object",
+        "properties": {
+          "bindingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "definitionKey": {
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "useCaseOrTrigger": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "failureBehavior": {
+            "$ref": "#/components/schemas/RuleBindingFailureBehavior"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleConditionNodeDto": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "logicalOperator": {
+            "$ref": "#/components/schemas/RuleLogicalOperator"
+          },
+          "predicateOperator": {
+            "$ref": "#/components/schemas/RulePredicateOperator"
+          },
+          "left": {
+            "$ref": "#/components/schemas/RuleOperandDto"
+          },
+          "right": {
+            "$ref": "#/components/schemas/RuleOperandDto"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleConditionNodeDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleConditionProjectionDto": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/components/schemas/RuleConditionNodeDto"
+          },
+          "display": {
+            "$ref": "#/components/schemas/RuleExpressionDisplayNodeDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleDefinitionDetailDto": {
+        "type": "object",
+        "properties": {
+          "definitionKey": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/RuleOrigin"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RuleLifecycleStatus"
+          },
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "latestPublishedVersion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleInputDefinitionDto"
+            }
+          },
+          "output": {
+            "$ref": "#/components/schemas/RuleOutputContractDto"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/RuleConditionNodeDto"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleDefinitionVersionDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "archivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleDefinitionSummaryDto": {
+        "type": "object",
+        "properties": {
+          "definitionKey": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/RuleOrigin"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RuleLifecycleStatus"
+          },
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "latestPublishedVersion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleInputDefinitionDto"
+            }
+          },
+          "output": {
+            "$ref": "#/components/schemas/RuleOutputContractDto"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleDefinitionSummaryDtoPagedResult": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleDefinitionSummaryDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleDefinitionVersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleInputDefinitionDto"
+            }
+          },
+          "output": {
+            "$ref": "#/components/schemas/RuleOutputContractDto"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/RuleConditionNodeDto"
+          },
+          "publishedByUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleDraftInputDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleValueType"
+            }
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "allowMultiple": {
+            "type": "boolean"
+          },
+          "allowedValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionCardinality": {
+        "enum": [
+          "Scalar",
+          "Multiple",
+          "Any"
+        ],
+        "type": "string"
+      },
+      "RuleExpressionCardinalityDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "cardinality": {
+            "$ref": "#/components/schemas/RuleExpressionCardinality"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionDisplayNodeDto": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionDisplayTokenDto"
+            }
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionDisplayNodeDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionDisplayTokenDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "referenceKind": {
+            "$ref": "#/components/schemas/RuleExpressionReferenceKind"
+          },
+          "referenceKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCode": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionFunction": {
+        "enum": [
+          "IsBlank",
+          "Length",
+          "Precision",
+          "Scale",
+          "Count",
+          "MatchesPattern",
+          "HasFormat",
+          "ToDecimal"
+        ],
+        "type": "string"
+      },
+      "RuleExpressionFunctionDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "function": {
+            "$ref": "#/components/schemas/RuleExpressionFunction"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionFunctionParameterDto"
+            }
+          },
+          "returnType": {
+            "$ref": "#/components/schemas/RuleValueType"
+          },
+          "returnCardinality": {
+            "$ref": "#/components/schemas/RuleExpressionCardinality"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionFunctionParameterDto": {
+        "type": "object",
+        "properties": {
+          "acceptedTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleValueType"
+            }
+          },
+          "cardinality": {
+            "$ref": "#/components/schemas/RuleExpressionCardinality"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionGuideDto": {
+        "type": "object",
+        "properties": {
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalResults": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionGuideSectionDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionGuideItemDto": {
+        "type": "object",
+        "properties": {
+          "referenceKind": {
+            "$ref": "#/components/schemas/RuleExpressionReferenceKind"
+          },
+          "referenceKey": {
+            "type": "string"
+          },
+          "displayName": {
+            "$ref": "#/components/schemas/SearchTextDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/SearchTextDto"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/SearchTextDto"
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchTextDto"
+            }
+          },
+          "detail": {
+            "$ref": "#/components/schemas/SearchTextDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionGuideSectionDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionGuideItemDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionLanguageDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RulePredicateOperatorDefinitionDto"
+            }
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionFunctionDefinitionDto"
+            }
+          },
+          "logicalOperators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleLogicalOperatorDefinitionDto"
+            }
+          },
+          "operandKinds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleOperandKindDefinitionDto"
+            }
+          },
+          "valueTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleValueTypeDefinitionDto"
+            }
+          },
+          "cardinalities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionCardinalityDefinitionDto"
+            }
+          },
+          "limitDefinitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionLimitDefinitionDto"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/RuleExpressionLimitsDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionLimitDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionLimitsDto": {
+        "type": "object",
+        "properties": {
+          "maxDepth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxNodes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxFunctionCalls": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxInputs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxExecutionSteps": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleExpressionReferenceKind": {
+        "enum": [
+          "LogicalOperator",
+          "PredicateOperator",
+          "Function",
+          "Input",
+          "Literal",
+          "ValueType",
+          "OperandKind",
+          "Limit"
+        ],
+        "type": "string"
+      },
+      "RuleExpressionValueShapeDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/RuleValueType"
+          },
+          "cardinality": {
+            "$ref": "#/components/schemas/RuleExpressionCardinality"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleInputDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleValueType"
+            }
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "allowMultiple": {
+            "type": "boolean"
+          },
+          "allowedValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleInputMappingDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/RuleInputMappingKind"
+          },
+          "contextKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "literalValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleInputMappingKind": {
+        "enum": [
+          "Context",
+          "Literal"
+        ],
+        "type": "string"
+      },
+      "RuleLifecycleStatus": {
+        "enum": [
+          "Draft",
+          "Published",
+          "Archived"
+        ],
+        "type": "string"
+      },
+      "RuleLogicalOperator": {
+        "enum": [
+          "All",
+          "Any",
+          "Not"
+        ],
+        "type": "string"
+      },
+      "RuleLogicalOperatorDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/RuleLogicalOperator"
+          },
+          "minimumChildren": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maximumChildren": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleNodeDiagnosticDto": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "isMatch": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleOperandDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/RuleOperandKind"
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "literal": {
+            "$ref": "#/components/schemas/RuleValueDto"
+          },
+          "function": {
+            "$ref": "#/components/schemas/RuleExpressionFunction"
+          },
+          "arguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleOperandDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleOperandKind": {
+        "enum": [
+          "Input",
+          "Literal",
+          "Function"
+        ],
+        "type": "string"
+      },
+      "RuleOperandKindDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/RuleOperandKind"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleOrigin": {
+        "enum": [
+          "System",
+          "Workspace"
+        ],
+        "type": "string"
+      },
+      "RuleOutputContractDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/RuleValueType"
+          },
+          "cardinality": {
+            "$ref": "#/components/schemas/RuleExpressionCardinality"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RulePredicateOperator": {
+        "enum": [
+          "Equal",
+          "NotEqual",
+          "GreaterThan",
+          "GreaterThanOrEqual",
+          "LessThan",
+          "LessThanOrEqual",
+          "Contains",
+          "StartsWith",
+          "EndsWith",
+          "IsNull",
+          "IsNotNull"
+        ],
+        "type": "string"
+      },
+      "RulePredicateOperatorDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/RulePredicateOperator"
+          },
+          "leftShapes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionValueShapeDto"
+            }
+          },
+          "rightShapes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleExpressionValueShapeDto"
+            }
+          },
+          "requiresMatchingTypes": {
+            "type": "boolean"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleReferenceContentDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "usage": {
+            "type": "string"
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleReferenceDocumentationDto": {
+        "type": "object",
+        "properties": {
+          "locales": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RuleReferenceContentDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleRevisionRequest": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleSimulationResultDto": {
+        "type": "object",
+        "properties": {
+          "definitionKey": {
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isMatch": {
+            "type": "boolean"
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleNodeDiagnosticDto"
+            }
+          },
+          "correlationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleValueDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/RuleValueType"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleValueType": {
+        "enum": [
+          "Text",
+          "Integer",
+          "Decimal",
+          "Date",
+          "DateTime",
+          "Boolean"
+        ],
+        "type": "string"
+      },
+      "RuleValueTypeDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/RuleValueType"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/RuleReferenceDocumentationDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveBusinessObjectRecordRequest": {
+        "required": [
+          "expectedRevision",
+          "values"
+        ],
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveRuleDefinitionDraftRequest": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleDraftInputDefinitionDto"
+            }
+          },
+          "condition": {
+            "$ref": "#/components/schemas/RuleConditionNodeDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveUnpublishedBusinessObjectDefinitionRequest": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessObjectFieldDefinitionInput"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchRuleExpressionGuideRequest": {
+        "type": "object",
+        "properties": {
+          "expressionLanguageVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "definitionKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleInputDefinitionDto"
+            }
+          },
+          "query": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchTextDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchTextSegmentDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchTextSegmentDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "isMatch": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignInNextStep": {
+        "enum": [
+          "Dashboard"
+        ],
+        "type": "string"
+      },
+      "SignInSessionEstablishedDto": {
+        "type": "object",
+        "properties": {
+          "sessionEstablished": {
+            "type": "boolean"
+          },
+          "nextStep": {
+            "$ref": "#/components/schemas/SignInNextStep"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignInUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SimulateRuleRequest": {
+        "type": "object",
+        "properties": {
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "inputs": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RuleValueDto"
+            }
+          },
+          "correlationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmitBusinessObjectRecordRequest": {
+        "required": [
+          "expectedRevision"
+        ],
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThemePreferenceDto": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateRuleBindingRequest": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "definitionKey": {
+            "type": "string"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "useCaseOrTrigger": {
+            "type": "string"
+          },
+          "inputMappings": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RuleInputMappingDto"
+            }
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "failureBehavior": {
+            "$ref": "#/components/schemas/RuleBindingFailureBehavior"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUserLanguagePreferenceRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUserThemePreferenceRequest": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserWorkspaceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "isCurrent": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerifyEmailNextStep": {
+        "enum": [
+          "Dashboard"
+        ],
+        "type": "string"
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerifyEmailSessionEstablishedDto": {
+        "type": "object",
+        "properties": {
+          "sessionEstablished": {
+            "type": "boolean"
+          },
+          "nextStep": {
+            "$ref": "#/components/schemas/VerifyEmailNextStep"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

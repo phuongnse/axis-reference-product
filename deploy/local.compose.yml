@@ -1,0 +1,89 @@
+services:
+  api:
+    environment:
+      OpenIddict__ClientCatalog__Clients__1__ClientId: axis_reference_product
+      OpenIddict__ClientCatalog__Clients__1__ClientSecret: ${AXIS_REFERENCE_PRODUCT_CLIENT_SECRET:?AXIS_REFERENCE_PRODUCT_CLIENT_SECRET is required}
+      OpenIddict__ClientCatalog__Clients__1__DisplayName: Axis Reference Product
+      OpenIddict__ClientCatalog__Clients__1__Profile: WebBffConfidential
+      OpenIddict__ClientCatalog__Clients__1__RedirectUris__0: https://localhost:4173/signin-oidc
+      OpenIddict__ClientCatalog__Clients__1__RedirectUris__1: https://web:4173/signin-oidc
+      OpenIddict__ClientCatalog__Clients__1__PostLogoutRedirectUris__0: https://localhost:4173/signout-callback-oidc
+      OpenIddict__ClientCatalog__Clients__1__PostLogoutRedirectUris__1: https://web:4173/signout-callback-oidc
+    networks:
+      - default
+      - reference_product_acceptance
+
+  maildev:
+    networks:
+      - default
+      - reference_product_acceptance
+
+  reference-product:
+    user: ${AXIS_REFERENCE_PRODUCT_UID:?AXIS_REFERENCE_PRODUCT_UID is required}
+    build:
+      context: ${AXIS_REFERENCE_PRODUCT_ROOT:?AXIS_REFERENCE_PRODUCT_ROOT is required}
+      dockerfile: Dockerfile
+    container_name: axis_reference_product
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Authentication__Authority: https://localhost:5281
+      Authentication__Backchannel__ConnectHost: api
+      Authentication__Backchannel__ConnectPort: 8443
+      Authentication__ClientId: axis_reference_product
+      Authentication__ClientSecret: ${AXIS_REFERENCE_PRODUCT_CLIENT_SECRET:?AXIS_REFERENCE_PRODUCT_CLIENT_SECRET is required}
+      Axis__ApiBaseUrl: https://api:8443
+      ConnectionStrings__Redis: redis:6379,abortConnect=false
+      Kestrel__Certificates__Default__Path: /https/localhost.pem
+      Kestrel__Certificates__Default__KeyPath: /https/localhost-key.pem
+      SSL_CERT_FILE: /https/rootCA.pem
+    ports:
+      - "127.0.0.1:4173:4173"
+    volumes:
+      - ${AXIS_PLATFORM_ROOT:?AXIS_PLATFORM_ROOT is required}/.dev-certs:/https:ro
+    networks:
+      default:
+      reference_product_acceptance:
+        aliases:
+          - web
+    healthcheck:
+      test:
+        - CMD
+        - dotnet
+        - /app/health-probe/Axis.ReferenceProduct.HealthProbe.dll
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  reference-product-e2e:
+    profiles: ["e2e"]
+    build:
+      context: ${AXIS_REFERENCE_PRODUCT_ROOT:?AXIS_REFERENCE_PRODUCT_ROOT is required}
+      dockerfile: Dockerfile.e2e
+    working_dir: /work/product
+    depends_on:
+      api:
+        condition: service_healthy
+      reference-product:
+        condition: service_healthy
+    environment:
+      CI: "1"
+      E2E_API_HEALTH_URL: https://localhost:5281/health
+      E2E_BASE_URL: https://localhost:4173
+      E2E_AXIS_WEB_URL: https://localhost:3000
+      E2E_MAILDEV_URL: http://localhost:1080
+      E2E_OUTPUT_DIR: /tmp/reference-product-e2e/test-results
+      E2E_REPORT_DIR: /tmp/reference-product-e2e/playwright-report
+      HOME: /root
+      NODE_EXTRA_CA_CERTS: /https/rootCA.pem
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    entrypoint: ["sh", "./scripts/docker-e2e-entrypoint.sh"]
+    volumes:
+      - ${AXIS_PLATFORM_ROOT:?AXIS_PLATFORM_ROOT is required}/.dev-certs/rootCA.pem:/https/rootCA.pem:ro
+    network_mode: host
+
+networks:
+  reference_product_acceptance:
