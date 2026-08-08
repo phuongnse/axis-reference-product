@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "build:solution": "node scripts/build-solution.mjs",
     "generate:api": "openapi-ts",
     "build": "tsc --noEmit && vite build",
     "sync:dotnet-lock": "dotnet restore server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj --force-evaluate",
@@ -47,7 +48,7 @@
   },
   "overrides": {
     "esbuild": "0.28.1",
-    "js-yaml": "4.3.0"
+    "js-yaml": "4.3.1"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,

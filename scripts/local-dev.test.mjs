@@ -1,8 +1,40 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { buildAxisInvocation, resolveReferenceProductUid } from './local-dev.mjs';
+import {
+  buildAxisInvocation,
+  prepareSolutionRelease,
+  resolveReferenceProductUid,
+} from './local-dev.mjs';
+
+const sourceRevision = '0123456789abcdef0123456789abcdef01234567';
+
+test('prepares one ignored signed release and reuses its private key', async (t) => {
+  const outputRoot = await mkdtemp(
+    join(process.env.TMPDIR ?? '/tmp', 'axis-reference-product-release-'),
+  );
+  t.after(() => rm(outputRoot, { recursive: true, force: true }));
+
+  const first = await prepareSolutionRelease({ outputRoot, sourceRevision });
+  const firstPackage = await readFile(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
+  const second = await prepareSolutionRelease({ outputRoot, sourceRevision });
+
+  assert.equal(
+    first.AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY,
+    second.AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY,
+  );
+  assert.match(first.AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY, /BEGIN PUBLIC KEY/);
+  assert.deepEqual(
+    await readFile(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE),
+    firstPackage,
+  );
+  assert.equal(
+    JSON.parse(await readFile(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, 'utf8')).payloadType,
+    'application/vnd.axis.solution.v1+json',
+  );
+  assert.equal((await stat(join(outputRoot, 'release-key.pem'))).mode & 0o777, 0o600);
+});
 
 test('builds the finite Axis overlay command without product identity in Axis source', async (t) => {
   const temporaryRoot = await mkdtemp(

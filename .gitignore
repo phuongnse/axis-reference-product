@@ -6,3 +6,4 @@ server/**/wwwroot/
 playwright-report/
 test-results/
 .env.local
+.axis-solution/

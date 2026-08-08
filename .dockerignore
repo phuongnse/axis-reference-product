@@ -1,5 +1,6 @@
 .git
 .env.local
+.axis-solution
 dist
 node_modules
 playwright-report
