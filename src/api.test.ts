@@ -134,6 +134,22 @@ describe('product API', () => {
     expect((await requestBody(fetchMock, 2)).expectedRevision).toBe(2);
   });
 
+  it('does not submit an intervening Draft revision after a lost response', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('response lost'))
+      .mockResolvedValueOnce(recordResponse({ revision: 3 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      api(() => 'csrf-token').submitRecord('11111111-1111-4111-8111-111111111111', 2),
+    ).rejects.toThrow('Request failed (0)');
+    expect(fetchMock.mock.calls.map((call) => (call[0] as Request).method)).toEqual([
+      'POST',
+      'GET',
+    ]);
+  });
+
   it('surfaces a failed automatic submit retry without another read-back loop', async () => {
     const fetchMock = vi
       .fn()

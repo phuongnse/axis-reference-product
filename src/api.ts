@@ -179,7 +179,7 @@ export function api(csrfToken: () => string | null) {
           throw cause;
         }
         if (current.status === 'Submitted') return { isSubmitted: true, record: current };
-        if (current.revision >= expectedRevision) return await submit(current.revision);
+        if (current.revision === expectedRevision) return await submit(current.revision);
         throw cause;
       }
     },
