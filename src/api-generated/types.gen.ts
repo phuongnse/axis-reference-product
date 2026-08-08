@@ -60,6 +60,15 @@ export type BusinessObjectChoiceOptionInput = {
 
 export type BusinessObjectChoiceSelectionMode = 'Single' | 'Multiple';
 
+export type BusinessObjectDefinitionActionsDto = {
+    canSave?: boolean;
+    canPublish?: boolean;
+};
+
+export type BusinessObjectDefinitionCollectionActionsDto = {
+    canStartCreate?: boolean;
+};
+
 export type BusinessObjectDefinitionDetailDto = {
     id?: string;
     workspaceId?: string;
@@ -72,6 +81,7 @@ export type BusinessObjectDefinitionDetailDto = {
     updatedAt?: string;
     fields?: Array<BusinessObjectFieldDefinitionDto>;
     latestPublishedVersion?: BusinessObjectDefinitionVersionDto;
+    actions?: BusinessObjectDefinitionActionsDto;
 };
 
 export type BusinessObjectDefinitionListItemDto = {
@@ -562,6 +572,10 @@ export type RuleDefinitionActionsDto = {
     canActivateVersion?: boolean;
     canDeactivate?: boolean;
     canArchive?: boolean;
+};
+
+export type RuleDefinitionCollectionActionsDto = {
+    canStartCreate?: boolean;
 };
 
 export type RuleDefinitionDetailDto = {
@@ -1217,6 +1231,10 @@ export type ListBusinessObjectRecordsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListBusinessObjectRecordsError = ListBusinessObjectRecordsErrors[keyof ListBusinessObjectRecordsErrors];
@@ -1264,6 +1282,10 @@ export type CreateBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateBusinessObjectRecordError = CreateBusinessObjectRecordErrors[keyof CreateBusinessObjectRecordErrors];
@@ -1299,6 +1321,10 @@ export type GetBusinessObjectRecordErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetBusinessObjectRecordError = GetBusinessObjectRecordErrors[keyof GetBusinessObjectRecordErrors];
@@ -1346,6 +1372,10 @@ export type SaveBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveBusinessObjectRecordError = SaveBusinessObjectRecordErrors[keyof SaveBusinessObjectRecordErrors];
@@ -1393,6 +1423,10 @@ export type SubmitBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SubmitBusinessObjectRecordError = SubmitBusinessObjectRecordErrors[keyof SubmitBusinessObjectRecordErrors];
@@ -1431,6 +1465,10 @@ export type ListBusinessObjectDefinitionsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListBusinessObjectDefinitionsError = ListBusinessObjectDefinitionsErrors[keyof ListBusinessObjectDefinitionsErrors];
@@ -1468,6 +1506,10 @@ export type CreateBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateBusinessObjectDefinitionError = CreateBusinessObjectDefinitionErrors[keyof CreateBusinessObjectDefinitionErrors];
@@ -1480,6 +1522,39 @@ export type CreateBusinessObjectDefinitionResponses = {
 };
 
 export type CreateBusinessObjectDefinitionResponse = CreateBusinessObjectDefinitionResponses[keyof CreateBusinessObjectDefinitionResponses];
+
+export type GetBusinessObjectDefinitionCollectionActionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/business-object-definitions/actions';
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsError = GetBusinessObjectDefinitionCollectionActionsErrors[keyof GetBusinessObjectDefinitionCollectionActionsErrors];
+
+export type GetBusinessObjectDefinitionCollectionActionsResponses = {
+    /**
+     * OK
+     */
+    200: BusinessObjectDefinitionCollectionActionsDto;
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsResponse = GetBusinessObjectDefinitionCollectionActionsResponses[keyof GetBusinessObjectDefinitionCollectionActionsResponses];
 
 export type GetBusinessObjectDefinitionData = {
     body?: never;
@@ -1503,6 +1578,10 @@ export type GetBusinessObjectDefinitionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetBusinessObjectDefinitionError = GetBusinessObjectDefinitionErrors[keyof GetBusinessObjectDefinitionErrors];
@@ -1546,6 +1625,10 @@ export type SaveUnpublishedBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveUnpublishedBusinessObjectDefinitionError = SaveUnpublishedBusinessObjectDefinitionErrors[keyof SaveUnpublishedBusinessObjectDefinitionErrors];
@@ -1589,6 +1672,10 @@ export type PublishBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type PublishBusinessObjectDefinitionError = PublishBusinessObjectDefinitionErrors[keyof PublishBusinessObjectDefinitionErrors];
@@ -2303,6 +2390,10 @@ export type ListRuleBindingUsageErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListRuleBindingUsageError = ListRuleBindingUsageErrors[keyof ListRuleBindingUsageErrors];
@@ -2343,6 +2434,10 @@ export type ListRuleDefinitionsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListRuleDefinitionsError = ListRuleDefinitionsErrors[keyof ListRuleDefinitionsErrors];
@@ -2380,6 +2475,10 @@ export type CreateRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleDefinitionError = CreateRuleDefinitionErrors[keyof CreateRuleDefinitionErrors];
@@ -2392,6 +2491,39 @@ export type CreateRuleDefinitionResponses = {
 };
 
 export type CreateRuleDefinitionResponse = CreateRuleDefinitionResponses[keyof CreateRuleDefinitionResponses];
+
+export type GetRuleDefinitionCollectionActionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/rules/actions';
+};
+
+export type GetRuleDefinitionCollectionActionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetRuleDefinitionCollectionActionsError = GetRuleDefinitionCollectionActionsErrors[keyof GetRuleDefinitionCollectionActionsErrors];
+
+export type GetRuleDefinitionCollectionActionsResponses = {
+    /**
+     * OK
+     */
+    200: RuleDefinitionCollectionActionsDto;
+};
+
+export type GetRuleDefinitionCollectionActionsResponse = GetRuleDefinitionCollectionActionsResponses[keyof GetRuleDefinitionCollectionActionsResponses];
 
 export type GetRuleExpressionLanguageData = {
     body?: never;
@@ -2409,6 +2541,10 @@ export type GetRuleExpressionLanguageErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleExpressionLanguageError = GetRuleExpressionLanguageErrors[keyof GetRuleExpressionLanguageErrors];
@@ -2442,6 +2578,10 @@ export type ProjectRuleConditionErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ProjectRuleConditionError = ProjectRuleConditionErrors[keyof ProjectRuleConditionErrors];
@@ -2475,6 +2615,10 @@ export type SearchRuleExpressionGuideErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SearchRuleExpressionGuideError = SearchRuleExpressionGuideErrors[keyof SearchRuleExpressionGuideErrors];
@@ -2510,6 +2654,10 @@ export type GetRuleDefinitionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleDefinitionError = GetRuleDefinitionErrors[keyof GetRuleDefinitionErrors];
@@ -2553,6 +2701,10 @@ export type SaveRuleDefinitionDraftErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveRuleDefinitionDraftError = SaveRuleDefinitionDraftErrors[keyof SaveRuleDefinitionDraftErrors];
@@ -2596,6 +2748,10 @@ export type CreateRuleDefinitionVersionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleDefinitionVersionError = CreateRuleDefinitionVersionErrors[keyof CreateRuleDefinitionVersionErrors];
@@ -2639,6 +2795,10 @@ export type DeactivateRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type DeactivateRuleDefinitionError = DeactivateRuleDefinitionErrors[keyof DeactivateRuleDefinitionErrors];
@@ -2682,6 +2842,10 @@ export type ActivateRuleDefinitionVersionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ActivateRuleDefinitionVersionError = ActivateRuleDefinitionVersionErrors[keyof ActivateRuleDefinitionVersionErrors];
@@ -2725,6 +2889,10 @@ export type ArchiveRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ArchiveRuleDefinitionError = ArchiveRuleDefinitionErrors[keyof ArchiveRuleDefinitionErrors];
@@ -2764,6 +2932,10 @@ export type SimulateRuleDefinitionDraftErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SimulateRuleDefinitionDraftError = SimulateRuleDefinitionDraftErrors[keyof SimulateRuleDefinitionDraftErrors];
@@ -2804,6 +2976,10 @@ export type SimulateRuleDefinitionVersionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SimulateRuleDefinitionVersionError = SimulateRuleDefinitionVersionErrors[keyof SimulateRuleDefinitionVersionErrors];
@@ -2907,6 +3083,10 @@ export type CreateRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleBindingError = CreateRuleBindingErrors[keyof CreateRuleBindingErrors];
@@ -2950,6 +3130,10 @@ export type DeleteRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type DeleteRuleBindingError = DeleteRuleBindingErrors[keyof DeleteRuleBindingErrors];
@@ -2985,6 +3169,10 @@ export type GetRuleBindingErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleBindingError = GetRuleBindingErrors[keyof GetRuleBindingErrors];
@@ -3028,6 +3216,10 @@ export type UpdateRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type UpdateRuleBindingError = UpdateRuleBindingErrors[keyof UpdateRuleBindingErrors];
