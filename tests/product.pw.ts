@@ -155,7 +155,7 @@ test('administrator installs the signed release before the applicant submits thr
   await expect(page.getByRole('banner')).toContainText('Dashboard');
 
   const organizationName = `Reference E2E ${Date.now()}`;
-  await page.getByRole('button', { name: 'Workspace control' }).click();
+  await page.getByRole('button', { name: 'Account menu' }).click();
   await page.getByRole('button', { name: 'Create Organization' }).click();
   const createOrganizationDialog = page.getByRole('dialog', { name: 'Create Organization' });
   await createOrganizationDialog
@@ -167,24 +167,37 @@ test('administrator installs the signed release before the applicant submits thr
     .getByRole('button', { name: 'Enter Workspace' })
     .click();
   await expect(page).toHaveURL(new RegExp(`${axisWebUrl.origin}/dashboard$`), { timeout: 30_000 });
-  await expect(page.getByRole('button', { name: 'Workspace control' })).toContainText(
+  await expect(page.getByRole('button', { name: 'Account menu' })).toContainText(
     organizationName,
   );
 
   await page.goto(new URL('/service-identities', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Service identities', exact: true })).toBeVisible();
-  await page.getByLabel('Client identifier').fill(`reference-e2e-${Date.now()}`);
-  await page.getByRole('button', { name: 'Create service identity' }).click();
-  await expect(page.getByText('Service identity created')).toBeVisible();
-  await page.getByLabel('Public ES256 JWK').fill(servicePublicJwk());
-  await page.getByRole('button', { name: 'Add public key' }).click();
-  await expect(page.getByText('Public key added')).toBeVisible();
-  await page.getByRole('button', { name: 'Revoke key' }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Revoke key' }).click();
-  await expect(page.getByText('Key revoked')).toBeVisible();
-  await page.getByRole('button', { name: 'Revoke identity' }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Revoke identity' }).click();
-  await expect(page.getByText('Service identity revoked')).toBeVisible();
+  const serviceIdentityClientId = `reference-e2e-${Date.now()}`;
+  const serviceIdentities = page.getByRole('region', { name: 'Service identities' });
+  await serviceIdentities.getByRole('button', { name: 'Create service identity' }).click();
+  const createIdentityDialog = page.getByRole('dialog', { name: 'Create service identity' });
+  await createIdentityDialog.getByLabel('Client identifier').fill(serviceIdentityClientId);
+  await createIdentityDialog.getByRole('button', { name: 'Create service identity' }).click();
+  await expect(createIdentityDialog.getByText('Service identity created')).toBeVisible();
+  await createIdentityDialog.getByRole('button', { name: 'Cancel' }).click();
+  await serviceIdentities.getByRole('button', { name: serviceIdentityClientId }).click();
+  const identityDialog = page.getByRole('dialog', { name: serviceIdentityClientId });
+  await identityDialog.getByLabel('Public ES256 JWK').fill(servicePublicJwk());
+  await identityDialog.getByRole('button', { name: 'Add public key' }).click();
+  await expect(identityDialog.getByText('Public key added')).toBeVisible();
+  await identityDialog.getByRole('button', { name: 'Revoke key' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this public key?' })
+    .getByRole('button', { name: 'Revoke key' })
+    .click();
+  await expect(identityDialog.getByText('Key revoked')).toBeVisible();
+  await identityDialog.getByRole('button', { name: 'Revoke identity' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this service identity?' })
+    .getByRole('button', { name: 'Revoke identity' })
+    .click();
+  await expect(identityDialog.getByText('Service identity revoked')).toBeVisible();
 
   await page.goto(new URL('/solutions', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Solutions', exact: true })).toBeVisible();
@@ -199,12 +212,16 @@ test('administrator installs the signed release before the applicant submits thr
 
   await page.goto(new URL('/product-role-assignments', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Product-role assignments' })).toBeVisible();
-  await page.getByRole('combobox', { name: 'Active subject' }).click();
+  const assignments = page.getByRole('region', { name: 'Current product-role assignments' });
+  await assignments.getByRole('button', { name: 'Assign role' }).click();
+  const assignDialog = page.getByRole('dialog', { name: 'Assign product role' });
+  await assignDialog.getByRole('combobox', { name: 'Active subject' }).click();
   await page.getByRole('option', { name: /Alex Rivers/ }).click();
-  await page.getByRole('combobox', { name: 'Installed product role' }).click();
+  await assignDialog.getByRole('combobox', { name: 'Installed product role' }).click();
   await page.getByRole('option', { name: 'Applicant' }).click();
-  await page.getByRole('button', { name: 'Assign role' }).click();
-  await expect(page.getByText('Product role assigned')).toBeVisible();
+  await assignDialog.getByRole('button', { name: 'Assign role' }).click();
+  await expect(assignDialog.getByText('Product role assigned')).toBeVisible();
+  await assignDialog.getByRole('button', { name: 'Cancel' }).click();
 
   await page.goto(productUrl.toString());
   await page.getByRole('button', { name: 'Sign in' }).click();
@@ -228,14 +245,17 @@ test('administrator installs the signed release before the applicant submits thr
   for (const request of productApiRequests) expect(request.authorization).toBeUndefined();
 
   await page.goto(new URL('/product-role-assignments', axisWebUrl).toString());
-  const applicantAssignment = page
-    .getByRole('list', { name: 'Current product-role assignments' })
-    .locator('li')
-    .filter({ hasText: 'Applicant' })
-    .filter({ hasText: 'Alex Rivers' });
-  await applicantAssignment.getByRole('button', { name: 'Revoke role' }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Revoke role' }).click();
-  await expect(page.getByText('Product role revoked')).toBeVisible();
+  const currentAssignments = page.getByRole('region', {
+    name: 'Current product-role assignments',
+  });
+  await currentAssignments.getByRole('button', { name: 'Alex Rivers' }).click();
+  const assignmentDialog = page.getByRole('dialog', { name: 'Alex Rivers' });
+  await assignmentDialog.getByRole('button', { name: 'Revoke role' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this exact product role?' })
+    .getByRole('button', { name: 'Revoke role' })
+    .click();
+  await expect(assignmentDialog.getByText('Product role revoked')).toBeVisible();
 
   await page.goto(productUrl.toString());
   await page.getByRole('button', { name: 'Sign out' }).click();

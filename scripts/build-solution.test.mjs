@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { generateKeyPairSync, verify } from 'node:crypto';
+import { createHash, generateKeyPairSync, verify } from 'node:crypto';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -27,7 +27,13 @@ test('builds deterministic canonical component and payload bytes with a valid DS
   );
   assert.equal(first.payload.schemaVersion, 1);
   assert.equal(first.payload.solutionKey, 'reference_application');
-  assert.equal(first.payload.solutionVersion, '0.1.1');
+  assert.equal(first.payload.solutionVersion, '0.1.2');
+  assert.equal(
+    first.payload.axisOpenApiSha256,
+    createHash('sha256')
+      .update(await readFile(join(productRoot, 'openapi.json')))
+      .digest('hex'),
+  );
   assert.equal(first.components.length, 5);
   assert.deepEqual(
     first.components.map(({ type, key }) => [type, key]),
@@ -99,14 +105,17 @@ test('enforces V-002 control-character escapes in source, component, and payload
   const policyPath = join(temporaryRoot, 'solution', 'authorization-policy.json');
   const release = JSON.parse(await readFile(releasePath, 'utf8'));
   const policy = JSON.parse(await readFile(policyPath, 'utf8'));
-  release.provenance.buildId = 'reference\u000Bbuild\nline';
+  release.provenance.sourceUri = 'https://example.test/reference\u000Bbuild\nline';
   policy.roles[0].presentation.en.description = 'Admin\u000Brole';
   const canonicalRelease = canonicalJson(release);
   await writeFile(releasePath, canonicalRelease, 'utf8');
   await writeFile(policyPath, canonicalJson(policy), 'utf8');
 
   assert.match(canonicalRelease, /reference\\u000Bbuild\\nline/);
-  assert.equal((await loadSolutionSource({ productRoot: temporaryRoot })).release.provenance.buildId, 'reference\u000Bbuild\nline');
+  assert.equal(
+    (await loadSolutionSource({ productRoot: temporaryRoot })).release.provenance.sourceUri,
+    'https://example.test/reference\u000Bbuild\nline',
+  );
 
   const { privateKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
   const built = await buildSolutionPackage({ privateKey, sourceRevision, productRoot: temporaryRoot });
@@ -121,4 +130,28 @@ test('enforces V-002 control-character escapes in source, component, and payload
 
   await writeFile(releasePath, canonicalRelease.replace('\\n', '\\u000A'), 'utf8');
   await assert.rejects(() => loadSolutionSource({ productRoot: temporaryRoot }), /not canonical JSON/);
+});
+
+test('requires the release build identity to match its canonical solution version', async (t) => {
+  const temporaryRoot = await mkdtemp(join(tmpdir(), 'axis-reference-product-version-'));
+  t.after(() => rm(temporaryRoot, { recursive: true, force: true }));
+  await cp(join(productRoot, 'solution'), join(temporaryRoot, 'solution'), { recursive: true });
+  await cp(join(productRoot, 'openapi.json'), join(temporaryRoot, 'openapi.json'));
+
+  const releasePath = join(temporaryRoot, 'solution', 'release.json');
+  const release = JSON.parse(await readFile(releasePath, 'utf8'));
+  release.provenance.buildId = 'reference-product-0.1.0';
+  await writeFile(releasePath, canonicalJson(release), 'utf8');
+  await assert.rejects(
+    () => loadSolutionSource({ productRoot: temporaryRoot }),
+    /buildId must match release\.solutionVersion/,
+  );
+
+  release.solutionVersion = '01.2.3';
+  release.provenance.buildId = 'reference-product-01.2.3';
+  await writeFile(releasePath, canonicalJson(release), 'utf8');
+  await assert.rejects(
+    () => loadSolutionSource({ productRoot: temporaryRoot }),
+    /stable major\.minor\.patch version/,
+  );
 });

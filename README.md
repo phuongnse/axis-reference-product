@@ -17,6 +17,8 @@ Prerequisites are Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, an
 
 Run `npm run local-dev:up`. The product overlay starts Axis and the BFF at `https://localhost:4173`. Use `local-dev:status`, `local-dev:logs`, `local-dev:recreate`, and `local-dev:down` so the deployment overlay and its confidential registration are always preserved.
 
+If the Docker deployment still belongs to this product but Axis's `.local/local-dev-topology.json` marker was lost, or the marker still records exactly this product overlay while its containers have drifted, run `npm run local-dev:recover-topology -- --yes`. This recovery reuses the preserved signing key and exact immutable solution artifact, asks Axis to rebuild and wait for only its API through the product overlay, and lets Axis restore the marker on success. It refuses invalid or different recorded topology and missing release state, and never changes the recorded topology; it does not check OpenAPI compatibility, generate release state, start the product, publish or install a solution, or delete volumes. After recovery, return to the normal product-owned commands above.
+
 ## Verification
 
 Run `npm ci`, `npm run restore`, `npm run audit:dependencies`, `npm run check`, `npm run test:unit`, and `npm run test:e2e`. E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.

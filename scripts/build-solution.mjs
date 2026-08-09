@@ -1,9 +1,12 @@
 import {
   createHash,
   createPrivateKey,
+  createPublicKey,
   KeyObject,
   sign,
+  verify as verifySignature,
 } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +15,7 @@ export const solutionPayloadType = 'application/vnd.axis.solution.v1+json';
 const defaultProductRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const sha256Pattern = /^[0-9a-f]{64}$/;
 const revisionPattern = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/;
+const solutionVersionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 
 const componentSources = Object.freeze([
   {
@@ -170,6 +174,14 @@ export async function loadSolutionSource({ productRoot = defaultProductRoot } = 
   exactKeys(release.publisher, ['publisherId', 'publisherKeyId'], 'release.publisher');
   exactKeys(release.provenance, ['buildId', 'builtAt', 'sourceUri'], 'release.provenance');
   assert(release.schemaVersion === 1, 'release.schemaVersion must be 1.');
+  assert(
+    solutionVersionPattern.test(release.solutionVersion),
+    'release.solutionVersion must be a stable major.minor.patch version.',
+  );
+  assert(
+    release.provenance.buildId === `reference-product-${release.solutionVersion}`,
+    'release.provenance.buildId must match release.solutionVersion.',
+  );
 
   const source = { release };
   for (const component of componentSources) {
@@ -273,6 +285,41 @@ export async function buildSolutionPackage({
   };
 }
 
+export function isReusableSolutionEnvelope(existingBytes, built, publicKey) {
+  try {
+    const existing = JSON.parse(existingBytes.toString('utf8'));
+    const signature = existing.signatures?.[0];
+    return (
+      existing.payloadType === solutionPayloadType &&
+      existing.payload === built.payloadBytes.toString('base64url') &&
+      existing.signatures?.length === 1 &&
+      signature?.keyid === built.payload.publisher.publisherKeyId &&
+      typeof signature.sig === 'string' &&
+      verifySignature(
+        'sha256',
+        built.paeBytes,
+        { key: publicKey, dsaEncoding: 'ieee-p1363' },
+        Buffer.from(signature.sig, 'base64url'),
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
+export async function writeImmutableSolutionArtifact(outputPath, built, publicKey) {
+  if (!existsSync(outputPath)) {
+    await writeFile(outputPath, built.envelopeBytes);
+    return;
+  }
+  if (isReusableSolutionEnvelope(await readFile(outputPath), built, publicKey)) return;
+  throw Error(
+    `Refusing to replace immutable solution artifact ${outputPath}. ` +
+      'Bump solution/release.json solutionVersion before building changed payload bytes. ' +
+      'If the signing key or artifact changed unexpectedly, restore the original release files; a version bump or database reset cannot repair publisher-key identity.',
+  );
+}
+
 async function main() {
   const keyPath = process.env.AXIS_SOLUTION_SIGNING_KEY_FILE;
   const sourceRevision = process.env.AXIS_SOLUTION_SOURCE_REVISION;
@@ -284,7 +331,7 @@ async function main() {
       resolve(defaultProductRoot, '.axis-solution', `${built.payload.solutionKey}-${built.payload.solutionVersion}.dsse.json`),
   );
   await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, built.envelopeBytes);
+  await writeImmutableSolutionArtifact(outputPath, built, createPublicKey(privateKey));
   process.stdout.write(`${outputPath}\n`);
 }
 

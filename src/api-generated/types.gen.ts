@@ -380,6 +380,10 @@ export type MessageResponse = {
     message?: string;
 };
 
+export type ModuleNavigationAvailabilityDto = {
+    availableContributionIds?: Array<string>;
+};
+
 export type ProblemDetails = {
     type?: string | null;
     title?: string | null;
@@ -1083,6 +1087,35 @@ export type RuleAuthoringProjectionDtoWritable = {
     explanation?: RuleExpressionDisplayNodeDto;
     diagnostics?: Array<RuleAuthoringDiagnosticDto>;
 };
+
+export type GetModuleNavigationAvailabilityData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/module-navigation';
+};
+
+export type GetModuleNavigationAvailabilityErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetModuleNavigationAvailabilityError = GetModuleNavigationAvailabilityErrors[keyof GetModuleNavigationAvailabilityErrors];
+
+export type GetModuleNavigationAvailabilityResponses = {
+    /**
+     * OK
+     */
+    200: ModuleNavigationAvailabilityDto;
+};
+
+export type GetModuleNavigationAvailabilityResponse = GetModuleNavigationAvailabilityResponses[keyof GetModuleNavigationAvailabilityResponses];
 
 export type AssignProductRoleData = {
     body: AssignProductRoleBody;

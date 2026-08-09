@@ -1,10 +1,18 @@
-import { createPublicKey, generateKeyPairSync, verify as verifySignature } from 'node:crypto';
+import {
+  createHash,
+  createPublicKey,
+  generateKeyPairSync,
+} from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { chmod, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { buildSolutionPackage, solutionPayloadType } from './build-solution.mjs';
+import {
+  buildSolutionPackage,
+  loadSolutionSource,
+  writeImmutableSolutionArtifact,
+} from './build-solution.mjs';
 
 const productRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const localEnvironment = resolve(productRoot, '.env.local');
@@ -16,7 +24,9 @@ export const localDevCommands = Object.freeze({
   logs: ['logs', 'reference-product'],
   recreate: ['recreate', 'api', 'reference-product'],
   e2e: ['e2e', '--build-service', 'reference-product', '--service', 'reference-product-e2e'],
+  'recover-topology': ['up', '--build', 'api'],
 });
+const releaseCommands = new Set(['up', 'recreate', 'e2e']);
 
 export function resolveReferenceProductUid(getuid) {
   if (typeof getuid !== 'function') {
@@ -30,12 +40,24 @@ export function resolveReferenceProductUid(getuid) {
 }
 
 export async function prepareSolutionRelease({
+  allowArtifactCreation = true,
+  allowKeyGeneration = true,
   outputRoot = resolve(productRoot, '.axis-solution'),
+  productRoot: currentProductRoot = productRoot,
   sourceRevision,
 } = {}) {
-  await mkdir(outputRoot, { recursive: true });
   const keyPath = join(outputRoot, 'release-key.pem');
   if (!existsSync(keyPath)) {
+    const existingArtifacts = existsSync(outputRoot)
+      ? (await readdir(outputRoot)).filter((entry) => entry.endsWith('.dsse.json'))
+      : [];
+    if (!allowKeyGeneration || existingArtifacts.length > 0) {
+      throw Error(
+        `Reference-product signing key is missing for the existing local deployment in ${outputRoot}. ` +
+          'Restore .axis-solution/release-key.pem; do not generate a replacement key, rotate the existing key identity, or reset the database.',
+      );
+    }
+    await mkdir(outputRoot, { recursive: true });
     const { privateKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
     try {
       await writeFile(keyPath, privateKey.export({ type: 'pkcs8', format: 'pem' }), {
@@ -50,34 +72,22 @@ export async function prepareSolutionRelease({
   await chmod(keyPath, 0o600);
   const privateKey = await readFile(keyPath, 'utf8');
   const publicKey = createPublicKey(privateKey);
-  const built = await buildSolutionPackage({ privateKey, sourceRevision });
+  const built = await buildSolutionPackage({
+    privateKey,
+    productRoot: currentProductRoot,
+    sourceRevision,
+  });
   const packagePath = join(
     outputRoot,
     `${built.payload.solutionKey}-${built.payload.solutionVersion}.dsse.json`,
   );
-  let reusePackage = false;
-  if (existsSync(packagePath)) {
-    try {
-      const existingBytes = await readFile(packagePath);
-      const existing = JSON.parse(existingBytes.toString('utf8'));
-      const signature = existing.signatures?.[0];
-      reusePackage =
-        existing.payloadType === solutionPayloadType &&
-        existing.payload === built.payloadBytes.toString('base64url') &&
-        existing.signatures?.length === 1 &&
-        signature?.keyid === built.payload.publisher.publisherKeyId &&
-        typeof signature.sig === 'string' &&
-        verifySignature(
-          'sha256',
-          built.paeBytes,
-          { key: publicKey, dsaEncoding: 'ieee-p1363' },
-          Buffer.from(signature.sig, 'base64url'),
-        );
-    } catch {
-      reusePackage = false;
-    }
+  if (!allowArtifactCreation && !existsSync(packagePath)) {
+    throw Error(
+      `The immutable solution artifact is missing for the existing local deployment: ${packagePath}. ` +
+        'Restore that exact artifact; do not rebuild it under the same solution version or reset the database.',
+    );
   }
-  if (!reusePackage) await writeFile(packagePath, built.envelopeBytes);
+  await writeImmutableSolutionArtifact(packagePath, built, publicKey);
   return {
     AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY: publicKey.export({
       type: 'spki',
@@ -85,6 +95,98 @@ export async function prepareSolutionRelease({
     }),
     AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE: packagePath,
   };
+}
+
+async function readExistingSolutionReleaseEnvironment({
+  outputRoot = resolve(productRoot, '.axis-solution'),
+  productRoot: currentProductRoot = productRoot,
+} = {}) {
+  const keyPath = join(outputRoot, 'release-key.pem');
+  if (!existsSync(keyPath)) {
+    throw Error(
+      `Reference-product signing key is missing for the existing local deployment in ${outputRoot}. ` +
+        'Restore .axis-solution/release-key.pem before running passive local-dev commands; no replacement key was generated.',
+    );
+  }
+  const { release } = await loadSolutionSource({ productRoot: currentProductRoot });
+  const packagePath = join(
+    outputRoot,
+    `${release.solutionKey}-${release.solutionVersion}.dsse.json`,
+  );
+  if (!existsSync(packagePath)) {
+    throw Error(
+      `The existing immutable solution artifact is missing: ${packagePath}. ` +
+        'Restore the artifact that belongs to the persisted signing key and release; passive local-dev commands do not rebuild it.',
+    );
+  }
+  const privateKey = await readFile(keyPath, 'utf8');
+  return {
+    AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY: createPublicKey(privateKey).export({
+      type: 'spki',
+      format: 'pem',
+    }),
+    AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE: packagePath,
+  };
+}
+
+function sha256(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
+}
+
+export async function assertAxisOpenApiCompatibility(
+  axisRoot,
+  currentProductRoot = productRoot,
+) {
+  const resolvedAxisRoot = resolve(axisRoot);
+  const axisOpenApiPath = resolve(resolvedAxisRoot, 'openapi.json');
+  const axisSettingsPath = resolve(resolvedAxisRoot, 'src', 'Axis.Api', 'appsettings.json');
+  const productOpenApiPath = resolve(currentProductRoot, 'openapi.json');
+  const [axisOpenApi, productOpenApi, axisSettingsBytes] = await Promise.all([
+    readFile(axisOpenApiPath),
+    readFile(productOpenApiPath),
+    readFile(axisSettingsPath),
+  ]);
+  const axisDigest = sha256(axisOpenApi);
+  const productDigest = sha256(productOpenApi);
+  const configuredDigest = JSON.parse(axisSettingsBytes.toString('utf8')).Solutions
+    ?.AxisOpenApiSha256;
+  if (configuredDigest !== axisDigest) {
+    throw Error(
+      `Axis OpenAPI metadata is stale: openapi.json is ${axisDigest}, ` +
+        `but src/Axis.Api/appsettings.json declares ${configuredDigest ?? 'no digest'}. ` +
+        'Regenerate Axis API contracts before starting the reference product.',
+    );
+  }
+  if (productDigest !== axisDigest) {
+    throw Error(
+      `Reference-product OpenAPI is incompatible with the current Axis platform ` +
+        `(product ${productDigest}, Axis ${axisDigest}). ` +
+        'Sync openapi.json and generated clients from Axis, then bump the immutable solution release version before starting or testing the product.',
+    );
+  }
+  return axisDigest;
+}
+
+async function recordedAxisTopology(axisRoot) {
+  const statePath = resolve(axisRoot, '.local', 'local-dev-topology.json');
+  if (!existsSync(statePath)) return null;
+  let state;
+  try {
+    state = JSON.parse(await readFile(statePath, 'utf8'));
+  } catch (error) {
+    throw Error(`Axis local deployment topology state is invalid: ${statePath}`, {
+      cause: error,
+    });
+  }
+  if (
+    state?.version !== 1 ||
+    !Array.isArray(state.composeOverlays) ||
+    state.composeOverlays.length === 0 ||
+    state.composeOverlays.some((entry) => typeof entry !== 'string' || !isAbsolute(entry))
+  ) {
+    throw Error(`Axis local deployment topology state is invalid: ${statePath}`);
+  }
+  return state.composeOverlays.map((entry) => resolve(entry));
 }
 
 export function buildAxisInvocation(
@@ -123,6 +225,98 @@ export function buildAxisInvocation(
   };
 }
 
+export async function prepareLocalDevInvocation(
+  command,
+  axisRoot,
+  {
+    currentProductRoot = productRoot,
+    getuid = process.getuid,
+    outputRoot = resolve(currentProductRoot, '.axis-solution'),
+    sourceRevision,
+  } = {},
+) {
+  if (command === 'recover-topology') {
+    throw Error('Use the confirmed topology-recovery preparation path.');
+  }
+  const invocation = buildAxisInvocation(command, axisRoot, currentProductRoot, getuid);
+  const requiresCurrentRelease = releaseCommands.has(command);
+  if (requiresCurrentRelease) {
+    await assertAxisOpenApiCompatibility(axisRoot, currentProductRoot);
+    const recordedTopology = await recordedAxisTopology(axisRoot);
+    const requestedTopology = [resolve(currentProductRoot, 'deploy', 'local.compose.yml')];
+    if (
+      recordedTopology !== null &&
+      (recordedTopology.length !== requestedTopology.length ||
+        recordedTopology.some((entry, index) => entry !== requestedTopology[index]))
+    ) {
+      throw Error(
+        'The reference-product wrapper does not match Axis’s recorded local deployment topology. ' +
+          'Use the deployment wrapper that owns the recorded overlays or explicitly reset all local data before changing topology.',
+      );
+    }
+    Object.assign(
+      invocation.environment,
+      await prepareSolutionRelease({
+        allowArtifactCreation: recordedTopology === null,
+        allowKeyGeneration: recordedTopology === null,
+        outputRoot,
+        productRoot: currentProductRoot,
+        sourceRevision,
+      }),
+    );
+  } else {
+    Object.assign(
+      invocation.environment,
+      await readExistingSolutionReleaseEnvironment({
+        outputRoot,
+        productRoot: currentProductRoot,
+      }),
+    );
+  }
+  return invocation;
+}
+
+export async function prepareTopologyRecoveryInvocation(
+  axisRoot,
+  {
+    confirmation,
+    currentProductRoot = productRoot,
+    getuid = process.getuid,
+    outputRoot = resolve(currentProductRoot, '.axis-solution'),
+  } = {},
+) {
+  if (confirmation !== '--yes') {
+    throw Error('Topology recovery requires the exact confirmation argument --yes.');
+  }
+  const resolvedAxisRoot = resolve(axisRoot);
+  const recordedTopology = await recordedAxisTopology(resolvedAxisRoot);
+  const requestedTopology = [resolve(currentProductRoot, 'deploy', 'local.compose.yml')];
+  if (
+    recordedTopology !== null &&
+    (recordedTopology.length !== requestedTopology.length ||
+      recordedTopology.some((entry, index) => entry !== requestedTopology[index]))
+  ) {
+    throw Error(
+      'Topology recovery cannot change Axis’s recorded deployment topology. ' +
+        'Use the normal deployment wrapper that owns the recorded topology.',
+    );
+  }
+  const invocation = buildAxisInvocation(
+    'recover-topology',
+    resolvedAxisRoot,
+    currentProductRoot,
+    getuid,
+  );
+  Object.assign(
+    invocation.environment,
+    await readExistingSolutionReleaseEnvironment({
+      outputRoot,
+      productRoot: currentProductRoot,
+    }),
+  );
+  return invocation;
+}
+
 function sourceRevision() {
   const configured = process.env.AXIS_SOLUTION_SOURCE_REVISION;
   if (configured) return configured;
@@ -135,20 +329,27 @@ function sourceRevision() {
 }
 
 async function main() {
-  if (existsSync(localEnvironment)) process.loadEnvFile(localEnvironment);
   const command = process.argv[2];
-  if (!command || process.argv.length !== 3) {
+  if (
+    command === 'recover-topology' &&
+    (process.argv.length !== 4 || process.argv[3] !== '--yes')
+  ) {
+    throw Error('Topology recovery requires the exact confirmation argument --yes.');
+  }
+  if (!command || (command !== 'recover-topology' && process.argv.length !== 3)) {
     throw Error(`Usage: node scripts/local-dev.mjs <${Object.keys(localDevCommands).join('|')}>`);
   }
+  if (existsSync(localEnvironment)) process.loadEnvFile(localEnvironment);
   const axisRoot = process.env.AXIS_PLATFORM_ROOT;
   if (!axisRoot) {
     throw Error('Set AXIS_PLATFORM_ROOT in .env.local before running local development.');
   }
-  const invocation = buildAxisInvocation(command, axisRoot);
-  Object.assign(
-    invocation.environment,
-    await prepareSolutionRelease({ sourceRevision: sourceRevision() }),
-  );
+  const invocation =
+    command === 'recover-topology'
+      ? await prepareTopologyRecoveryInvocation(axisRoot, { confirmation: process.argv[3] })
+      : await prepareLocalDevInvocation(command, axisRoot, {
+          sourceRevision: releaseCommands.has(command) ? sourceRevision() : undefined,
+        });
   const result = spawnSync(invocation.executable, invocation.arguments, {
     cwd: invocation.cwd,
     env: invocation.environment,

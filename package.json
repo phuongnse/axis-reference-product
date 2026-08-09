@@ -1,7 +1,6 @@
 {
   "name": "axis-reference-product",
   "private": true,
-  "version": "0.1.0",
   "packageManager": "npm@11.16.0",
   "type": "module",
   "engines": {
@@ -26,7 +25,8 @@
     "local-dev:down": "node scripts/local-dev.mjs down",
     "local-dev:status": "node scripts/local-dev.mjs status",
     "local-dev:logs": "node scripts/local-dev.mjs logs",
-    "local-dev:recreate": "node scripts/local-dev.mjs recreate"
+    "local-dev:recreate": "node scripts/local-dev.mjs recreate",
+    "local-dev:recover-topology": "node scripts/local-dev.mjs recover-topology"
   },
   "dependencies": {
     "react": "19.2.4",

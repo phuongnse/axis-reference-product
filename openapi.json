@@ -5,6 +5,52 @@
     "version": "v1"
   },
   "paths": {
+    "/api/module-navigation": {
+      "get": {
+        "tags": [
+          "App Shell"
+        ],
+        "summary": "Get server-authoritative module navigation availability",
+        "operationId": "GetModuleNavigationAvailability",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModuleNavigationAvailabilityDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/api/product-role-assignments/assign": {
       "post": {
         "tags": [
@@ -6338,6 +6384,18 @@
         },
         "additionalProperties": false
       },
+      "ModuleNavigationAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "availableContributionIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -8494,6 +8552,9 @@
     }
   },
   "tags": [
+    {
+      "name": "App Shell"
+    },
     {
       "name": "Authorization"
     },
