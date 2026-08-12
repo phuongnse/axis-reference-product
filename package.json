@@ -20,6 +20,7 @@
     "test:frontend": "vitest run --config vitest.config.ts",
     "test:unit": "npm run test:frontend && node --test scripts/*.test.mjs",
     "test:e2e": "node scripts/local-dev.mjs e2e",
+    "test:axis-e2e": "node scripts/local-dev.mjs axis-e2e",
     "test:e2e:container": "playwright test",
     "local-dev:up": "node scripts/local-dev.mjs up",
     "local-dev:down": "node scripts/local-dev.mjs down",

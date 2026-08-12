@@ -468,6 +468,61 @@ test('builds only the reference product image before its E2E runner', async (t) 
   ]);
 });
 
+test('runs Axis browser evidence through the product-owned topology and forwards runner arguments', async (t) => {
+  const temporaryRoot = await mkdtemp(
+    join(process.env.TMPDIR ?? '/tmp', 'axis-reference-product-'),
+  );
+  t.after(() => rm(temporaryRoot, { recursive: true, force: true }));
+  const axisRoot = join(temporaryRoot, 'axis');
+  const productRoot = join(temporaryRoot, 'product');
+  await mkdir(join(axisRoot, 'scripts'), { recursive: true });
+  await mkdir(join(productRoot, 'deploy'), { recursive: true });
+  await writeFile(join(axisRoot, 'scripts', 'axis.py'), '', 'utf8');
+  await writeFile(join(productRoot, 'deploy', 'local.compose.yml'), 'services: {}\n', 'utf8');
+
+  const invocation = buildAxisInvocation(
+    'axis-e2e',
+    axisRoot,
+    productRoot,
+    () => 1000,
+    ['--', 'e2e/app-frame.pw.ts', '-g', 'AT-002'],
+  );
+  assert.deepEqual(invocation.arguments, [
+    join(axisRoot, 'scripts', 'axis.py'),
+    'local-dev',
+    '--compose-overlay',
+    join(productRoot, 'deploy', 'local.compose.yml'),
+    'e2e',
+    '--service',
+    'e2e',
+    '--',
+    'e2e/app-frame.pw.ts',
+    '-g',
+    'AT-002',
+  ]);
+});
+
+test('keeps the Axis browser service owned by the product wrapper', () => {
+  for (const additionalArguments of [
+    ['--service', 'reference-product-e2e'],
+    ['--build-service', 'api'],
+    ['e2e/app-frame.pw.ts'],
+    ['--snapshot-output', 'e2e/app-frame.pw.ts-snapshots'],
+  ]) {
+    assert.throws(
+      () =>
+        buildAxisInvocation(
+          'axis-e2e',
+          process.cwd(),
+          process.cwd(),
+          () => 1000,
+          additionalArguments,
+        ),
+      /axis-e2e accepts only Playwright arguments after `--`/,
+    );
+  }
+});
+
 test('requires a numeric non-root POSIX UID', () => {
   for (const uid of [0, -1, 1.5, Number.NaN, '1000']) {
     assert.throws(

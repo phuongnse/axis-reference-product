@@ -24,9 +24,25 @@ export const localDevCommands = Object.freeze({
   logs: ['logs', 'reference-product'],
   recreate: ['recreate', 'api', 'reference-product'],
   e2e: ['e2e', '--build-service', 'reference-product', '--service', 'reference-product-e2e'],
+  'axis-e2e': ['e2e', '--service', 'e2e'],
   'recover-topology': ['up', '--build', 'api'],
 });
-const releaseCommands = new Set(['up', 'recreate', 'e2e']);
+const releaseCommands = new Set(['up', 'recreate', 'e2e', 'axis-e2e']);
+
+function assertAxisE2eArguments(additionalArguments) {
+  if (additionalArguments.length === 0 || additionalArguments[0] === '--') return;
+  if (
+    additionalArguments.length >= 3 &&
+    additionalArguments[0] === '--snapshot-output' &&
+    additionalArguments[1] &&
+    additionalArguments[2] === '--'
+  ) {
+    return;
+  }
+  throw Error(
+    'axis-e2e accepts only Playwright arguments after `--`, optionally preceded by one `--snapshot-output <path>`.',
+  );
+}
 
 export function resolveReferenceProductUid(getuid) {
   if (typeof getuid !== 'function') {
@@ -194,11 +210,13 @@ export function buildAxisInvocation(
   axisRoot,
   currentProductRoot = productRoot,
   getuid = process.getuid,
+  additionalArguments = [],
 ) {
   const commandArguments = localDevCommands[command];
   if (!commandArguments) {
     throw Error(`Unsupported local-dev command: ${command}`);
   }
+  if (command === 'axis-e2e') assertAxisE2eArguments(additionalArguments);
   const resolvedAxisRoot = resolve(axisRoot);
   const axisScript = resolve(resolvedAxisRoot, 'scripts', 'axis.py');
   if (!existsSync(axisScript)) {
@@ -221,6 +239,7 @@ export function buildAxisInvocation(
       '--compose-overlay',
       overlay,
       ...commandArguments,
+      ...additionalArguments,
     ],
   };
 }
@@ -233,12 +252,19 @@ export async function prepareLocalDevInvocation(
     getuid = process.getuid,
     outputRoot = resolve(currentProductRoot, '.axis-solution'),
     sourceRevision,
+    additionalArguments = [],
   } = {},
 ) {
   if (command === 'recover-topology') {
     throw Error('Use the confirmed topology-recovery preparation path.');
   }
-  const invocation = buildAxisInvocation(command, axisRoot, currentProductRoot, getuid);
+  const invocation = buildAxisInvocation(
+    command,
+    axisRoot,
+    currentProductRoot,
+    getuid,
+    additionalArguments,
+  );
   const requiresCurrentRelease = releaseCommands.has(command);
   if (requiresCurrentRelease) {
     await assertAxisOpenApiCompatibility(axisRoot, currentProductRoot);
@@ -330,13 +356,19 @@ function sourceRevision() {
 
 async function main() {
   const command = process.argv[2];
+  const additionalArguments = command === 'axis-e2e' ? process.argv.slice(3) : [];
   if (
     command === 'recover-topology' &&
     (process.argv.length !== 4 || process.argv[3] !== '--yes')
   ) {
     throw Error('Topology recovery requires the exact confirmation argument --yes.');
   }
-  if (!command || (command !== 'recover-topology' && process.argv.length !== 3)) {
+  if (
+    !command ||
+    (command === 'recover-topology'
+      ? process.argv.length !== 4
+      : command !== 'axis-e2e' && process.argv.length !== 3)
+  ) {
     throw Error(`Usage: node scripts/local-dev.mjs <${Object.keys(localDevCommands).join('|')}>`);
   }
   if (existsSync(localEnvironment)) process.loadEnvFile(localEnvironment);
@@ -349,6 +381,7 @@ async function main() {
       ? await prepareTopologyRecoveryInvocation(axisRoot, { confirmation: process.argv[3] })
       : await prepareLocalDevInvocation(command, axisRoot, {
           sourceRevision: releaseCommands.has(command) ? sourceRevision() : undefined,
+          additionalArguments,
         });
   const result = spawnSync(invocation.executable, invocation.arguments, {
     cwd: invocation.cwd,
