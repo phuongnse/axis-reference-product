@@ -9,6 +9,19 @@ export type ActivateRuleDefinitionVersionRequest = {
     expectedRevision?: number;
 };
 
+export type AssignProductRoleBody = {
+    target?: SubjectReferenceDto;
+    policyVersionId?: string;
+    roleKey?: string;
+    expectedRevision?: number | null;
+};
+
+export type AssignableSubjectDto = {
+    subject?: SubjectReferenceDto;
+    displayName?: string;
+    secondaryLabel?: string | null;
+};
+
 export type AxisBrowserSessionDto = {
     authenticated?: boolean;
     csrfToken?: string;
@@ -47,6 +60,15 @@ export type BusinessObjectChoiceOptionInput = {
 
 export type BusinessObjectChoiceSelectionMode = 'Single' | 'Multiple';
 
+export type BusinessObjectDefinitionActionsDto = {
+    canSave?: boolean;
+    canPublish?: boolean;
+};
+
+export type BusinessObjectDefinitionCollectionActionsDto = {
+    canStartCreate?: boolean;
+};
+
 export type BusinessObjectDefinitionDetailDto = {
     id?: string;
     workspaceId?: string;
@@ -59,6 +81,7 @@ export type BusinessObjectDefinitionDetailDto = {
     updatedAt?: string;
     fields?: Array<BusinessObjectFieldDefinitionDto>;
     latestPublishedVersion?: BusinessObjectDefinitionVersionDto;
+    actions?: BusinessObjectDefinitionActionsDto;
 };
 
 export type BusinessObjectDefinitionListItemDto = {
@@ -97,7 +120,7 @@ export type BusinessObjectDefinitionVersionDto = {
     id?: string;
     sourceDefinitionId?: string;
     versionNumber?: number;
-    publishedByUserId?: string;
+    publishedBySubject?: SubjectReferenceDto;
     publishedAt?: string;
     fields?: Array<BusinessObjectDefinitionVersionFieldDto>;
 };
@@ -167,11 +190,11 @@ export type BusinessObjectRecordDetailDto = {
     };
     fields: Array<BusinessObjectRecordFieldContractDto>;
     ruleEvaluations: Array<BusinessObjectRecordRuleEvaluationDto>;
-    createdByUserId: string;
+    createdBySubject: SubjectReferenceDto;
     createdAt: string;
-    updatedByUserId: string;
+    updatedBySubject: SubjectReferenceDto;
     updatedAt: string;
-    submittedByUserId?: string | null;
+    submittedBySubject?: SubjectReferenceDto;
     submittedAt?: string | null;
 };
 
@@ -224,6 +247,14 @@ export type BusinessObjectRecordSubmitResultDto = {
     ruleEvaluations: Array<BusinessObjectRecordRuleEvaluationDto>;
 };
 
+export type ChangeWorkspaceInvitationRequest = {
+    expectedRevision?: number;
+};
+
+export type ChangeWorkspaceProductBuilderRequest = {
+    expectedRevision?: number;
+};
+
 export type CompleteRuleAuthoringRequest = {
     text?: string | null;
     cursor?: number;
@@ -240,6 +271,22 @@ export type CreateBusinessObjectRecordRequest = {
     values?: {
         [key: string]: Array<string>;
     } | null;
+};
+
+export type CreateOrganizationWorkspaceDto = {
+    organizationId?: string;
+    organizationName?: string;
+    workspaceId?: string;
+    workspaceName?: string;
+    workspaceSlug?: string;
+};
+
+export type CreateOrganizationWorkspaceRequest = {
+    name?: string;
+};
+
+export type CreateRequest = {
+    clientId?: string;
 };
 
 export type CreateRuleBindingRequest = {
@@ -303,6 +350,27 @@ export type HttpValidationProblemDetails = {
     [key: string]: unknown;
 };
 
+export type InstallSolutionResponse = {
+    operation?: SolutionOperationStatusDto;
+    isRetry?: boolean;
+};
+
+export type InviteWorkspaceMemberDto = {
+    outcome?: string;
+    requestedRole?: string;
+    invitation?: WorkspaceInvitationLifecycleDto;
+};
+
+export type InviteWorkspaceMemberRequest = {
+    email?: string;
+    requestedRole?: string;
+};
+
+export type KeyRequest = {
+    expectedRevision?: number;
+    publicJwk?: string;
+};
+
 export type LanguagePreferenceDto = {
     language?: string;
 };
@@ -314,6 +382,10 @@ export type LegalVersionsDto = {
 
 export type MessageResponse = {
     message?: string;
+};
+
+export type ModuleNavigationAvailabilityDto = {
+    availableContributionIds?: Array<string>;
 };
 
 export type ProblemDetails = {
@@ -335,6 +407,38 @@ export type ProblemDetails = {
     [key: string]: unknown;
 };
 
+export type ProductRoleAssignmentDto = {
+    workspaceId?: string;
+    subject?: SubjectReferenceDto;
+    policyVersionId?: string;
+    roleKey?: string;
+    isActive?: boolean;
+    revision?: number;
+};
+
+export type ProductRoleAssignmentResponse = {
+    workspaceId?: string;
+    subject?: SubjectReferenceDto;
+    policyVersionId?: string;
+    roleKey?: string;
+    isActive?: boolean;
+    revision?: number;
+};
+
+export type ProductRoleManagementResponse = {
+    subjects?: Array<AssignableSubjectDto>;
+    roles?: Array<ProductRoleOptionDto>;
+    assignments?: Array<ProductRoleAssignmentDto>;
+};
+
+export type ProductRoleOptionDto = {
+    policyVersionId?: string;
+    policyKey?: string;
+    roleKey?: string;
+    displayName?: string;
+    description?: string | null;
+};
+
 export type ProjectRuleAuthoringRequest = {
     source?: RuleAuthoringSourceDto;
     inputs?: Array<RuleInputDefinitionDto>;
@@ -353,6 +457,11 @@ export type PublishBusinessObjectDefinitionRequest = {
     expectedRevision?: number;
 };
 
+export type PublishSolutionResponse = {
+    version?: SolutionVersionSummaryDto;
+    isRetry?: boolean;
+};
+
 export type RegisterUserRequest = {
     fullName?: string;
     email?: string;
@@ -365,6 +474,17 @@ export type RegisterUserRequest = {
 
 export type ResendVerificationRequest = {
     email?: string;
+};
+
+export type RevisionRequest = {
+    expectedRevision?: number;
+};
+
+export type RevokeProductRoleBody = {
+    target?: SubjectReferenceDto;
+    policyVersionId?: string;
+    roleKey?: string;
+    expectedRevision?: number;
 };
 
 export type RuleAuthoringCompletionDto = {
@@ -462,6 +582,10 @@ export type RuleDefinitionActionsDto = {
     canArchive?: boolean;
 };
 
+export type RuleDefinitionCollectionActionsDto = {
+    canStartCreate?: boolean;
+};
+
 export type RuleDefinitionDetailDto = {
     definitionKey?: string;
     name?: string;
@@ -515,7 +639,7 @@ export type RuleDefinitionVersionDto = {
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
     condition?: RuleConditionNodeDto;
-    createdByUserId?: string;
+    publishedBySubject?: SubjectReferenceDto;
     createdAt?: string;
 };
 
@@ -775,6 +899,24 @@ export type SearchTextSegmentDto = {
     isMatch?: boolean;
 };
 
+export type ServiceIdentityDto = {
+    id?: string;
+    clientId?: string;
+    workspaceId?: string;
+    status?: string;
+    workspaceGrantStatus?: string;
+    revision?: number;
+    keys?: Array<ServiceIdentityKeyDto>;
+    subject?: SubjectReferenceDto;
+};
+
+export type ServiceIdentityKeyDto = {
+    id?: string;
+    kid?: string;
+    thumbprint?: string;
+    status?: string;
+};
+
 export type SignInNextStep = 'Dashboard';
 
 export type SignInSessionEstablishedDto = {
@@ -797,6 +939,82 @@ export type SimulateRuleVersionRequest = {
     inputs?: {
         [key: string]: RuleValueDto;
     };
+};
+
+export type SolutionComplianceStatus = 'Compliant' | 'Noncompliant';
+
+export type SolutionComponentIdentityDto = {
+    type?: string;
+    key?: string;
+};
+
+export type SolutionComponentPlanDto = {
+    type?: string;
+    key?: string;
+    sha256?: string;
+    dependsOn?: Array<SolutionComponentIdentityDto>;
+};
+
+export type SolutionComponentStatusDto = {
+    type?: string;
+    key?: string;
+    sha256?: string;
+    status?: SolutionStepStatus;
+    problemCode?: string | null;
+};
+
+export type SolutionInstallationStatusDto = {
+    id?: string;
+    workspaceId?: string;
+    solutionVersionId?: string;
+    operationId?: string | null;
+    operationStatus?: SolutionOperationStatus;
+    provisioningStatus?: SolutionProvisioningStatus;
+    complianceStatus?: SolutionComplianceStatus;
+    components?: Array<SolutionComponentStatusDto>;
+    updatedAt?: string;
+};
+
+export type SolutionOperationStatus = 'Pending' | 'Running' | 'Failed' | 'Blocked' | 'Succeeded';
+
+export type SolutionOperationStatusDto = {
+    id?: string;
+    installationId?: string;
+    status?: SolutionOperationStatus;
+    leaseEpoch?: number;
+    problemCode?: string | null;
+    steps?: Array<SolutionComponentStatusDto>;
+    updatedAt?: string;
+};
+
+export type SolutionProvisioningStatus = 'Installing' | 'Installed' | 'Failed';
+
+export type SolutionStepStatus = 'Pending' | 'Applying' | 'Confirmed' | 'Failed';
+
+export type SolutionTrustStatus = 'Trusted' | 'Revoked' | 'Unknown';
+
+export type SolutionVersionSummaryDto = {
+    id?: string;
+    solutionKey?: string;
+    solutionVersion?: string;
+    packageSha256?: string;
+    axisOpenApiSha256?: string;
+    publisherId?: string;
+    publisherKeyId?: string;
+    trustStatus?: SolutionTrustStatus;
+    sourceRevision?: string;
+    buildId?: string;
+    builtAt?: string;
+    sourceUri?: string;
+    publishedAt?: string;
+    components?: Array<SolutionComponentPlanDto>;
+};
+
+export type SubjectKind = 'Human' | 'Service';
+
+export type SubjectReferenceDto = {
+    kind: SubjectKind;
+    subjectId: string;
 };
 
 export type SubmitBusinessObjectRecordRequest = {
@@ -849,12 +1067,192 @@ export type VerifyEmailSessionEstablishedDto = {
     nextStep?: VerifyEmailNextStep;
 };
 
+export type WorkspaceInvitationLifecycleDto = {
+    invitationId?: string;
+    recipientEmail?: string | null;
+    requestedRole?: string;
+    status?: string;
+    deliveryStatus?: string;
+    createdAt?: string;
+    expiresAt?: string;
+    revision?: number;
+};
+
+export type WorkspaceInvitationPageDto = {
+    items?: Array<WorkspaceInvitationLifecycleDto>;
+    page?: number;
+    pageSize?: number;
+    totalCount?: number;
+};
+
+export type WorkspaceProductBuilderDto = {
+    userId?: string;
+    displayName?: string;
+    email?: string;
+    workspaceRole?: string;
+    isProductBuilder?: boolean;
+    membershipRevision?: number;
+    canChange?: boolean;
+};
+
 export type RuleAuthoringProjectionDtoWritable = {
     condition?: RuleConditionNodeDto;
     formattedDsl?: string | null;
     explanation?: RuleExpressionDisplayNodeDto;
     diagnostics?: Array<RuleAuthoringDiagnosticDto>;
 };
+
+export type GetModuleNavigationAvailabilityData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/module-navigation';
+};
+
+export type GetModuleNavigationAvailabilityErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetModuleNavigationAvailabilityError = GetModuleNavigationAvailabilityErrors[keyof GetModuleNavigationAvailabilityErrors];
+
+export type GetModuleNavigationAvailabilityResponses = {
+    /**
+     * OK
+     */
+    200: ModuleNavigationAvailabilityDto;
+};
+
+export type GetModuleNavigationAvailabilityResponse = GetModuleNavigationAvailabilityResponses[keyof GetModuleNavigationAvailabilityResponses];
+
+export type AssignProductRoleData = {
+    body: AssignProductRoleBody;
+    headers: {
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/product-role-assignments/assign';
+};
+
+export type AssignProductRoleErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type AssignProductRoleError = AssignProductRoleErrors[keyof AssignProductRoleErrors];
+
+export type AssignProductRoleResponses = {
+    /**
+     * OK
+     */
+    200: ProductRoleAssignmentResponse;
+};
+
+export type AssignProductRoleResponse = AssignProductRoleResponses[keyof AssignProductRoleResponses];
+
+export type RevokeProductRoleData = {
+    body: RevokeProductRoleBody;
+    headers: {
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/product-role-assignments/revoke';
+};
+
+export type RevokeProductRoleErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RevokeProductRoleError = RevokeProductRoleErrors[keyof RevokeProductRoleErrors];
+
+export type RevokeProductRoleResponses = {
+    /**
+     * OK
+     */
+    200: ProductRoleAssignmentResponse;
+};
+
+export type RevokeProductRoleResponse = RevokeProductRoleResponses[keyof RevokeProductRoleResponses];
+
+export type ListProductRoleAssignmentsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        language?: string;
+    };
+    url: '/api/product-role-assignments';
+};
+
+export type ListProductRoleAssignmentsErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ListProductRoleAssignmentsError = ListProductRoleAssignmentsErrors[keyof ListProductRoleAssignmentsErrors];
+
+export type ListProductRoleAssignmentsResponses = {
+    /**
+     * OK
+     */
+    200: ProductRoleManagementResponse;
+};
+
+export type ListProductRoleAssignmentsResponse = ListProductRoleAssignmentsResponses[keyof ListProductRoleAssignmentsResponses];
 
 export type ListBusinessObjectRecordsData = {
     body?: never;
@@ -880,6 +1278,10 @@ export type ListBusinessObjectRecordsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListBusinessObjectRecordsError = ListBusinessObjectRecordsErrors[keyof ListBusinessObjectRecordsErrors];
@@ -927,6 +1329,10 @@ export type CreateBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateBusinessObjectRecordError = CreateBusinessObjectRecordErrors[keyof CreateBusinessObjectRecordErrors];
@@ -962,6 +1368,10 @@ export type GetBusinessObjectRecordErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetBusinessObjectRecordError = GetBusinessObjectRecordErrors[keyof GetBusinessObjectRecordErrors];
@@ -1009,6 +1419,10 @@ export type SaveBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveBusinessObjectRecordError = SaveBusinessObjectRecordErrors[keyof SaveBusinessObjectRecordErrors];
@@ -1056,6 +1470,10 @@ export type SubmitBusinessObjectRecordErrors = {
      * Unprocessable Content
      */
     422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SubmitBusinessObjectRecordError = SubmitBusinessObjectRecordErrors[keyof SubmitBusinessObjectRecordErrors];
@@ -1094,6 +1512,10 @@ export type ListBusinessObjectDefinitionsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListBusinessObjectDefinitionsError = ListBusinessObjectDefinitionsErrors[keyof ListBusinessObjectDefinitionsErrors];
@@ -1131,6 +1553,10 @@ export type CreateBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateBusinessObjectDefinitionError = CreateBusinessObjectDefinitionErrors[keyof CreateBusinessObjectDefinitionErrors];
@@ -1143,6 +1569,39 @@ export type CreateBusinessObjectDefinitionResponses = {
 };
 
 export type CreateBusinessObjectDefinitionResponse = CreateBusinessObjectDefinitionResponses[keyof CreateBusinessObjectDefinitionResponses];
+
+export type GetBusinessObjectDefinitionCollectionActionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/business-object-definitions/actions';
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsError = GetBusinessObjectDefinitionCollectionActionsErrors[keyof GetBusinessObjectDefinitionCollectionActionsErrors];
+
+export type GetBusinessObjectDefinitionCollectionActionsResponses = {
+    /**
+     * OK
+     */
+    200: BusinessObjectDefinitionCollectionActionsDto;
+};
+
+export type GetBusinessObjectDefinitionCollectionActionsResponse = GetBusinessObjectDefinitionCollectionActionsResponses[keyof GetBusinessObjectDefinitionCollectionActionsResponses];
 
 export type GetBusinessObjectDefinitionData = {
     body?: never;
@@ -1166,6 +1625,10 @@ export type GetBusinessObjectDefinitionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetBusinessObjectDefinitionError = GetBusinessObjectDefinitionErrors[keyof GetBusinessObjectDefinitionErrors];
@@ -1209,6 +1672,10 @@ export type SaveUnpublishedBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveUnpublishedBusinessObjectDefinitionError = SaveUnpublishedBusinessObjectDefinitionErrors[keyof SaveUnpublishedBusinessObjectDefinitionErrors];
@@ -1252,6 +1719,10 @@ export type PublishBusinessObjectDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type PublishBusinessObjectDefinitionError = PublishBusinessObjectDefinitionErrors[keyof PublishBusinessObjectDefinitionErrors];
@@ -1520,6 +1991,559 @@ export type UpdateThemePreferenceResponses = {
 
 export type UpdateThemePreferenceResponse = UpdateThemePreferenceResponses[keyof UpdateThemePreferenceResponses];
 
+export type CreateOrganizationWorkspaceData = {
+    body: CreateOrganizationWorkspaceRequest;
+    headers: {
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/organizations';
+};
+
+export type CreateOrganizationWorkspaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: HttpValidationProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Unprocessable Content
+     */
+    422: ProblemDetails;
+};
+
+export type CreateOrganizationWorkspaceError = CreateOrganizationWorkspaceErrors[keyof CreateOrganizationWorkspaceErrors];
+
+export type CreateOrganizationWorkspaceResponses = {
+    /**
+     * Created
+     */
+    201: CreateOrganizationWorkspaceDto;
+};
+
+export type CreateOrganizationWorkspaceResponse = CreateOrganizationWorkspaceResponses[keyof CreateOrganizationWorkspaceResponses];
+
+export type ListWorkspaceInvitationsData = {
+    body?: never;
+    path?: never;
+    query: {
+        page: number;
+        pageSize: number;
+    };
+    url: '/api/workspace-invitations';
+};
+
+export type ListWorkspaceInvitationsErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type ListWorkspaceInvitationsError = ListWorkspaceInvitationsErrors[keyof ListWorkspaceInvitationsErrors];
+
+export type ListWorkspaceInvitationsResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceInvitationPageDto;
+};
+
+export type ListWorkspaceInvitationsResponse = ListWorkspaceInvitationsResponses[keyof ListWorkspaceInvitationsResponses];
+
+export type InviteWorkspaceMemberData = {
+    body: InviteWorkspaceMemberRequest;
+    path?: never;
+    query?: never;
+    url: '/api/workspace-invitations';
+};
+
+export type InviteWorkspaceMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: HttpValidationProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Unprocessable Content
+     */
+    422: ProblemDetails;
+    /**
+     * Too Many Requests
+     */
+    429: ProblemDetails;
+};
+
+export type InviteWorkspaceMemberError = InviteWorkspaceMemberErrors[keyof InviteWorkspaceMemberErrors];
+
+export type InviteWorkspaceMemberResponses = {
+    /**
+     * OK
+     */
+    200: InviteWorkspaceMemberDto;
+    /**
+     * Created
+     */
+    201: InviteWorkspaceMemberDto;
+};
+
+export type InviteWorkspaceMemberResponse = InviteWorkspaceMemberResponses[keyof InviteWorkspaceMemberResponses];
+
+export type ResendWorkspaceInvitationData = {
+    body: ChangeWorkspaceInvitationRequest;
+    path: {
+        invitationId: string;
+    };
+    query?: never;
+    url: '/api/workspace-invitations/{invitationId}/resend';
+};
+
+export type ResendWorkspaceInvitationErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Too Many Requests
+     */
+    429: ProblemDetails;
+};
+
+export type ResendWorkspaceInvitationError = ResendWorkspaceInvitationErrors[keyof ResendWorkspaceInvitationErrors];
+
+export type ResendWorkspaceInvitationResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceInvitationLifecycleDto;
+};
+
+export type ResendWorkspaceInvitationResponse = ResendWorkspaceInvitationResponses[keyof ResendWorkspaceInvitationResponses];
+
+export type RevokeWorkspaceInvitationData = {
+    body: ChangeWorkspaceInvitationRequest;
+    path: {
+        invitationId: string;
+    };
+    query?: never;
+    url: '/api/workspace-invitations/{invitationId}/revoke';
+};
+
+export type RevokeWorkspaceInvitationErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+};
+
+export type RevokeWorkspaceInvitationError = RevokeWorkspaceInvitationErrors[keyof RevokeWorkspaceInvitationErrors];
+
+export type RevokeWorkspaceInvitationResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceInvitationLifecycleDto;
+};
+
+export type RevokeWorkspaceInvitationResponse = RevokeWorkspaceInvitationResponses[keyof RevokeWorkspaceInvitationResponses];
+
+export type ListWorkspaceProductBuildersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/workspace-product-builders';
+};
+
+export type ListWorkspaceProductBuildersErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type ListWorkspaceProductBuildersError = ListWorkspaceProductBuildersErrors[keyof ListWorkspaceProductBuildersErrors];
+
+export type ListWorkspaceProductBuildersResponses = {
+    /**
+     * OK
+     */
+    200: Array<WorkspaceProductBuilderDto>;
+};
+
+export type ListWorkspaceProductBuildersResponse = ListWorkspaceProductBuildersResponses[keyof ListWorkspaceProductBuildersResponses];
+
+export type GrantWorkspaceProductBuilderData = {
+    body: ChangeWorkspaceProductBuilderRequest;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/workspace-product-builders/{userId}/grant';
+};
+
+export type GrantWorkspaceProductBuilderErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GrantWorkspaceProductBuilderError = GrantWorkspaceProductBuilderErrors[keyof GrantWorkspaceProductBuilderErrors];
+
+export type GrantWorkspaceProductBuilderResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceProductBuilderDto;
+};
+
+export type GrantWorkspaceProductBuilderResponse = GrantWorkspaceProductBuilderResponses[keyof GrantWorkspaceProductBuilderResponses];
+
+export type RevokeWorkspaceProductBuilderData = {
+    body: ChangeWorkspaceProductBuilderRequest;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/workspace-product-builders/{userId}/revoke';
+};
+
+export type RevokeWorkspaceProductBuilderErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RevokeWorkspaceProductBuilderError = RevokeWorkspaceProductBuilderErrors[keyof RevokeWorkspaceProductBuilderErrors];
+
+export type RevokeWorkspaceProductBuilderResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceProductBuilderDto;
+};
+
+export type RevokeWorkspaceProductBuilderResponse = RevokeWorkspaceProductBuilderResponses[keyof RevokeWorkspaceProductBuilderResponses];
+
+export type ListServiceIdentitiesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/service-identities';
+};
+
+export type ListServiceIdentitiesErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type ListServiceIdentitiesError = ListServiceIdentitiesErrors[keyof ListServiceIdentitiesErrors];
+
+export type ListServiceIdentitiesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServiceIdentityDto>;
+};
+
+export type ListServiceIdentitiesResponse = ListServiceIdentitiesResponses[keyof ListServiceIdentitiesResponses];
+
+export type CreateServiceIdentityData = {
+    body: CreateRequest;
+    path?: never;
+    query?: never;
+    url: '/api/service-identities';
+};
+
+export type CreateServiceIdentityErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type CreateServiceIdentityError = CreateServiceIdentityErrors[keyof CreateServiceIdentityErrors];
+
+export type CreateServiceIdentityResponses = {
+    /**
+     * OK
+     */
+    200: ServiceIdentityDto;
+};
+
+export type CreateServiceIdentityResponse = CreateServiceIdentityResponses[keyof CreateServiceIdentityResponses];
+
+export type GetServiceIdentityData = {
+    body?: never;
+    path: {
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/api/service-identities/{serviceIdentityId}';
+};
+
+export type GetServiceIdentityErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetServiceIdentityError = GetServiceIdentityErrors[keyof GetServiceIdentityErrors];
+
+export type GetServiceIdentityResponses = {
+    /**
+     * OK
+     */
+    200: ServiceIdentityDto;
+};
+
+export type GetServiceIdentityResponse = GetServiceIdentityResponses[keyof GetServiceIdentityResponses];
+
+export type AddServiceIdentityKeyData = {
+    body: KeyRequest;
+    path: {
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/api/service-identities/{serviceIdentityId}/keys';
+};
+
+export type AddServiceIdentityKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type AddServiceIdentityKeyError = AddServiceIdentityKeyErrors[keyof AddServiceIdentityKeyErrors];
+
+export type AddServiceIdentityKeyResponses = {
+    /**
+     * OK
+     */
+    200: ServiceIdentityDto;
+};
+
+export type AddServiceIdentityKeyResponse = AddServiceIdentityKeyResponses[keyof AddServiceIdentityKeyResponses];
+
+export type RevokeServiceIdentityKeyData = {
+    body: RevisionRequest;
+    path: {
+        serviceIdentityId: string;
+        keyId: string;
+    };
+    query?: never;
+    url: '/api/service-identities/{serviceIdentityId}/keys/{keyId}/revoke';
+};
+
+export type RevokeServiceIdentityKeyErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RevokeServiceIdentityKeyError = RevokeServiceIdentityKeyErrors[keyof RevokeServiceIdentityKeyErrors];
+
+export type RevokeServiceIdentityKeyResponses = {
+    /**
+     * OK
+     */
+    200: ServiceIdentityDto;
+};
+
+export type RevokeServiceIdentityKeyResponse = RevokeServiceIdentityKeyResponses[keyof RevokeServiceIdentityKeyResponses];
+
+export type RevokeServiceIdentityData = {
+    body: RevisionRequest;
+    path: {
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/api/service-identities/{serviceIdentityId}/revoke';
+};
+
+export type RevokeServiceIdentityErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RevokeServiceIdentityError = RevokeServiceIdentityErrors[keyof RevokeServiceIdentityErrors];
+
+export type RevokeServiceIdentityResponses = {
+    /**
+     * OK
+     */
+    200: ServiceIdentityDto;
+};
+
+export type RevokeServiceIdentityResponse = RevokeServiceIdentityResponses[keyof RevokeServiceIdentityResponses];
+
 export type ListRuleBindingUsageData = {
     body?: never;
     path: {
@@ -1544,6 +2568,10 @@ export type ListRuleBindingUsageErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListRuleBindingUsageError = ListRuleBindingUsageErrors[keyof ListRuleBindingUsageErrors];
@@ -1584,6 +2612,10 @@ export type ListRuleDefinitionsErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ListRuleDefinitionsError = ListRuleDefinitionsErrors[keyof ListRuleDefinitionsErrors];
@@ -1621,6 +2653,10 @@ export type CreateRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleDefinitionError = CreateRuleDefinitionErrors[keyof CreateRuleDefinitionErrors];
@@ -1633,6 +2669,39 @@ export type CreateRuleDefinitionResponses = {
 };
 
 export type CreateRuleDefinitionResponse = CreateRuleDefinitionResponses[keyof CreateRuleDefinitionResponses];
+
+export type GetRuleDefinitionCollectionActionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/rules/actions';
+};
+
+export type GetRuleDefinitionCollectionActionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetRuleDefinitionCollectionActionsError = GetRuleDefinitionCollectionActionsErrors[keyof GetRuleDefinitionCollectionActionsErrors];
+
+export type GetRuleDefinitionCollectionActionsResponses = {
+    /**
+     * OK
+     */
+    200: RuleDefinitionCollectionActionsDto;
+};
+
+export type GetRuleDefinitionCollectionActionsResponse = GetRuleDefinitionCollectionActionsResponses[keyof GetRuleDefinitionCollectionActionsResponses];
 
 export type GetRuleExpressionLanguageData = {
     body?: never;
@@ -1650,6 +2719,10 @@ export type GetRuleExpressionLanguageErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleExpressionLanguageError = GetRuleExpressionLanguageErrors[keyof GetRuleExpressionLanguageErrors];
@@ -1683,6 +2756,10 @@ export type ProjectRuleConditionErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ProjectRuleConditionError = ProjectRuleConditionErrors[keyof ProjectRuleConditionErrors];
@@ -1716,6 +2793,10 @@ export type SearchRuleExpressionGuideErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SearchRuleExpressionGuideError = SearchRuleExpressionGuideErrors[keyof SearchRuleExpressionGuideErrors];
@@ -1751,6 +2832,10 @@ export type GetRuleDefinitionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleDefinitionError = GetRuleDefinitionErrors[keyof GetRuleDefinitionErrors];
@@ -1794,6 +2879,10 @@ export type SaveRuleDefinitionDraftErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SaveRuleDefinitionDraftError = SaveRuleDefinitionDraftErrors[keyof SaveRuleDefinitionDraftErrors];
@@ -1837,6 +2926,10 @@ export type CreateRuleDefinitionVersionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleDefinitionVersionError = CreateRuleDefinitionVersionErrors[keyof CreateRuleDefinitionVersionErrors];
@@ -1880,6 +2973,10 @@ export type DeactivateRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type DeactivateRuleDefinitionError = DeactivateRuleDefinitionErrors[keyof DeactivateRuleDefinitionErrors];
@@ -1923,6 +3020,10 @@ export type ActivateRuleDefinitionVersionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ActivateRuleDefinitionVersionError = ActivateRuleDefinitionVersionErrors[keyof ActivateRuleDefinitionVersionErrors];
@@ -1966,6 +3067,10 @@ export type ArchiveRuleDefinitionErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ArchiveRuleDefinitionError = ArchiveRuleDefinitionErrors[keyof ArchiveRuleDefinitionErrors];
@@ -2005,6 +3110,10 @@ export type SimulateRuleDefinitionDraftErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SimulateRuleDefinitionDraftError = SimulateRuleDefinitionDraftErrors[keyof SimulateRuleDefinitionDraftErrors];
@@ -2045,6 +3154,10 @@ export type SimulateRuleDefinitionVersionErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type SimulateRuleDefinitionVersionError = SimulateRuleDefinitionVersionErrors[keyof SimulateRuleDefinitionVersionErrors];
@@ -2078,6 +3191,10 @@ export type ProjectRuleAuthoringErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ProjectRuleAuthoringError = ProjectRuleAuthoringErrors[keyof ProjectRuleAuthoringErrors];
@@ -2107,6 +3224,10 @@ export type CompleteRuleAuthoringErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CompleteRuleAuthoringError = CompleteRuleAuthoringErrors[keyof CompleteRuleAuthoringErrors];
@@ -2148,6 +3269,10 @@ export type CreateRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CreateRuleBindingError = CreateRuleBindingErrors[keyof CreateRuleBindingErrors];
@@ -2191,6 +3316,10 @@ export type DeleteRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type DeleteRuleBindingError = DeleteRuleBindingErrors[keyof DeleteRuleBindingErrors];
@@ -2226,6 +3355,10 @@ export type GetRuleBindingErrors = {
      * Not Found
      */
     404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type GetRuleBindingError = GetRuleBindingErrors[keyof GetRuleBindingErrors];
@@ -2269,6 +3402,10 @@ export type UpdateRuleBindingErrors = {
      * Conflict
      */
     409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type UpdateRuleBindingError = UpdateRuleBindingErrors[keyof UpdateRuleBindingErrors];
@@ -2324,3 +3461,285 @@ export type EvaluateRuleBindingResponses = {
 };
 
 export type EvaluateRuleBindingResponse = EvaluateRuleBindingResponses[keyof EvaluateRuleBindingResponses];
+
+export type ListSolutionVersionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/solutions/versions';
+};
+
+export type ListSolutionVersionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ListSolutionVersionsError = ListSolutionVersionsErrors[keyof ListSolutionVersionsErrors];
+
+export type ListSolutionVersionsResponses = {
+    /**
+     * OK
+     */
+    200: Array<SolutionVersionSummaryDto>;
+};
+
+export type ListSolutionVersionsResponse = ListSolutionVersionsResponses[keyof ListSolutionVersionsResponses];
+
+export type PublishSolutionVersionData = {
+    body: string;
+    path?: never;
+    query?: never;
+    url: '/api/solutions/versions';
+};
+
+export type PublishSolutionVersionErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Content Too Large
+     */
+    413: ProblemDetails;
+    /**
+     * Unsupported Media Type
+     */
+    415: ProblemDetails;
+    /**
+     * Unprocessable Content
+     */
+    422: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type PublishSolutionVersionError = PublishSolutionVersionErrors[keyof PublishSolutionVersionErrors];
+
+export type PublishSolutionVersionResponses = {
+    /**
+     * OK
+     */
+    200: PublishSolutionResponse;
+    /**
+     * Created
+     */
+    201: PublishSolutionResponse;
+};
+
+export type PublishSolutionVersionResponse = PublishSolutionVersionResponses[keyof PublishSolutionVersionResponses];
+
+export type GetSolutionVersionStatusData = {
+    body?: never;
+    path: {
+        solutionVersionId: string;
+    };
+    query?: never;
+    url: '/api/solutions/versions/{solutionVersionId}';
+};
+
+export type GetSolutionVersionStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetSolutionVersionStatusError = GetSolutionVersionStatusErrors[keyof GetSolutionVersionStatusErrors];
+
+export type GetSolutionVersionStatusResponses = {
+    /**
+     * OK
+     */
+    200: SolutionVersionSummaryDto;
+};
+
+export type GetSolutionVersionStatusResponse = GetSolutionVersionStatusResponses[keyof GetSolutionVersionStatusResponses];
+
+export type InstallSolutionVersionData = {
+    body?: never;
+    headers: {
+        'Idempotency-Key': string;
+    };
+    path: {
+        solutionVersionId: string;
+    };
+    query?: never;
+    url: '/api/solutions/versions/{solutionVersionId}/installations';
+};
+
+export type InstallSolutionVersionErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type InstallSolutionVersionError = InstallSolutionVersionErrors[keyof InstallSolutionVersionErrors];
+
+export type InstallSolutionVersionResponses = {
+    /**
+     * OK
+     */
+    200: InstallSolutionResponse;
+    /**
+     * Created
+     */
+    201: InstallSolutionResponse;
+};
+
+export type InstallSolutionVersionResponse = InstallSolutionVersionResponses[keyof InstallSolutionVersionResponses];
+
+export type ListSolutionInstallationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/solutions/installations';
+};
+
+export type ListSolutionInstallationsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ListSolutionInstallationsError = ListSolutionInstallationsErrors[keyof ListSolutionInstallationsErrors];
+
+export type ListSolutionInstallationsResponses = {
+    /**
+     * OK
+     */
+    200: Array<SolutionInstallationStatusDto>;
+};
+
+export type ListSolutionInstallationsResponse = ListSolutionInstallationsResponses[keyof ListSolutionInstallationsResponses];
+
+export type GetSolutionOperationStatusData = {
+    body?: never;
+    path: {
+        operationId: string;
+    };
+    query?: never;
+    url: '/api/solutions/operations/{operationId}';
+};
+
+export type GetSolutionOperationStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetSolutionOperationStatusError = GetSolutionOperationStatusErrors[keyof GetSolutionOperationStatusErrors];
+
+export type GetSolutionOperationStatusResponses = {
+    /**
+     * OK
+     */
+    200: SolutionOperationStatusDto;
+};
+
+export type GetSolutionOperationStatusResponse = GetSolutionOperationStatusResponses[keyof GetSolutionOperationStatusResponses];
+
+export type ResumeSolutionInstallationData = {
+    body?: never;
+    path: {
+        operationId: string;
+    };
+    query?: never;
+    url: '/api/solutions/operations/{operationId}/resume';
+};
+
+export type ResumeSolutionInstallationErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ResumeSolutionInstallationError = ResumeSolutionInstallationErrors[keyof ResumeSolutionInstallationErrors];
+
+export type ResumeSolutionInstallationResponses = {
+    /**
+     * OK
+     */
+    200: SolutionOperationStatusDto;
+};
+
+export type ResumeSolutionInstallationResponse = ResumeSolutionInstallationResponses[keyof ResumeSolutionInstallationResponses];

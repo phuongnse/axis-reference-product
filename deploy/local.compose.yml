@@ -9,6 +9,11 @@ services:
       OpenIddict__ClientCatalog__Clients__1__RedirectUris__1: https://web:4173/signin-oidc
       OpenIddict__ClientCatalog__Clients__1__PostLogoutRedirectUris__0: https://localhost:4173/signout-callback-oidc
       OpenIddict__ClientCatalog__Clients__1__PostLogoutRedirectUris__1: https://web:4173/signout-callback-oidc
+      Solutions__TrustedPublishers__ConfigurationRevision: "1"
+      Solutions__TrustedPublishers__Keys__0__PublisherId: axis_reference_product
+      Solutions__TrustedPublishers__Keys__0__KeyId: release
+      Solutions__TrustedPublishers__Keys__0__PublicKeyPem: ${AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY:?AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY is required}
+      Solutions__TrustedPublishers__Keys__0__IsActive: "true"
     networks:
       - default
       - reference_product_acceptance
@@ -77,12 +82,14 @@ services:
       E2E_MAILDEV_URL: http://localhost:1080
       E2E_OUTPUT_DIR: /tmp/reference-product-e2e/test-results
       E2E_REPORT_DIR: /tmp/reference-product-e2e/playwright-report
+      E2E_SOLUTION_PACKAGE: /work/product/.axis-solution/reference-application.dsse.json
       HOME: /root
       NODE_EXTRA_CA_CERTS: /https/rootCA.pem
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     entrypoint: ["sh", "./scripts/docker-e2e-entrypoint.sh"]
     volumes:
       - ${AXIS_PLATFORM_ROOT:?AXIS_PLATFORM_ROOT is required}/.dev-certs/rootCA.pem:/https/rootCA.pem:ro
+      - ${AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE:?AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE is required}:/work/product/.axis-solution/reference-application.dsse.json:ro
     network_mode: host
 
 networks:

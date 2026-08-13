@@ -1,0 +1,1 @@
+{"schemaVersion":1,"definitionKey":"field.required","definitionVersion":1,"targetType":"business-object-field","targetId":"loan_application.applicant_name","useCaseOrTrigger":"field-validation","inputMappings":{"value":{"kind":"Context","contextKey":"record.value","literalValues":[]}},"priority":0,"enabled":true,"failureBehavior":"FailClosed"}

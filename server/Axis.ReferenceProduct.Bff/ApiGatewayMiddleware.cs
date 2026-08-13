@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Duende.AccessTokenManagement;
 using Duende.AccessTokenManagement.OpenIdConnect;
@@ -10,10 +11,15 @@ namespace Axis.ReferenceProduct.Bff;
 internal sealed partial class ApiGatewayMiddleware(RequestDelegate next)
 {
     internal const string AccessTokenItem = "Axis.ReferenceProduct.Bff.AccessToken";
+    internal const string ProductObjectKey = "loan_application";
     private static readonly HashSet<string> UnsafeMethods = new(StringComparer.OrdinalIgnoreCase)
         { "POST", "PUT", "PATCH", "DELETE" };
 
-    public async Task InvokeAsync(HttpContext context, IAntiforgery antiforgery)
+    public async Task InvokeAsync(
+        HttpContext context,
+        IAntiforgery antiforgery,
+        BffOptions options,
+        HttpMessageInvoker http)
     {
         if (!IsAllowed(context.Request.Method, context.Request.Path))
         {
@@ -29,7 +35,14 @@ internal sealed partial class ApiGatewayMiddleware(RequestDelegate next)
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
-        context.Items[AccessTokenItem] = result.Token.AccessToken.ToString();
+        string accessToken = result.Token.AccessToken.ToString();
+        if (TryGetRecordId(context.Request.Path, out Guid recordId) &&
+            !await IsProductRecordAsync(recordId, accessToken, options, http, context.RequestAborted))
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            return;
+        }
+        context.Items[AccessTokenItem] = accessToken;
         await next(context);
     }
 
@@ -38,32 +51,61 @@ internal sealed partial class ApiGatewayMiddleware(RequestDelegate next)
         string value = path.Value ?? string.Empty;
         return (method, value) switch
         {
-            ("GET", "/api/users/me") => true,
-            ("GET" or "POST", "/api/business-object-definitions") => true,
-            ("GET", _) when DefinitionDetailPath().IsMatch(value) => true,
-            ("PUT", _) when DefinitionSavePath().IsMatch(value) => true,
-            ("POST", _) when DefinitionPublishPath().IsMatch(value) => true,
-            ("GET", _) when RuleDefinitionPath().IsMatch(value) => true,
-            ("GET", _) when RuleUsagePath().IsMatch(value) => true,
-            ("GET", _) when BindingDetailPath().IsMatch(value) => true,
-            ("POST", "/api/rule-bindings") => true,
-            ("POST", _) when RecordCreatePath().IsMatch(value) => true,
-            ("PUT", _) when RecordSavePath().IsMatch(value) => true,
+            ("POST", _) when string.Equals(
+                value,
+                $"/api/business-object-records/{ProductObjectKey}",
+                StringComparison.Ordinal) => true,
+            ("GET", _) when RecordPath().IsMatch(value) => true,
+            ("PUT", _) when RecordPath().IsMatch(value) => true,
             ("POST", _) when RecordSubmitPath().IsMatch(value) => true,
             _ => false,
         };
     }
 
+    internal static async Task<bool> IsProductRecordAsync(
+        Guid recordId,
+        string accessToken,
+        BffOptions options,
+        HttpMessageInvoker http,
+        CancellationToken cancellationToken)
+    {
+        using HttpRequestMessage request = new(
+            HttpMethod.Get,
+            new Uri(
+                $"{options.ApiBaseUrl.AbsoluteUri.TrimEnd('/')}/api/business-object-records/{recordId:D}",
+                UriKind.Absolute));
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        using HttpResponseMessage response = await http.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+            return false;
+
+        try
+        {
+            await using Stream content = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using JsonDocument document = await JsonDocument.ParseAsync(content, cancellationToken: cancellationToken);
+            return document.RootElement.ValueKind == JsonValueKind.Object &&
+                document.RootElement.TryGetProperty("objectKey", out JsonElement objectKey) &&
+                objectKey.ValueKind == JsonValueKind.String &&
+                string.Equals(objectKey.GetString(), ProductObjectKey, StringComparison.Ordinal);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryGetRecordId(PathString path, out Guid recordId)
+    {
+        recordId = default;
+        Match match = ProductRecordPath().Match(path.Value ?? string.Empty);
+        return match.Success && Guid.TryParseExact(match.Groups["recordId"].Value, "D", out recordId);
+    }
+
     private const string GuidPattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
-    [GeneratedRegex("^/api/business-object-definitions/" + GuidPattern + "$", RegexOptions.CultureInvariant)] private static partial Regex DefinitionDetailPath();
-    [GeneratedRegex("^/api/business-object-definitions/" + GuidPattern + "/unpublished$", RegexOptions.CultureInvariant)] private static partial Regex DefinitionSavePath();
-    [GeneratedRegex("^/api/business-object-definitions/" + GuidPattern + "/publish$", RegexOptions.CultureInvariant)] private static partial Regex DefinitionPublishPath();
-    [GeneratedRegex("^/api/rules/[a-z][a-z0-9._-]{0,99}$", RegexOptions.CultureInvariant)] private static partial Regex RuleDefinitionPath();
-    [GeneratedRegex("^/api/rules/[a-z][a-z0-9._-]{0,99}/bindings$", RegexOptions.CultureInvariant)] private static partial Regex RuleUsagePath();
-    [GeneratedRegex("^/api/rule-bindings/" + GuidPattern + "$", RegexOptions.CultureInvariant)] private static partial Regex BindingDetailPath();
-    [GeneratedRegex("^/api/business-object-records/[a-z][a-z0-9_]{0,99}$", RegexOptions.CultureInvariant)] private static partial Regex RecordCreatePath();
-    [GeneratedRegex("^/api/business-object-records/" + GuidPattern + "$", RegexOptions.CultureInvariant)] private static partial Regex RecordSavePath();
+    [GeneratedRegex("^/api/business-object-records/" + GuidPattern + "$", RegexOptions.CultureInvariant)] private static partial Regex RecordPath();
     [GeneratedRegex("^/api/business-object-records/" + GuidPattern + "/submit$", RegexOptions.CultureInvariant)] private static partial Regex RecordSubmitPath();
+    [GeneratedRegex("^/api/business-object-records/(?<recordId>" + GuidPattern + ")(?:/submit)?$", RegexOptions.CultureInvariant)] private static partial Regex ProductRecordPath();
 }
 
 internal sealed class AxisApiTransformer : HttpTransformer

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateRuleDefinitionVersionData, ActivateRuleDefinitionVersionErrors, ActivateRuleDefinitionVersionResponses, ArchiveRuleDefinitionData, ArchiveRuleDefinitionErrors, ArchiveRuleDefinitionResponses, CompleteRuleAuthoringData, CompleteRuleAuthoringErrors, CompleteRuleAuthoringResponses, CreateBusinessObjectDefinitionData, CreateBusinessObjectDefinitionErrors, CreateBusinessObjectDefinitionResponses, CreateBusinessObjectRecordData, CreateBusinessObjectRecordErrors, CreateBusinessObjectRecordResponses, CreateRuleBindingData, CreateRuleBindingErrors, CreateRuleBindingResponses, CreateRuleDefinitionData, CreateRuleDefinitionErrors, CreateRuleDefinitionResponses, CreateRuleDefinitionVersionData, CreateRuleDefinitionVersionErrors, CreateRuleDefinitionVersionResponses, DeactivateRuleDefinitionData, DeactivateRuleDefinitionErrors, DeactivateRuleDefinitionResponses, DeleteRuleBindingData, DeleteRuleBindingErrors, DeleteRuleBindingResponses, EvaluateRuleBindingData, EvaluateRuleBindingErrors, EvaluateRuleBindingResponses, GetBrowserSessionData, GetBrowserSessionResponses, GetBusinessObjectDefinitionData, GetBusinessObjectDefinitionErrors, GetBusinessObjectDefinitionResponses, GetBusinessObjectRecordData, GetBusinessObjectRecordErrors, GetBusinessObjectRecordResponses, GetLegalVersionsData, GetLegalVersionsResponses, GetMeData, GetMeErrors, GetMeResponses, GetRuleBindingData, GetRuleBindingErrors, GetRuleBindingResponses, GetRuleDefinitionData, GetRuleDefinitionErrors, GetRuleDefinitionResponses, GetRuleExpressionLanguageData, GetRuleExpressionLanguageErrors, GetRuleExpressionLanguageResponses, ListBusinessObjectDefinitionsData, ListBusinessObjectDefinitionsErrors, ListBusinessObjectDefinitionsResponses, ListBusinessObjectRecordsData, ListBusinessObjectRecordsErrors, ListBusinessObjectRecordsResponses, ListRuleBindingUsageData, ListRuleBindingUsageErrors, ListRuleBindingUsageResponses, ListRuleDefinitionsData, ListRuleDefinitionsErrors, ListRuleDefinitionsResponses, ProjectRuleAuthoringData, ProjectRuleAuthoringErrors, ProjectRuleAuthoringResponses, ProjectRuleConditionData, ProjectRuleConditionErrors, ProjectRuleConditionResponses, PublishBusinessObjectDefinitionData, PublishBusinessObjectDefinitionErrors, PublishBusinessObjectDefinitionResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, ResendEmailVerificationData, ResendEmailVerificationErrors, ResendEmailVerificationResponses, SaveBusinessObjectRecordData, SaveBusinessObjectRecordErrors, SaveBusinessObjectRecordResponses, SaveRuleDefinitionDraftData, SaveRuleDefinitionDraftErrors, SaveRuleDefinitionDraftResponses, SaveUnpublishedBusinessObjectDefinitionData, SaveUnpublishedBusinessObjectDefinitionErrors, SaveUnpublishedBusinessObjectDefinitionResponses, SearchRuleExpressionGuideData, SearchRuleExpressionGuideErrors, SearchRuleExpressionGuideResponses, SignInUserData, SignInUserErrors, SignInUserResponses, SignOutUserData, SignOutUserResponses, SimulateRuleDefinitionDraftData, SimulateRuleDefinitionDraftErrors, SimulateRuleDefinitionDraftResponses, SimulateRuleDefinitionVersionData, SimulateRuleDefinitionVersionErrors, SimulateRuleDefinitionVersionResponses, SubmitBusinessObjectRecordData, SubmitBusinessObjectRecordErrors, SubmitBusinessObjectRecordResponses, UpdateLanguagePreferenceData, UpdateLanguagePreferenceErrors, UpdateLanguagePreferenceResponses, UpdateRuleBindingData, UpdateRuleBindingErrors, UpdateRuleBindingResponses, UpdateThemePreferenceData, UpdateThemePreferenceErrors, UpdateThemePreferenceResponses, VerifyEmailData, VerifyEmailErrors, VerifyEmailResponses } from './types.gen';
+import type { ActivateRuleDefinitionVersionData, ActivateRuleDefinitionVersionErrors, ActivateRuleDefinitionVersionResponses, AddServiceIdentityKeyData, AddServiceIdentityKeyErrors, AddServiceIdentityKeyResponses, ArchiveRuleDefinitionData, ArchiveRuleDefinitionErrors, ArchiveRuleDefinitionResponses, AssignProductRoleData, AssignProductRoleErrors, AssignProductRoleResponses, CompleteRuleAuthoringData, CompleteRuleAuthoringErrors, CompleteRuleAuthoringResponses, CreateBusinessObjectDefinitionData, CreateBusinessObjectDefinitionErrors, CreateBusinessObjectDefinitionResponses, CreateBusinessObjectRecordData, CreateBusinessObjectRecordErrors, CreateBusinessObjectRecordResponses, CreateOrganizationWorkspaceData, CreateOrganizationWorkspaceErrors, CreateOrganizationWorkspaceResponses, CreateRuleBindingData, CreateRuleBindingErrors, CreateRuleBindingResponses, CreateRuleDefinitionData, CreateRuleDefinitionErrors, CreateRuleDefinitionResponses, CreateRuleDefinitionVersionData, CreateRuleDefinitionVersionErrors, CreateRuleDefinitionVersionResponses, CreateServiceIdentityData, CreateServiceIdentityErrors, CreateServiceIdentityResponses, DeactivateRuleDefinitionData, DeactivateRuleDefinitionErrors, DeactivateRuleDefinitionResponses, DeleteRuleBindingData, DeleteRuleBindingErrors, DeleteRuleBindingResponses, EvaluateRuleBindingData, EvaluateRuleBindingErrors, EvaluateRuleBindingResponses, GetBrowserSessionData, GetBrowserSessionResponses, GetBusinessObjectDefinitionCollectionActionsData, GetBusinessObjectDefinitionCollectionActionsErrors, GetBusinessObjectDefinitionCollectionActionsResponses, GetBusinessObjectDefinitionData, GetBusinessObjectDefinitionErrors, GetBusinessObjectDefinitionResponses, GetBusinessObjectRecordData, GetBusinessObjectRecordErrors, GetBusinessObjectRecordResponses, GetLegalVersionsData, GetLegalVersionsResponses, GetMeData, GetMeErrors, GetMeResponses, GetModuleNavigationAvailabilityData, GetModuleNavigationAvailabilityErrors, GetModuleNavigationAvailabilityResponses, GetRuleBindingData, GetRuleBindingErrors, GetRuleBindingResponses, GetRuleDefinitionCollectionActionsData, GetRuleDefinitionCollectionActionsErrors, GetRuleDefinitionCollectionActionsResponses, GetRuleDefinitionData, GetRuleDefinitionErrors, GetRuleDefinitionResponses, GetRuleExpressionLanguageData, GetRuleExpressionLanguageErrors, GetRuleExpressionLanguageResponses, GetServiceIdentityData, GetServiceIdentityErrors, GetServiceIdentityResponses, GetSolutionOperationStatusData, GetSolutionOperationStatusErrors, GetSolutionOperationStatusResponses, GetSolutionVersionStatusData, GetSolutionVersionStatusErrors, GetSolutionVersionStatusResponses, GrantWorkspaceProductBuilderData, GrantWorkspaceProductBuilderErrors, GrantWorkspaceProductBuilderResponses, InstallSolutionVersionData, InstallSolutionVersionErrors, InstallSolutionVersionResponses, InviteWorkspaceMemberData, InviteWorkspaceMemberErrors, InviteWorkspaceMemberResponses, ListBusinessObjectDefinitionsData, ListBusinessObjectDefinitionsErrors, ListBusinessObjectDefinitionsResponses, ListBusinessObjectRecordsData, ListBusinessObjectRecordsErrors, ListBusinessObjectRecordsResponses, ListProductRoleAssignmentsData, ListProductRoleAssignmentsErrors, ListProductRoleAssignmentsResponses, ListRuleBindingUsageData, ListRuleBindingUsageErrors, ListRuleBindingUsageResponses, ListRuleDefinitionsData, ListRuleDefinitionsErrors, ListRuleDefinitionsResponses, ListServiceIdentitiesData, ListServiceIdentitiesErrors, ListServiceIdentitiesResponses, ListSolutionInstallationsData, ListSolutionInstallationsErrors, ListSolutionInstallationsResponses, ListSolutionVersionsData, ListSolutionVersionsErrors, ListSolutionVersionsResponses, ListWorkspaceInvitationsData, ListWorkspaceInvitationsErrors, ListWorkspaceInvitationsResponses, ListWorkspaceProductBuildersData, ListWorkspaceProductBuildersErrors, ListWorkspaceProductBuildersResponses, ProjectRuleAuthoringData, ProjectRuleAuthoringErrors, ProjectRuleAuthoringResponses, ProjectRuleConditionData, ProjectRuleConditionErrors, ProjectRuleConditionResponses, PublishBusinessObjectDefinitionData, PublishBusinessObjectDefinitionErrors, PublishBusinessObjectDefinitionResponses, PublishSolutionVersionData, PublishSolutionVersionErrors, PublishSolutionVersionResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, ResendEmailVerificationData, ResendEmailVerificationErrors, ResendEmailVerificationResponses, ResendWorkspaceInvitationData, ResendWorkspaceInvitationErrors, ResendWorkspaceInvitationResponses, ResumeSolutionInstallationData, ResumeSolutionInstallationErrors, ResumeSolutionInstallationResponses, RevokeProductRoleData, RevokeProductRoleErrors, RevokeProductRoleResponses, RevokeServiceIdentityData, RevokeServiceIdentityErrors, RevokeServiceIdentityKeyData, RevokeServiceIdentityKeyErrors, RevokeServiceIdentityKeyResponses, RevokeServiceIdentityResponses, RevokeWorkspaceInvitationData, RevokeWorkspaceInvitationErrors, RevokeWorkspaceInvitationResponses, RevokeWorkspaceProductBuilderData, RevokeWorkspaceProductBuilderErrors, RevokeWorkspaceProductBuilderResponses, SaveBusinessObjectRecordData, SaveBusinessObjectRecordErrors, SaveBusinessObjectRecordResponses, SaveRuleDefinitionDraftData, SaveRuleDefinitionDraftErrors, SaveRuleDefinitionDraftResponses, SaveUnpublishedBusinessObjectDefinitionData, SaveUnpublishedBusinessObjectDefinitionErrors, SaveUnpublishedBusinessObjectDefinitionResponses, SearchRuleExpressionGuideData, SearchRuleExpressionGuideErrors, SearchRuleExpressionGuideResponses, SignInUserData, SignInUserErrors, SignInUserResponses, SignOutUserData, SignOutUserResponses, SimulateRuleDefinitionDraftData, SimulateRuleDefinitionDraftErrors, SimulateRuleDefinitionDraftResponses, SimulateRuleDefinitionVersionData, SimulateRuleDefinitionVersionErrors, SimulateRuleDefinitionVersionResponses, SubmitBusinessObjectRecordData, SubmitBusinessObjectRecordErrors, SubmitBusinessObjectRecordResponses, UpdateLanguagePreferenceData, UpdateLanguagePreferenceErrors, UpdateLanguagePreferenceResponses, UpdateRuleBindingData, UpdateRuleBindingErrors, UpdateRuleBindingResponses, UpdateThemePreferenceData, UpdateThemePreferenceErrors, UpdateThemePreferenceResponses, VerifyEmailData, VerifyEmailErrors, VerifyEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,50 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+/**
+ * Get server-authoritative module navigation availability
+ */
+export const getModuleNavigationAvailability = <ThrowOnError extends boolean = false>(options?: Options<GetModuleNavigationAvailabilityData, ThrowOnError>): RequestResult<GetModuleNavigationAvailabilityResponses, GetModuleNavigationAvailabilityErrors, ThrowOnError> => (options?.client ?? client).get<GetModuleNavigationAvailabilityResponses, GetModuleNavigationAvailabilityErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/module-navigation',
+    ...options
+});
+
+/**
+ * Assign an exact installed product role to a current-Workspace subject
+ */
+export const assignProductRole = <ThrowOnError extends boolean = false>(options: Options<AssignProductRoleData, ThrowOnError>): RequestResult<AssignProductRoleResponses, AssignProductRoleErrors, ThrowOnError> => (options.client ?? client).post<AssignProductRoleResponses, AssignProductRoleErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/product-role-assignments/assign',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Revoke an exact product-role assignment
+ */
+export const revokeProductRole = <ThrowOnError extends boolean = false>(options: Options<RevokeProductRoleData, ThrowOnError>): RequestResult<RevokeProductRoleResponses, RevokeProductRoleErrors, ThrowOnError> => (options.client ?? client).post<RevokeProductRoleResponses, RevokeProductRoleErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/product-role-assignments/revoke',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List active assignable subjects, installed product roles, and assignment state
+ */
+export const listProductRoleAssignments = <ThrowOnError extends boolean = false>(options?: Options<ListProductRoleAssignmentsData, ThrowOnError>): RequestResult<ListProductRoleAssignmentsResponses, ListProductRoleAssignmentsErrors, ThrowOnError> => (options?.client ?? client).get<ListProductRoleAssignmentsResponses, ListProductRoleAssignmentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/product-role-assignments',
+    ...options
+});
 
 /**
  * List business object records for the current workspace
@@ -95,6 +139,15 @@ export const createBusinessObjectDefinition = <ThrowOnError extends boolean = fa
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get authorized business object definition collection actions
+ */
+export const getBusinessObjectDefinitionCollectionActions = <ThrowOnError extends boolean = false>(options?: Options<GetBusinessObjectDefinitionCollectionActionsData, ThrowOnError>): RequestResult<GetBusinessObjectDefinitionCollectionActionsResponses, GetBusinessObjectDefinitionCollectionActionsErrors, ThrowOnError> => (options?.client ?? client).get<GetBusinessObjectDefinitionCollectionActionsResponses, GetBusinessObjectDefinitionCollectionActionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/business-object-definitions/actions',
+    ...options
 });
 
 /**
@@ -231,6 +284,172 @@ export const updateThemePreference = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
+ * Create an organization and its initial workspace
+ */
+export const createOrganizationWorkspace = <ThrowOnError extends boolean = false>(options: Options<CreateOrganizationWorkspaceData, ThrowOnError>): RequestResult<CreateOrganizationWorkspaceResponses, CreateOrganizationWorkspaceErrors, ThrowOnError> => (options.client ?? client).post<CreateOrganizationWorkspaceResponses, CreateOrganizationWorkspaceErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/organizations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List invitation lifecycle outcomes for the active workspace
+ */
+export const listWorkspaceInvitations = <ThrowOnError extends boolean = false>(options: Options<ListWorkspaceInvitationsData, ThrowOnError>): RequestResult<ListWorkspaceInvitationsResponses, ListWorkspaceInvitationsErrors, ThrowOnError> => (options.client ?? client).get<ListWorkspaceInvitationsResponses, ListWorkspaceInvitationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-invitations',
+    ...options
+});
+
+/**
+ * Invite a member to the active organization workspace
+ */
+export const inviteWorkspaceMember = <ThrowOnError extends boolean = false>(options: Options<InviteWorkspaceMemberData, ThrowOnError>): RequestResult<InviteWorkspaceMemberResponses, InviteWorkspaceMemberErrors, ThrowOnError> => (options.client ?? client).post<InviteWorkspaceMemberResponses, InviteWorkspaceMemberErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-invitations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Resend a pending workspace invitation
+ */
+export const resendWorkspaceInvitation = <ThrowOnError extends boolean = false>(options: Options<ResendWorkspaceInvitationData, ThrowOnError>): RequestResult<ResendWorkspaceInvitationResponses, ResendWorkspaceInvitationErrors, ThrowOnError> => (options.client ?? client).post<ResendWorkspaceInvitationResponses, ResendWorkspaceInvitationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-invitations/{invitationId}/resend',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Revoke a pending workspace invitation
+ */
+export const revokeWorkspaceInvitation = <ThrowOnError extends boolean = false>(options: Options<RevokeWorkspaceInvitationData, ThrowOnError>): RequestResult<RevokeWorkspaceInvitationResponses, RevokeWorkspaceInvitationErrors, ThrowOnError> => (options.client ?? client).post<RevokeWorkspaceInvitationResponses, RevokeWorkspaceInvitationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-invitations/{invitationId}/revoke',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List active human members and Product Builder authority for the active workspace
+ */
+export const listWorkspaceProductBuilders = <ThrowOnError extends boolean = false>(options?: Options<ListWorkspaceProductBuildersData, ThrowOnError>): RequestResult<ListWorkspaceProductBuildersResponses, ListWorkspaceProductBuildersErrors, ThrowOnError> => (options?.client ?? client).get<ListWorkspaceProductBuildersResponses, ListWorkspaceProductBuildersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-product-builders',
+    ...options
+});
+
+/**
+ * Grant Product Builder authority to another active workspace member
+ */
+export const grantWorkspaceProductBuilder = <ThrowOnError extends boolean = false>(options: Options<GrantWorkspaceProductBuilderData, ThrowOnError>): RequestResult<GrantWorkspaceProductBuilderResponses, GrantWorkspaceProductBuilderErrors, ThrowOnError> => (options.client ?? client).post<GrantWorkspaceProductBuilderResponses, GrantWorkspaceProductBuilderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-product-builders/{userId}/grant',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Revoke Product Builder authority from another active workspace member
+ */
+export const revokeWorkspaceProductBuilder = <ThrowOnError extends boolean = false>(options: Options<RevokeWorkspaceProductBuilderData, ThrowOnError>): RequestResult<RevokeWorkspaceProductBuilderResponses, RevokeWorkspaceProductBuilderErrors, ThrowOnError> => (options.client ?? client).post<RevokeWorkspaceProductBuilderResponses, RevokeWorkspaceProductBuilderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-product-builders/{userId}/revoke',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List non-secret service identity lifecycle state for the current Workspace
+ */
+export const listServiceIdentities = <ThrowOnError extends boolean = false>(options?: Options<ListServiceIdentitiesData, ThrowOnError>): RequestResult<ListServiceIdentitiesResponses, ListServiceIdentitiesErrors, ThrowOnError> => (options?.client ?? client).get<ListServiceIdentitiesResponses, ListServiceIdentitiesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities',
+    ...options
+});
+
+/**
+ * Create one current-Workspace service identity
+ */
+export const createServiceIdentity = <ThrowOnError extends boolean = false>(options: Options<CreateServiceIdentityData, ThrowOnError>): RequestResult<CreateServiceIdentityResponses, CreateServiceIdentityErrors, ThrowOnError> => (options.client ?? client).post<CreateServiceIdentityResponses, CreateServiceIdentityErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get non-secret lifecycle state for one current-Workspace service identity
+ */
+export const getServiceIdentity = <ThrowOnError extends boolean = false>(options: Options<GetServiceIdentityData, ThrowOnError>): RequestResult<GetServiceIdentityResponses, GetServiceIdentityErrors, ThrowOnError> => (options.client ?? client).get<GetServiceIdentityResponses, GetServiceIdentityErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities/{serviceIdentityId}',
+    ...options
+});
+
+/**
+ * Add one ES256 public JWK to a current-Workspace service identity
+ */
+export const addServiceIdentityKey = <ThrowOnError extends boolean = false>(options: Options<AddServiceIdentityKeyData, ThrowOnError>): RequestResult<AddServiceIdentityKeyResponses, AddServiceIdentityKeyErrors, ThrowOnError> => (options.client ?? client).post<AddServiceIdentityKeyResponses, AddServiceIdentityKeyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities/{serviceIdentityId}/keys',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Irrevocably revoke one service identity public key
+ */
+export const revokeServiceIdentityKey = <ThrowOnError extends boolean = false>(options: Options<RevokeServiceIdentityKeyData, ThrowOnError>): RequestResult<RevokeServiceIdentityKeyResponses, RevokeServiceIdentityKeyErrors, ThrowOnError> => (options.client ?? client).post<RevokeServiceIdentityKeyResponses, RevokeServiceIdentityKeyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities/{serviceIdentityId}/keys/{keyId}/revoke',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Irrevocably revoke one current-Workspace service identity
+ */
+export const revokeServiceIdentity = <ThrowOnError extends boolean = false>(options: Options<RevokeServiceIdentityData, ThrowOnError>): RequestResult<RevokeServiceIdentityResponses, RevokeServiceIdentityErrors, ThrowOnError> => (options.client ?? client).post<RevokeServiceIdentityResponses, RevokeServiceIdentityErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/service-identities/{serviceIdentityId}/revoke',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Show where an exact rule version is currently used
  */
 export const listRuleBindingUsage = <ThrowOnError extends boolean = false>(options: Options<ListRuleBindingUsageData, ThrowOnError>): RequestResult<ListRuleBindingUsageResponses, ListRuleBindingUsageErrors, ThrowOnError> => (options.client ?? client).get<ListRuleBindingUsageResponses, ListRuleBindingUsageErrors, ThrowOnError>({
@@ -259,6 +478,15 @@ export const createRuleDefinition = <ThrowOnError extends boolean = false>(optio
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get authorized rule definition collection actions
+ */
+export const getRuleDefinitionCollectionActions = <ThrowOnError extends boolean = false>(options?: Options<GetRuleDefinitionCollectionActionsData, ThrowOnError>): RequestResult<GetRuleDefinitionCollectionActionsResponses, GetRuleDefinitionCollectionActionsErrors, ThrowOnError> => (options?.client ?? client).get<GetRuleDefinitionCollectionActionsResponses, GetRuleDefinitionCollectionActionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/rules/actions',
+    ...options
 });
 
 /**
@@ -481,4 +709,71 @@ export const evaluateRuleBinding = <ThrowOnError extends boolean = false>(option
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * List safe published solution version status
+ */
+export const listSolutionVersions = <ThrowOnError extends boolean = false>(options?: Options<ListSolutionVersionsData, ThrowOnError>): RequestResult<ListSolutionVersionsResponses, ListSolutionVersionsErrors, ThrowOnError> => (options?.client ?? client).get<ListSolutionVersionsResponses, ListSolutionVersionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/versions',
+    ...options
+});
+
+/**
+ * Publish one trusted immutable signed solution package
+ */
+export const publishSolutionVersion = <ThrowOnError extends boolean = false>(options: Options<PublishSolutionVersionData, ThrowOnError>): RequestResult<PublishSolutionVersionResponses, PublishSolutionVersionErrors, ThrowOnError> => (options.client ?? client).post<PublishSolutionVersionResponses, PublishSolutionVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/versions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.dsse.envelope.v1+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get safe status for one published solution version
+ */
+export const getSolutionVersionStatus = <ThrowOnError extends boolean = false>(options: Options<GetSolutionVersionStatusData, ThrowOnError>): RequestResult<GetSolutionVersionStatusResponses, GetSolutionVersionStatusErrors, ThrowOnError> => (options.client ?? client).get<GetSolutionVersionStatusResponses, GetSolutionVersionStatusErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/versions/{solutionVersionId}',
+    ...options
+});
+
+/**
+ * Begin installation of an exact trusted solution version
+ */
+export const installSolutionVersion = <ThrowOnError extends boolean = false>(options: Options<InstallSolutionVersionData, ThrowOnError>): RequestResult<InstallSolutionVersionResponses, InstallSolutionVersionErrors, ThrowOnError> => (options.client ?? client).post<InstallSolutionVersionResponses, InstallSolutionVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/versions/{solutionVersionId}/installations',
+    ...options
+});
+
+/**
+ * List safe solution installation status for the current Workspace
+ */
+export const listSolutionInstallations = <ThrowOnError extends boolean = false>(options?: Options<ListSolutionInstallationsData, ThrowOnError>): RequestResult<ListSolutionInstallationsResponses, ListSolutionInstallationsErrors, ThrowOnError> => (options?.client ?? client).get<ListSolutionInstallationsResponses, ListSolutionInstallationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/installations',
+    ...options
+});
+
+/**
+ * Get safe status for one current-Workspace solution operation
+ */
+export const getSolutionOperationStatus = <ThrowOnError extends boolean = false>(options: Options<GetSolutionOperationStatusData, ThrowOnError>): RequestResult<GetSolutionOperationStatusResponses, GetSolutionOperationStatusErrors, ThrowOnError> => (options.client ?? client).get<GetSolutionOperationStatusResponses, GetSolutionOperationStatusErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/operations/{operationId}',
+    ...options
+});
+
+/**
+ * Resume one recoverable current-Workspace solution operation
+ */
+export const resumeSolutionInstallation = <ThrowOnError extends boolean = false>(options: Options<ResumeSolutionInstallationData, ThrowOnError>): RequestResult<ResumeSolutionInstallationResponses, ResumeSolutionInstallationErrors, ThrowOnError> => (options.client ?? client).post<ResumeSolutionInstallationResponses, ResumeSolutionInstallationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/solutions/operations/{operationId}/resume',
+    ...options
 });

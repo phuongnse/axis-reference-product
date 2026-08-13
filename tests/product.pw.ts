@@ -1,3 +1,4 @@
+import { generateKeyPairSync } from 'node:crypto';
 import { expect, type Page, test } from '@playwright/test';
 
 function requiredUrl(name: string): URL {
@@ -13,6 +14,8 @@ function requiredUrl(name: string): URL {
 const productUrl = requiredUrl('E2E_BASE_URL');
 const axisWebUrl = requiredUrl('E2E_AXIS_WEB_URL');
 const maildevUrl = requiredUrl('E2E_MAILDEV_URL');
+const solutionPackage = process.env.E2E_SOLUTION_PACKAGE;
+if (!solutionPackage) throw Error('E2E_SOLUTION_PACKAGE is required for signed release acceptance.');
 const password = 'maple river sunrise';
 const oauthArtifact = /(?:access_token|refresh_token|id_token|authorization_code)/i;
 
@@ -25,6 +28,18 @@ type MaildevMessage = {
 
 function uniqueEmail(): string {
   return `product-e2e.${Date.now()}.${Math.random().toString(36).slice(2, 10)}@test.com`;
+}
+
+function servicePublicJwk(): string {
+  const { publicKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const jwk = publicKey.export({ format: 'jwk' });
+  return JSON.stringify({
+    kty: jwk.kty,
+    crv: jwk.crv,
+    kid: `reference-e2e-${Date.now()}`,
+    x: jwk.x,
+    y: jwk.y,
+  });
 }
 
 function recipients(value: MaildevMessage['to']): MaildevRecipient[] {
@@ -108,7 +123,7 @@ async function expectNoOAuthArtifacts(page: Page): Promise<void> {
   expect(JSON.stringify(artifacts)).not.toMatch(oauthArtifact);
 }
 
-test('real user registers, provisions, submits, and signs out through the product BFF', async ({
+test('administrator installs the signed release before the applicant submits through the product BFF', async ({
   page,
 }) => {
   const email = uniqueEmail();
@@ -139,6 +154,89 @@ test('real user registers, provisions, submits, and signs out through the produc
   await expect(page).toHaveURL(new RegExp(`${axisWebUrl.origin}/dashboard$`), { timeout: 30_000 });
   await expect(page.getByRole('banner')).toContainText('Dashboard');
 
+  const organizationName = `Reference E2E ${Date.now()}`;
+  await page.getByRole('button', { name: 'Account menu' }).click();
+  await page.getByRole('button', { name: 'Create Organization' }).click();
+  const createOrganizationDialog = page.getByRole('dialog', { name: 'Create Organization' });
+  await createOrganizationDialog
+    .getByRole('textbox', { name: 'Organization name' })
+    .fill(organizationName);
+  await createOrganizationDialog.getByRole('button', { name: 'Create Organization' }).click();
+  await page
+    .getByRole('dialog', { name: 'Organization created' })
+    .getByRole('button', { name: 'Enter Workspace' })
+    .click();
+  await expect(page).toHaveURL(new RegExp(`${axisWebUrl.origin}/dashboard$`), { timeout: 30_000 });
+  await expect(page.getByRole('button', { name: 'Account menu' })).toContainText(
+    organizationName,
+  );
+
+  await page.goto(new URL('/service-identities', axisWebUrl).toString());
+  await expect(page.getByRole('heading', { name: 'Service identities', exact: true })).toBeVisible();
+  const serviceIdentityClientId = `reference-e2e-${Date.now()}`;
+  const serviceIdentities = page.getByRole('region', { name: 'Service identities' });
+  await serviceIdentities.getByRole('button', { name: 'Create service identity' }).click();
+  const createIdentityDialog = page.getByRole('dialog', { name: 'Create service identity' });
+  await createIdentityDialog.getByLabel('Client identifier').fill(serviceIdentityClientId);
+  await createIdentityDialog.getByRole('button', { name: 'Create service identity' }).click();
+  await expect(createIdentityDialog.getByText('Service identity created')).toBeVisible();
+  await createIdentityDialog.getByRole('button', { name: 'Cancel' }).click();
+  await serviceIdentities.getByRole('button', { name: serviceIdentityClientId }).click();
+  const identityDialog = page.getByRole('dialog', { name: serviceIdentityClientId });
+  await identityDialog.getByLabel('Public ES256 JWK').fill(servicePublicJwk());
+  await identityDialog.getByRole('button', { name: 'Add public key' }).click();
+  await expect(identityDialog.getByText('Public key added')).toBeVisible();
+  await identityDialog.getByRole('button', { name: 'Revoke key' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this public key?' })
+    .getByRole('button', { name: 'Revoke key' })
+    .click();
+  await expect(identityDialog.getByText('Key revoked')).toBeVisible();
+  await identityDialog.getByRole('button', { name: 'Revoke identity' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this service identity?' })
+    .getByRole('button', { name: 'Revoke identity' })
+    .click();
+  await expect(identityDialog.getByText('Service identity revoked')).toBeVisible();
+
+  await page.goto(new URL('/solutions', axisWebUrl).toString());
+  await expect(page.getByRole('heading', { name: 'Solutions', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Publish package' }).click();
+  const publishDialog = page.getByRole('dialog', { name: 'Publish signed version' });
+  await publishDialog.getByLabel('Signed solution package').setInputFiles(solutionPackage);
+  await publishDialog.getByRole('button', { name: 'Publish package' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Publish this signed package?' })
+    .getByRole('button', { name: 'Publish package' })
+    .click();
+  await expect(publishDialog.getByText('Solution version published')).toBeVisible({
+    timeout: 30_000,
+  });
+  await publishDialog.getByRole('button', { name: 'View release' }).click();
+  const releaseDialog = page.getByRole('dialog', { name: /reference_application 0\.1\.3/ });
+  await releaseDialog.getByRole('button', { name: 'Install version' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Install version' }).click();
+  const installationDialog = page.getByRole('dialog', {
+    name: /Installation · reference_application 0\.1\.3/,
+  });
+  await expect(installationDialog).toBeVisible();
+  await expect(installationDialog.getByText('Succeeded', { exact: true })).toBeVisible({
+    timeout: 60_000,
+  });
+
+  await page.goto(new URL('/product-role-assignments', axisWebUrl).toString());
+  await expect(page.getByRole('heading', { name: 'Product-role assignments' })).toBeVisible();
+  const assignments = page.getByRole('region', { name: 'Current product-role assignments' });
+  await assignments.getByRole('button', { name: 'Assign role' }).click();
+  const assignDialog = page.getByRole('dialog', { name: 'Assign product role' });
+  await assignDialog.getByRole('combobox', { name: 'Active subject' }).click();
+  await page.getByRole('option', { name: /Alex Rivers/ }).click();
+  await assignDialog.getByRole('combobox', { name: 'Installed product role' }).click();
+  await page.getByRole('option', { name: 'Applicant' }).click();
+  await assignDialog.getByRole('button', { name: 'Assign role' }).click();
+  await expect(assignDialog.getByText('Product role assigned')).toBeVisible();
+  await assignDialog.getByRole('button', { name: 'Cancel' }).click();
+
   await page.goto(productUrl.toString());
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible({ timeout: 30_000 });
@@ -146,19 +244,6 @@ test('real user registers, provisions, submits, and signs out through the produc
   await expectNoOAuthArtifacts(page);
   await expectSessionCookie(page, productUrl, '__Host-axis-reference-product-session');
   await expectSessionCookie(page, axisWebUrl, '__Host-axis-session');
-
-  const provisioning = page.getByRole('region', { name: 'Provisioning' });
-  await provisioning.getByRole('button', { name: 'Run preflight' }).click();
-  const firstPlan = provisioning.locator(':scope > ol > li');
-  await expect(firstPlan).toHaveCount(4);
-  for (const entry of await firstPlan.allTextContents()) expect(entry).toMatch(/: create\./);
-  await provisioning.getByRole('button', { name: 'Confirm provisioning' }).click();
-  await expect(provisioning.getByRole('status')).toHaveText(
-    'Provisioning succeeded. Read-back matches this release.',
-  );
-  const reusePlan = provisioning.locator(':scope > ol > li');
-  await expect(reusePlan).toHaveCount(4);
-  for (const entry of await reusePlan.allTextContents()) expect(entry).toMatch(/: reuse\./);
 
   const applications = page.getByRole('region', { name: 'Applications' });
   await applications.getByRole('button', { name: 'Create draft' }).click();
@@ -173,6 +258,20 @@ test('real user registers, provisions, submits, and signs out through the produc
   expect(productApiRequests).not.toHaveLength(0);
   for (const request of productApiRequests) expect(request.authorization).toBeUndefined();
 
+  await page.goto(new URL('/product-role-assignments', axisWebUrl).toString());
+  const currentAssignments = page.getByRole('region', {
+    name: 'Current product-role assignments',
+  });
+  await currentAssignments.getByRole('button', { name: 'Alex Rivers' }).click();
+  const assignmentDialog = page.getByRole('dialog', { name: 'Alex Rivers' });
+  await assignmentDialog.getByRole('button', { name: 'Revoke role' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Revoke this exact product role?' })
+    .getByRole('button', { name: 'Revoke role' })
+    .click();
+  await expect(assignmentDialog.getByText('Product role revoked')).toBeVisible();
+
+  await page.goto(productUrl.toString());
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 30_000 });
   expect(await page.evaluate(async () => (await fetch('/api/users/me')).status)).toBe(401);

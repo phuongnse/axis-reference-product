@@ -17,9 +17,13 @@ Prerequisites are Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, an
 
 Run `npm run local-dev:up`. The product overlay starts Axis and the BFF at `https://localhost:4173`. Use `local-dev:status`, `local-dev:logs`, `local-dev:recreate`, and `local-dev:down` so the deployment overlay and its confidential registration are always preserved.
 
+If the Docker deployment still belongs to this product but Axis's `.local/local-dev-topology.json` marker was lost, or the marker still records exactly this product overlay while its containers have drifted, run `npm run local-dev:recover-topology -- --yes`. This recovery reuses the preserved signing key and exact immutable solution artifact, asks Axis to rebuild and wait for only its API through the product overlay, and lets Axis restore the marker on success. It refuses invalid or different recorded topology and missing release state, and never changes the recorded topology; it does not check OpenAPI compatibility, generate release state, start the product, publish or install a solution, or delete volumes. After recovery, return to the normal product-owned commands above.
+
 ## Verification
 
 Run `npm ci`, `npm run restore`, `npm run audit:dependencies`, `npm run check`, `npm run test:unit`, and `npm run test:e2e`. E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
+
+When this product owns the recorded Axis deployment topology, run Axis browser evidence through the same trusted wrapper with `npm run test:axis-e2e`. Forward an Axis Playwright selection after the runner separator, for example `npm run test:axis-e2e -- -- e2e/app-frame.pw.ts -g "AT-002"`. Intentional snapshot updates must also name the Axis runner's bounded output directory, for example `npm run test:axis-e2e -- --snapshot-output e2e/app-frame.pw.ts-snapshots -- e2e/app-frame.pw.ts --update-snapshots`. The wrapper preserves the product overlay and supplies its release identity without exposing or reconstructing deployment secrets.
 
 Dependency installation is fail-closed: npm install scripts are restricted to exact reviewed package versions, NuGet restores use committed lock files and fail on published vulnerability advisories, and production/E2E container bases are digest-pinned. Renovate is the only automated version proposer; pull-request CI and the daily dependency-security workflow verify the locked graphs. The direct BFF dependencies use their published license expressions: Duende Access Token Management is Apache-2.0; Microsoft Data Protection Redis, StackExchange.Redis, and YARP are MIT.
 

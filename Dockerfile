@@ -3,7 +3,8 @@
 FROM node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS frontend
 RUN npm install --global npm@11.16.0 --ignore-scripts
 WORKDIR /src
-COPY package.json package-lock.json .npmrc openapi-ts.config.ts openapi.json index.html manifest.json tsconfig.json vite.config.ts ./
+COPY package.json package-lock.json .npmrc openapi-ts.config.ts openapi.json index.html tsconfig.json vite.config.ts ./
+COPY solution/ ./solution/
 COPY src/ ./src/
 RUN npm ci && npm run generate:api && npm run build
 
