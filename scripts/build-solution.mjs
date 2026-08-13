@@ -305,6 +305,10 @@ export function verifySolutionEnvelope(existingBytes, publicKey) {
   const payload = JSON.parse(payloadText);
   inspectCanonical(payload, 'solution payload');
   assert(canonicalJson(payload) === payloadText, 'The solution envelope payload is not canonical.');
+  assert(
+    signature.keyid === payload.publisher?.publisherKeyId,
+    'The solution envelope key id does not match the payload publisher key id.',
+  );
 
   const signatureBytes = Buffer.from(signature.sig, 'base64url');
   assert(

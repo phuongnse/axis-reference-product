@@ -332,6 +332,24 @@ test('Axis evidence reuses the verified deployed release without rebuilding it f
   );
   await writeFile(release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, artifactBefore);
 
+  const mismatchedKeyEnvelope = JSON.parse(artifactBefore.toString('utf8'));
+  mismatchedKeyEnvelope.signatures[0].keyid = 'modified-key-id';
+  await writeFile(
+    release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    JSON.stringify(mismatchedKeyEnvelope),
+  );
+  await assert.rejects(
+    () =>
+      prepareLocalDevInvocation('axis-e2e', axisRoot, {
+        currentProductRoot,
+        getuid: () => 1000,
+        outputRoot,
+        additionalArguments: ['--', 'e2e/app-frame.pw.ts'],
+      }),
+    /failed signature or canonical-envelope verification/,
+  );
+  await writeFile(release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, artifactBefore);
+
   const nextOpenApi = '{"openapi":"3.1.1"}\n';
   const nextDigest = createHash('sha256').update(nextOpenApi).digest('hex');
   await writeFile(join(axisRoot, 'openapi.json'), nextOpenApi);
