@@ -27,7 +27,7 @@ test('builds deterministic canonical component and payload bytes with a valid DS
   );
   assert.equal(first.payload.schemaVersion, 1);
   assert.equal(first.payload.solutionKey, 'reference_application');
-  assert.equal(first.payload.solutionVersion, '0.1.2');
+  assert.equal(first.payload.solutionVersion, '0.1.3');
   assert.equal(
     first.payload.axisOpenApiSha256,
     createHash('sha256')
@@ -66,6 +66,16 @@ test('keeps source component documents canonical and reference roles exact', asy
     'Applicant',
     'Caseworker',
   ]);
+  assert.deepEqual(
+    source.policy.grants
+      .filter((grant) => grant.roleKey === 'Administrator')
+      .map((grant) => [grant.actionKey, grant.scope]),
+    [
+      ['business-object.definition.read-published', 'None'],
+      ['business-object.record.list', 'All'],
+      ['business-object.record.read', 'All'],
+    ],
+  );
   assert.deepEqual(
     source.policy.grants
       .filter((grant) => grant.roleKey === 'Applicant')

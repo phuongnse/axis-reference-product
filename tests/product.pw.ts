@@ -201,14 +201,28 @@ test('administrator installs the signed release before the applicant submits thr
 
   await page.goto(new URL('/solutions', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Solutions', exact: true })).toBeVisible();
-  await page.getByLabel('Signed solution package').setInputFiles(solutionPackage);
   await page.getByRole('button', { name: 'Publish package' }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Publish package' }).click();
-  await expect(page.getByText('Solution version published')).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Install version' }).click();
+  const publishDialog = page.getByRole('dialog', { name: 'Publish signed version' });
+  await publishDialog.getByLabel('Signed solution package').setInputFiles(solutionPackage);
+  await publishDialog.getByRole('button', { name: 'Publish package' }).click();
+  await page
+    .getByRole('alertdialog', { name: 'Publish this signed package?' })
+    .getByRole('button', { name: 'Publish package' })
+    .click();
+  await expect(publishDialog.getByText('Solution version published')).toBeVisible({
+    timeout: 30_000,
+  });
+  await publishDialog.getByRole('button', { name: 'View release' }).click();
+  const releaseDialog = page.getByRole('dialog', { name: /reference_application 0\.1\.3/ });
+  await releaseDialog.getByRole('button', { name: 'Install version' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Install version' }).click();
-  await expect(page.getByRole('heading', { name: 'Installation progress' })).toBeVisible();
-  await expect(page.getByText('Succeeded', { exact: true })).toBeVisible({ timeout: 60_000 });
+  const installationDialog = page.getByRole('dialog', {
+    name: /Installation · reference_application 0\.1\.3/,
+  });
+  await expect(installationDialog).toBeVisible();
+  await expect(installationDialog.getByText('Succeeded', { exact: true })).toBeVisible({
+    timeout: 60_000,
+  });
 
   await page.goto(new URL('/product-role-assignments', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Product-role assignments' })).toBeVisible();

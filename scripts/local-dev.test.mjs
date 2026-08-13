@@ -96,8 +96,8 @@ test('creates a separate artifact after the canonical release version is bumped'
   });
   const releasePath = join(currentProductRoot, 'solution', 'release.json');
   const release = JSON.parse(await readFile(releasePath, 'utf8'));
-  release.solutionVersion = '0.1.3';
-  release.provenance.buildId = 'reference-product-0.1.3';
+  release.solutionVersion = '0.1.4';
+  release.provenance.buildId = 'reference-product-0.1.4';
   await writeFile(releasePath, JSON.stringify(release), 'utf8');
   const second = await prepareSolutionRelease({
     outputRoot,
@@ -108,7 +108,7 @@ test('creates a separate artifact after the canonical release version is bumped'
     second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
     first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
   );
-  assert.match(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, /-0\.1\.3\.dsse\.json$/);
+  assert.match(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, /-0\.1\.4\.dsse\.json$/);
   await stat(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
   await stat(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
 });
@@ -250,7 +250,7 @@ test('recorded product topology requires restoring missing release state', async
     /immutable solution artifact is missing.*Restore that exact artifact.*do not.*reset the database/s,
   );
   await assert.rejects(
-    () => stat(join(outputRoot, 'reference_application-0.1.2.dsse.json')),
+    () => stat(join(outputRoot, 'reference_application-0.1.3.dsse.json')),
     { code: 'ENOENT' },
   );
 });
@@ -377,7 +377,7 @@ test('topology recovery fails closed without creating missing release state', as
   );
   assert.deepEqual(await readFile(keyPath), keyBefore);
   await assert.rejects(
-    () => stat(join(outputRoot, 'reference_application-0.1.2.dsse.json')),
+    () => stat(join(outputRoot, 'reference_application-0.1.3.dsse.json')),
     { code: 'ENOENT' },
   );
 });

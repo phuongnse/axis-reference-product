@@ -251,6 +251,10 @@ export type ChangeWorkspaceInvitationRequest = {
     expectedRevision?: number;
 };
 
+export type ChangeWorkspaceProductBuilderRequest = {
+    expectedRevision?: number;
+};
+
 export type CompleteRuleAuthoringRequest = {
     text?: string | null;
     cursor?: number;
@@ -1079,6 +1083,16 @@ export type WorkspaceInvitationPageDto = {
     page?: number;
     pageSize?: number;
     totalCount?: number;
+};
+
+export type WorkspaceProductBuilderDto = {
+    userId?: string;
+    displayName?: string;
+    email?: string;
+    workspaceRole?: string;
+    isProductBuilder?: boolean;
+    membershipRevision?: number;
+    canChange?: boolean;
 };
 
 export type RuleAuthoringProjectionDtoWritable = {
@@ -2196,6 +2210,137 @@ export type RevokeWorkspaceInvitationResponses = {
 
 export type RevokeWorkspaceInvitationResponse = RevokeWorkspaceInvitationResponses[keyof RevokeWorkspaceInvitationResponses];
 
+export type ListWorkspaceProductBuildersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/workspace-product-builders';
+};
+
+export type ListWorkspaceProductBuildersErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type ListWorkspaceProductBuildersError = ListWorkspaceProductBuildersErrors[keyof ListWorkspaceProductBuildersErrors];
+
+export type ListWorkspaceProductBuildersResponses = {
+    /**
+     * OK
+     */
+    200: Array<WorkspaceProductBuilderDto>;
+};
+
+export type ListWorkspaceProductBuildersResponse = ListWorkspaceProductBuildersResponses[keyof ListWorkspaceProductBuildersResponses];
+
+export type GrantWorkspaceProductBuilderData = {
+    body: ChangeWorkspaceProductBuilderRequest;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/workspace-product-builders/{userId}/grant';
+};
+
+export type GrantWorkspaceProductBuilderErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GrantWorkspaceProductBuilderError = GrantWorkspaceProductBuilderErrors[keyof GrantWorkspaceProductBuilderErrors];
+
+export type GrantWorkspaceProductBuilderResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceProductBuilderDto;
+};
+
+export type GrantWorkspaceProductBuilderResponse = GrantWorkspaceProductBuilderResponses[keyof GrantWorkspaceProductBuilderResponses];
+
+export type RevokeWorkspaceProductBuilderData = {
+    body: ChangeWorkspaceProductBuilderRequest;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/workspace-product-builders/{userId}/revoke';
+};
+
+export type RevokeWorkspaceProductBuilderErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Conflict
+     */
+    409: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RevokeWorkspaceProductBuilderError = RevokeWorkspaceProductBuilderErrors[keyof RevokeWorkspaceProductBuilderErrors];
+
+export type RevokeWorkspaceProductBuilderResponses = {
+    /**
+     * OK
+     */
+    200: WorkspaceProductBuilderDto;
+};
+
+export type RevokeWorkspaceProductBuilderResponse = RevokeWorkspaceProductBuilderResponses[keyof RevokeWorkspaceProductBuilderResponses];
+
 export type ListServiceIdentitiesData = {
     body?: never;
     path?: never;
@@ -3046,6 +3191,10 @@ export type ProjectRuleAuthoringErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type ProjectRuleAuthoringError = ProjectRuleAuthoringErrors[keyof ProjectRuleAuthoringErrors];
@@ -3075,6 +3224,10 @@ export type CompleteRuleAuthoringErrors = {
      * Forbidden
      */
     403: ProblemDetails;
+    /**
+     * Service Unavailable
+     */
+    503: ProblemDetails;
 };
 
 export type CompleteRuleAuthoringError = CompleteRuleAuthoringErrors[keyof CompleteRuleAuthoringErrors];
