@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { generateKeyPairSync } from 'node:crypto';
+import { createHash, generateKeyPairSync } from 'node:crypto';
 import { cp, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -252,6 +252,103 @@ test('recorded product topology requires restoring missing release state', async
   await assert.rejects(
     () => stat(join(outputRoot, 'reference_application-0.1.3.dsse.json')),
     { code: 'ENOENT' },
+  );
+});
+
+test('Axis evidence reuses the verified deployed release without rebuilding it from current HEAD', async (t) => {
+  const temporaryRoot = await mkdtemp(
+    join(process.env.TMPDIR ?? '/tmp', 'axis-reference-product-axis-e2e-release-'),
+  );
+  t.after(() => rm(temporaryRoot, { recursive: true, force: true }));
+  const axisRoot = join(temporaryRoot, 'axis');
+  const currentProductRoot = join(temporaryRoot, 'product');
+  const outputRoot = join(temporaryRoot, 'release-output');
+  const overlay = join(currentProductRoot, 'deploy', 'local.compose.yml');
+  await mkdir(join(axisRoot, 'scripts'), { recursive: true });
+  await mkdir(join(axisRoot, 'src', 'Axis.Api'), { recursive: true });
+  await mkdir(join(axisRoot, '.local'), { recursive: true });
+  await mkdir(join(currentProductRoot, 'deploy'), { recursive: true });
+  await writeFile(join(axisRoot, 'scripts', 'axis.py'), '', 'utf8');
+  await writeFile(overlay, 'services: {}\n');
+  const openApi = '{"openapi":"3.1.0"}\n';
+  await writeFile(join(axisRoot, 'openapi.json'), openApi);
+  await writeFile(join(currentProductRoot, 'openapi.json'), openApi);
+  const digest = '7927cf5b451b44fb947646f0e189a8b41ed29b043923cf030c42d00da8a3b072';
+  await writeFile(
+    join(axisRoot, 'src', 'Axis.Api', 'appsettings.json'),
+    JSON.stringify({ Solutions: { AxisOpenApiSha256: digest } }),
+  );
+  await cp(join(process.cwd(), 'solution'), join(currentProductRoot, 'solution'), {
+    recursive: true,
+  });
+
+  const release = await prepareSolutionRelease({
+    outputRoot,
+    productRoot: currentProductRoot,
+    sourceRevision,
+  });
+  const keyBefore = await readFile(join(outputRoot, 'release-key.pem'));
+  const artifactBefore = await readFile(release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
+  await writeFile(
+    join(axisRoot, '.local', 'local-dev-topology.json'),
+    JSON.stringify({ version: 1, composeOverlays: [overlay] }),
+  );
+
+  const invocation = await prepareLocalDevInvocation('axis-e2e', axisRoot, {
+    currentProductRoot,
+    getuid: () => 1000,
+    outputRoot,
+    sourceRevision: '1123456789abcdef0123456789abcdef01234567',
+    additionalArguments: ['--', 'e2e/app-frame.pw.ts', '-g', 'AT-002'],
+  });
+
+  assert.equal(
+    invocation.environment.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+  );
+  assert.deepEqual(await readFile(join(outputRoot, 'release-key.pem')), keyBefore);
+  assert.deepEqual(
+    await readFile(release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE),
+    artifactBefore,
+  );
+
+  const invalidEnvelope = JSON.parse(artifactBefore.toString('utf8'));
+  invalidEnvelope.signatures[0].sig = `${invalidEnvelope.signatures[0].sig.slice(0, -1)}${
+    invalidEnvelope.signatures[0].sig.endsWith('A') ? 'B' : 'A'
+  }`;
+  await writeFile(
+    release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    JSON.stringify(invalidEnvelope),
+  );
+  await assert.rejects(
+    () =>
+      prepareLocalDevInvocation('axis-e2e', axisRoot, {
+        currentProductRoot,
+        getuid: () => 1000,
+        outputRoot,
+        additionalArguments: ['--', 'e2e/app-frame.pw.ts'],
+      }),
+    /failed signature or canonical-envelope verification/,
+  );
+  await writeFile(release.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, artifactBefore);
+
+  const nextOpenApi = '{"openapi":"3.1.1"}\n';
+  const nextDigest = createHash('sha256').update(nextOpenApi).digest('hex');
+  await writeFile(join(axisRoot, 'openapi.json'), nextOpenApi);
+  await writeFile(join(currentProductRoot, 'openapi.json'), nextOpenApi);
+  await writeFile(
+    join(axisRoot, 'src', 'Axis.Api', 'appsettings.json'),
+    JSON.stringify({ Solutions: { AxisOpenApiSha256: nextDigest } }),
+  );
+  await assert.rejects(
+    () =>
+      prepareLocalDevInvocation('axis-e2e', axisRoot, {
+        currentProductRoot,
+        getuid: () => 1000,
+        outputRoot,
+        additionalArguments: ['--', 'e2e/app-frame.pw.ts'],
+      }),
+    /existing immutable solution artifact targets Axis OpenAPI.*recorded deployment requires/s,
   );
 });
 

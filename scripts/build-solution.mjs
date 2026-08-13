@@ -285,22 +285,50 @@ export async function buildSolutionPackage({
   };
 }
 
+export function verifySolutionEnvelope(existingBytes, publicKey) {
+  const existing = JSON.parse(existingBytes.toString('utf8'));
+  exactKeys(existing, ['payloadType', 'payload', 'signatures'], 'solution envelope');
+  assert(existing.payloadType === solutionPayloadType, 'The solution envelope payload type is invalid.');
+  assert(typeof existing.payload === 'string', 'The solution envelope payload is invalid.');
+  assert(existing.signatures.length === 1, 'The solution envelope must contain one signature.');
+  const [signature] = existing.signatures;
+  exactKeys(signature, ['keyid', 'sig'], 'solution envelope signature');
+  assert(typeof signature.keyid === 'string', 'The solution envelope key id is invalid.');
+  assert(typeof signature.sig === 'string', 'The solution envelope signature is invalid.');
+
+  const payloadBytes = Buffer.from(existing.payload, 'base64url');
+  assert(
+    payloadBytes.toString('base64url') === existing.payload,
+    'The solution envelope payload encoding is not canonical.',
+  );
+  const payloadText = payloadBytes.toString('utf8');
+  const payload = JSON.parse(payloadText);
+  inspectCanonical(payload, 'solution payload');
+  assert(canonicalJson(payload) === payloadText, 'The solution envelope payload is not canonical.');
+
+  const signatureBytes = Buffer.from(signature.sig, 'base64url');
+  assert(
+    signatureBytes.toString('base64url') === signature.sig && signatureBytes.length === 64,
+    'The solution envelope signature encoding is invalid.',
+  );
+  assert(
+    verifySignature(
+      'sha256',
+      pae(payloadBytes),
+      { key: publicKey, dsaEncoding: 'ieee-p1363' },
+      signatureBytes,
+    ),
+    'The solution envelope signature is invalid.',
+  );
+  return { envelope: existing, payload, payloadBytes };
+}
+
 export function isReusableSolutionEnvelope(existingBytes, built, publicKey) {
   try {
-    const existing = JSON.parse(existingBytes.toString('utf8'));
-    const signature = existing.signatures?.[0];
+    const verified = verifySolutionEnvelope(existingBytes, publicKey);
     return (
-      existing.payloadType === solutionPayloadType &&
-      existing.payload === built.payloadBytes.toString('base64url') &&
-      existing.signatures?.length === 1 &&
-      signature?.keyid === built.payload.publisher.publisherKeyId &&
-      typeof signature.sig === 'string' &&
-      verifySignature(
-        'sha256',
-        built.paeBytes,
-        { key: publicKey, dsaEncoding: 'ieee-p1363' },
-        Buffer.from(signature.sig, 'base64url'),
-      )
+      verified.envelope.payload === built.payloadBytes.toString('base64url') &&
+      verified.envelope.signatures[0].keyid === built.payload.publisher.publisherKeyId
     );
   } catch {
     return false;

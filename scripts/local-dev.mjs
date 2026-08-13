@@ -11,6 +11,7 @@ import { spawnSync } from 'node:child_process';
 import {
   buildSolutionPackage,
   loadSolutionSource,
+  verifySolutionEnvelope,
   writeImmutableSolutionArtifact,
 } from './build-solution.mjs';
 
@@ -27,7 +28,7 @@ export const localDevCommands = Object.freeze({
   'axis-e2e': ['e2e', '--service', 'e2e'],
   'recover-topology': ['up', '--build', 'api'],
 });
-const releaseCommands = new Set(['up', 'recreate', 'e2e', 'axis-e2e']);
+const releaseCommands = new Set(['up', 'recreate', 'e2e']);
 
 function assertAxisE2eArguments(additionalArguments) {
   if (additionalArguments.length === 0 || additionalArguments[0] === '--') return;
@@ -114,6 +115,7 @@ export async function prepareSolutionRelease({
 }
 
 async function readExistingSolutionReleaseEnvironment({
+  expectedAxisOpenApiSha256,
   outputRoot = resolve(productRoot, '.axis-solution'),
   productRoot: currentProductRoot = productRoot,
 } = {}) {
@@ -136,8 +138,42 @@ async function readExistingSolutionReleaseEnvironment({
     );
   }
   const privateKey = await readFile(keyPath, 'utf8');
+  const publicKey = createPublicKey(privateKey);
+  let verified;
+  try {
+    verified = verifySolutionEnvelope(await readFile(packagePath), publicKey);
+  } catch (error) {
+    throw Error(
+      `The existing immutable solution artifact failed signature or canonical-envelope verification: ${packagePath}.`,
+      { cause: error },
+    );
+  }
+  const { payload } = verified;
+  const identityMatches =
+    payload.schemaVersion === 1 &&
+    payload.solutionKey === release.solutionKey &&
+    payload.solutionVersion === release.solutionVersion &&
+    payload.publisher?.publisherId === release.publisher.publisherId &&
+    payload.publisher?.publisherKeyId === release.publisher.publisherKeyId &&
+    payload.provenance?.buildId === release.provenance.buildId &&
+    payload.provenance?.builtAt === release.provenance.builtAt &&
+    payload.provenance?.sourceUri === release.provenance.sourceUri;
+  if (!identityMatches) {
+    throw Error(
+      `The existing immutable solution artifact does not match the declared release identity: ${packagePath}.`,
+    );
+  }
+  if (
+    expectedAxisOpenApiSha256 &&
+    payload.axisOpenApiSha256 !== expectedAxisOpenApiSha256
+  ) {
+    throw Error(
+      `The existing immutable solution artifact targets Axis OpenAPI ${payload.axisOpenApiSha256 ?? 'without a digest'}, ` +
+        `but the recorded deployment requires ${expectedAxisOpenApiSha256}.`,
+    );
+  }
   return {
-    AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY: createPublicKey(privateKey).export({
+    AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY: publicKey.export({
       type: 'spki',
       format: 'pem',
     }),
@@ -266,8 +302,12 @@ export async function prepareLocalDevInvocation(
     additionalArguments,
   );
   const requiresCurrentRelease = releaseCommands.has(command);
-  if (requiresCurrentRelease) {
-    await assertAxisOpenApiCompatibility(axisRoot, currentProductRoot);
+  const requiresCompatibleRelease = requiresCurrentRelease || command === 'axis-e2e';
+  if (requiresCompatibleRelease) {
+    const axisOpenApiSha256 = await assertAxisOpenApiCompatibility(
+      axisRoot,
+      currentProductRoot,
+    );
     const recordedTopology = await recordedAxisTopology(axisRoot);
     const requestedTopology = [resolve(currentProductRoot, 'deploy', 'local.compose.yml')];
     if (
@@ -282,13 +322,19 @@ export async function prepareLocalDevInvocation(
     }
     Object.assign(
       invocation.environment,
-      await prepareSolutionRelease({
-        allowArtifactCreation: recordedTopology === null,
-        allowKeyGeneration: recordedTopology === null,
-        outputRoot,
-        productRoot: currentProductRoot,
-        sourceRevision,
-      }),
+      requiresCurrentRelease
+        ? await prepareSolutionRelease({
+            allowArtifactCreation: recordedTopology === null,
+            allowKeyGeneration: recordedTopology === null,
+            outputRoot,
+            productRoot: currentProductRoot,
+            sourceRevision,
+          })
+        : await readExistingSolutionReleaseEnvironment({
+            expectedAxisOpenApiSha256: axisOpenApiSha256,
+            outputRoot,
+            productRoot: currentProductRoot,
+          }),
     );
   } else {
     Object.assign(
