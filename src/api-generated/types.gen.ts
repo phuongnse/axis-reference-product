@@ -9,6 +9,8 @@ export type ActivateRuleDefinitionVersionRequest = {
     expectedRevision?: number;
 };
 
+export type ActorKind = 'User' | 'ServiceIdentity' | 'System' | 'Anonymous';
+
 export type AssignProductRoleBody = {
     target?: SubjectReferenceDto;
     policyVersionId?: string;
@@ -79,6 +81,7 @@ export type BusinessObjectDefinitionDetailDto = {
     latestPublishedVersionNumber?: number | null;
     createdAt?: string;
     updatedAt?: string;
+    metadata: ResourceMetadataDto;
     fields?: Array<BusinessObjectFieldDefinitionDto>;
     latestPublishedVersion?: BusinessObjectDefinitionVersionDto;
     actions?: BusinessObjectDefinitionActionsDto;
@@ -92,6 +95,7 @@ export type BusinessObjectDefinitionListItemDto = {
     revision?: number;
     latestPublishedVersionNumber?: number | null;
     updatedAt?: string;
+    metadata: ResourceMetadataDto;
 };
 
 export type BusinessObjectDefinitionListItemDtoPagedResult = {
@@ -100,6 +104,8 @@ export type BusinessObjectDefinitionListItemDtoPagedResult = {
     page: number;
     pageSize: number;
 };
+
+export type BusinessObjectDefinitionSortField = 'Name' | 'Key' | 'Status' | 'Version' | 'Revision' | 'CreatedBy' | 'CreatedAt' | 'ModifiedBy' | 'ModifiedAt';
 
 export type BusinessObjectDefinitionStatus = 'Unpublished' | 'Published';
 
@@ -254,6 +260,8 @@ export type ChangeWorkspaceInvitationRequest = {
 export type ChangeWorkspaceProductBuilderRequest = {
     expectedRevision?: number;
 };
+
+export type CollectionSortDirection = 'Ascending' | 'Descending';
 
 export type CompleteRuleAuthoringRequest = {
     text?: string | null;
@@ -414,15 +422,7 @@ export type ProductRoleAssignmentDto = {
     roleKey?: string;
     isActive?: boolean;
     revision?: number;
-};
-
-export type ProductRoleAssignmentResponse = {
-    workspaceId?: string;
-    subject?: SubjectReferenceDto;
-    policyVersionId?: string;
-    roleKey?: string;
-    isActive?: boolean;
-    revision?: number;
+    metadata: ResourceMetadataDto;
 };
 
 export type ProductRoleManagementResponse = {
@@ -474,6 +474,20 @@ export type RegisterUserRequest = {
 
 export type ResendVerificationRequest = {
     email?: string;
+};
+
+export type ResourceActorDto = {
+    kind: ActorKind;
+    subjectId?: string | null;
+    displayName: string;
+};
+
+export type ResourceMetadataDto = {
+    revision?: number | null;
+    createdBy: ResourceActorDto;
+    createdAt: string;
+    modifiedBy: ResourceActorDto;
+    modifiedAt: string;
 };
 
 export type RevisionRequest = {
@@ -600,12 +614,15 @@ export type RuleDefinitionDetailDto = {
     output?: RuleOutputContractDto;
     condition?: RuleConditionNodeDto;
     versions?: Array<RuleDefinitionVersionDto>;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
     archivedAt?: string | null;
+    metadata: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
+
+export type RuleDefinitionSortField = 'Name' | 'Origin' | 'Status' | 'ActiveVersion' | 'LatestVersion' | 'Revision' | 'CreatedBy' | 'CreatedAt' | 'ModifiedBy' | 'ModifiedAt';
 
 export type RuleDefinitionSummaryDto = {
     definitionKey?: string;
@@ -619,7 +636,8 @@ export type RuleDefinitionSummaryDto = {
     activeVersion?: number | null;
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
-    updatedAt?: string | null;
+    updatedAt?: string;
+    metadata: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
@@ -836,6 +854,20 @@ export type RuleReferenceDocumentationDto = {
     };
 };
 
+export type RuleResourceActorDto = {
+    kind: string;
+    subjectId?: string | null;
+    displayName: string;
+};
+
+export type RuleResourceMetadataDto = {
+    revision?: number | null;
+    createdBy: RuleResourceActorDto;
+    createdAt: string;
+    modifiedBy: RuleResourceActorDto;
+    modifiedAt: string;
+};
+
 export type RuleRevisionRequest = {
     expectedRevision?: number;
 };
@@ -907,6 +939,7 @@ export type ServiceIdentityDto = {
     workspaceGrantStatus?: string;
     revision?: number;
     keys?: Array<ServiceIdentityKeyDto>;
+    metadata: ResourceMetadataDto;
     subject?: SubjectReferenceDto;
 };
 
@@ -973,6 +1006,8 @@ export type SolutionInstallationStatusDto = {
     complianceStatus?: SolutionComplianceStatus;
     components?: Array<SolutionComponentStatusDto>;
     updatedAt?: string;
+    revision?: number;
+    metadata: SolutionResourceMetadataDto;
 };
 
 export type SolutionOperationStatus = 'Pending' | 'Running' | 'Failed' | 'Blocked' | 'Succeeded';
@@ -988,6 +1023,20 @@ export type SolutionOperationStatusDto = {
 };
 
 export type SolutionProvisioningStatus = 'Installing' | 'Installed' | 'Failed';
+
+export type SolutionResourceActorDto = {
+    kind: string;
+    subjectId?: string | null;
+    displayName: string;
+};
+
+export type SolutionResourceMetadataDto = {
+    revision?: number | null;
+    createdBy: SolutionResourceActorDto;
+    createdAt: string;
+    modifiedBy: SolutionResourceActorDto;
+    modifiedAt: string;
+};
 
 export type SolutionStepStatus = 'Pending' | 'Applying' | 'Confirmed' | 'Failed';
 
@@ -1008,6 +1057,7 @@ export type SolutionVersionSummaryDto = {
     sourceUri?: string;
     publishedAt?: string;
     components?: Array<SolutionComponentPlanDto>;
+    metadata: SolutionResourceMetadataDto;
 };
 
 export type SubjectKind = 'Human' | 'Service';
@@ -1076,6 +1126,7 @@ export type WorkspaceInvitationLifecycleDto = {
     createdAt?: string;
     expiresAt?: string;
     revision?: number;
+    metadata: ResourceMetadataDto;
 };
 
 export type WorkspaceInvitationPageDto = {
@@ -1085,6 +1136,8 @@ export type WorkspaceInvitationPageDto = {
     totalCount?: number;
 };
 
+export type WorkspaceInvitationSortField = 'Email' | 'Status' | 'Role' | 'Created' | 'Expires' | 'Delivery' | 'Revision' | 'CreatedBy' | 'ModifiedBy' | 'ModifiedAt';
+
 export type WorkspaceProductBuilderDto = {
     userId?: string;
     displayName?: string;
@@ -1093,6 +1146,7 @@ export type WorkspaceProductBuilderDto = {
     isProductBuilder?: boolean;
     membershipRevision?: number;
     canChange?: boolean;
+    metadata: ResourceMetadataDto;
 };
 
 export type RuleAuthoringProjectionDtoWritable = {
@@ -1170,7 +1224,7 @@ export type AssignProductRoleResponses = {
     /**
      * OK
      */
-    200: ProductRoleAssignmentResponse;
+    200: ProductRoleAssignmentDto;
 };
 
 export type AssignProductRoleResponse = AssignProductRoleResponses[keyof AssignProductRoleResponses];
@@ -1214,7 +1268,7 @@ export type RevokeProductRoleResponses = {
     /**
      * OK
      */
-    200: ProductRoleAssignmentResponse;
+    200: ProductRoleAssignmentDto;
 };
 
 export type RevokeProductRoleResponse = RevokeProductRoleResponses[keyof RevokeProductRoleResponses];
@@ -1495,6 +1549,8 @@ export type ListBusinessObjectDefinitionsData = {
         pageSize?: number;
         query?: string;
         language?: string;
+        sortBy?: BusinessObjectDefinitionSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/business-object-definitions';
 };
@@ -2045,6 +2101,8 @@ export type ListWorkspaceInvitationsData = {
     query: {
         page: number;
         pageSize: number;
+        sortBy?: WorkspaceInvitationSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/workspace-invitations';
 };
@@ -2595,6 +2653,8 @@ export type ListRuleDefinitionsData = {
         status?: RuleLifecycleStatus;
         query?: string;
         language?: string;
+        sortBy?: RuleDefinitionSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/rules';
 };

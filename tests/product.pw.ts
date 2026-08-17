@@ -1,4 +1,5 @@
 import { generateKeyPairSync } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
 
 function requiredUrl(name: string): URL {
@@ -16,6 +17,21 @@ const axisWebUrl = requiredUrl('E2E_AXIS_WEB_URL');
 const maildevUrl = requiredUrl('E2E_MAILDEV_URL');
 const solutionPackage = process.env.E2E_SOLUTION_PACKAGE;
 if (!solutionPackage) throw Error('E2E_SOLUTION_PACKAGE is required for signed release acceptance.');
+
+function readSolutionReleaseName(path: string): string {
+  const envelope = JSON.parse(readFileSync(path, 'utf8')) as { payload?: string };
+  if (!envelope.payload) throw Error('E2E_SOLUTION_PACKAGE does not contain a signed payload.');
+  const payload = JSON.parse(Buffer.from(envelope.payload, 'base64url').toString('utf8')) as {
+    solutionKey?: string;
+    solutionVersion?: string;
+  };
+  if (!payload.solutionKey || !payload.solutionVersion) {
+    throw Error('E2E_SOLUTION_PACKAGE does not contain a solution identity.');
+  }
+  return `${payload.solutionKey} ${payload.solutionVersion}`;
+}
+
+const solutionReleaseName = readSolutionReleaseName(solutionPackage);
 const password = 'maple river sunrise';
 const oauthArtifact = /(?:access_token|refresh_token|id_token|authorization_code)/i;
 
@@ -123,22 +139,8 @@ async function expectNoOAuthArtifacts(page: Page): Promise<void> {
   expect(JSON.stringify(artifacts)).not.toMatch(oauthArtifact);
 }
 
-test('administrator installs the signed release before the applicant submits through the product BFF', async ({
-  page,
-}) => {
+async function createWorkspaceAdministrator(page: Page): Promise<string> {
   const email = uniqueEmail();
-  const productApiRequests: Array<{ url: string; authorization?: string }> = [];
-  page.on('request', (request) => {
-    const url = new URL(request.url());
-    if (url.origin === productUrl.origin && url.pathname.startsWith('/api/')) {
-      productApiRequests.push({ url: request.url(), authorization: request.headers().authorization });
-    }
-  });
-
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Reference applications' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
-
   await page.goto(new URL('/register', axisWebUrl).toString());
   await page.getByLabel('Full name').fill('Alex Rivers');
   await page.getByLabel('Email address').fill(email);
@@ -171,6 +173,11 @@ test('administrator installs the signed release before the applicant submits thr
     organizationName,
   );
 
+  return email;
+}
+
+test('administrator revokes a service identity and its public key', async ({ page }) => {
+  await createWorkspaceAdministrator(page);
   await page.goto(new URL('/service-identities', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Service identities', exact: true })).toBeVisible();
   const serviceIdentityClientId = `reference-e2e-${Date.now()}`;
@@ -198,6 +205,24 @@ test('administrator installs the signed release before the applicant submits thr
     .getByRole('button', { name: 'Revoke identity' })
     .click();
   await expect(identityDialog.getByText('Service identity revoked')).toBeVisible();
+});
+
+test('administrator installs the signed release before the applicant submits through the product BFF', async ({
+  page,
+}) => {
+  const productApiRequests: Array<{ url: string; authorization?: string }> = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.origin === productUrl.origin && url.pathname.startsWith('/api/')) {
+      productApiRequests.push({ url: request.url(), authorization: request.headers().authorization });
+    }
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Reference applications' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+
+  const email = await createWorkspaceAdministrator(page);
 
   await page.goto(new URL('/solutions', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Solutions', exact: true })).toBeVisible();
@@ -213,11 +238,11 @@ test('administrator installs the signed release before the applicant submits thr
     timeout: 30_000,
   });
   await publishDialog.getByRole('button', { name: 'View release' }).click();
-  const releaseDialog = page.getByRole('dialog', { name: /reference_application 0\.1\.3/ });
+  const releaseDialog = page.getByRole('dialog', { name: solutionReleaseName });
   await releaseDialog.getByRole('button', { name: 'Install version' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Install version' }).click();
   const installationDialog = page.getByRole('dialog', {
-    name: /Installation · reference_application 0\.1\.3/,
+    name: `Installation · ${solutionReleaseName}`,
   });
   await expect(installationDialog).toBeVisible();
   await expect(installationDialog.getByText('Succeeded', { exact: true })).toBeVisible({

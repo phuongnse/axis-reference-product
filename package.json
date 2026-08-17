@@ -27,6 +27,7 @@
     "local-dev:status": "node scripts/local-dev.mjs status",
     "local-dev:logs": "node scripts/local-dev.mjs logs",
     "local-dev:recreate": "node scripts/local-dev.mjs recreate",
+    "local-dev:reset-all": "node scripts/local-dev.mjs reset-all",
     "local-dev:recover-topology": "node scripts/local-dev.mjs recover-topology"
   },
   "dependencies": {

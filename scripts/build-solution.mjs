@@ -190,6 +190,18 @@ export async function loadSolutionSource({ productRoot = defaultProductRoot } = 
   return source;
 }
 
+export function developmentSolutionVersion(stableVersion, sourceRevision) {
+  assert(
+    solutionVersionPattern.test(stableVersion ?? ''),
+    'A stable major.minor.patch base version is required for a development snapshot.',
+  );
+  assert(
+    revisionPattern.test(sourceRevision ?? ''),
+    'A lower-case 40 or 64 hex source revision is required for a development snapshot.',
+  );
+  return `${stableVersion}-dev.g${sourceRevision.slice(0, 12)}`;
+}
+
 function sha256(bytes) {
   const value = createHash('sha256').update(bytes).digest('hex');
   assert(sha256Pattern.test(value), 'SHA-256 output was not canonical.');
@@ -218,6 +230,7 @@ function signingKey(value) {
 }
 
 export async function buildSolutionPackage({
+  development = false,
   privateKey,
   sourceRevision,
   productRoot = defaultProductRoot,
@@ -246,10 +259,13 @@ export async function buildSolutionPackage({
   );
 
   const { release } = source;
+  const solutionVersion = development
+    ? developmentSolutionVersion(release.solutionVersion, sourceRevision)
+    : release.solutionVersion;
   const payload = {
     schemaVersion: 1,
     solutionKey: release.solutionKey,
-    solutionVersion: release.solutionVersion,
+    solutionVersion,
     axisOpenApiSha256: sha256(openApiBytes),
     publisher: {
       publisherId: release.publisher.publisherId,
@@ -257,7 +273,9 @@ export async function buildSolutionPackage({
     },
     provenance: {
       sourceRevision,
-      buildId: release.provenance.buildId,
+      buildId: development
+        ? `reference-product-${solutionVersion}`
+        : release.provenance.buildId,
       builtAt: release.provenance.builtAt,
       sourceUri: release.provenance.sourceUri,
     },
@@ -347,7 +365,7 @@ export async function writeImmutableSolutionArtifact(outputPath, built, publicKe
   if (isReusableSolutionEnvelope(await readFile(outputPath), built, publicKey)) return;
   throw Error(
     `Refusing to replace immutable solution artifact ${outputPath}. ` +
-      'Bump solution/release.json solutionVersion before building changed payload bytes. ' +
+      'A stable release requires a new intentional solutionVersion; a development snapshot requires a new committed source revision. ' +
       'If the signing key or artifact changed unexpectedly, restore the original release files; a version bump or database reset cannot repair publisher-key identity.',
   );
 }

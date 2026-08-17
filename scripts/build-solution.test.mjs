@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import {
   buildSolutionPackage,
   canonicalJson,
+  developmentSolutionVersion,
   loadSolutionSource,
   solutionPayloadType,
 } from './build-solution.mjs';
@@ -17,6 +18,7 @@ const productRoot = fileURLToPath(new URL('..', import.meta.url));
 
 test('builds deterministic canonical component and payload bytes with a valid DSSE signature', async () => {
   const { privateKey, publicKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const { release } = await loadSolutionSource();
   const first = await buildSolutionPackage({ privateKey, sourceRevision });
   const second = await buildSolutionPackage({ privateKey, sourceRevision });
 
@@ -26,8 +28,8 @@ test('builds deterministic canonical component and payload bytes with a valid DS
     second.components.map((component) => component.contentBytes),
   );
   assert.equal(first.payload.schemaVersion, 1);
-  assert.equal(first.payload.solutionKey, 'reference_application');
-  assert.equal(first.payload.solutionVersion, '0.1.3');
+  assert.equal(first.payload.solutionKey, release.solutionKey);
+  assert.equal(first.payload.solutionVersion, release.solutionVersion);
   assert.equal(
     first.payload.axisOpenApiSha256,
     createHash('sha256')
@@ -57,6 +59,26 @@ test('builds deterministic canonical component and payload bytes with a valid DS
     ),
     true,
   );
+});
+
+test('derives an immutable SemVer prerelease snapshot from the stable base and source commit', async () => {
+  const { privateKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const { release } = await loadSolutionSource();
+  const built = await buildSolutionPackage({
+    development: true,
+    privateKey,
+    sourceRevision,
+  });
+
+  assert.equal(
+    built.payload.solutionVersion,
+    developmentSolutionVersion(release.solutionVersion, sourceRevision),
+  );
+  assert.equal(
+    built.payload.provenance.buildId,
+    `reference-product-${built.payload.solutionVersion}`,
+  );
+  assert.equal(release.solutionVersion, '0.1.0');
 });
 
 test('keeps source component documents canonical and reference roles exact', async () => {
@@ -150,7 +172,7 @@ test('requires the release build identity to match its canonical solution versio
 
   const releasePath = join(temporaryRoot, 'solution', 'release.json');
   const release = JSON.parse(await readFile(releasePath, 'utf8'));
-  release.provenance.buildId = 'reference-product-0.1.0';
+  release.provenance.buildId = 'reference-product-9.9.9';
   await writeFile(releasePath, canonicalJson(release), 'utf8');
   await assert.rejects(
     () => loadSolutionSource({ productRoot: temporaryRoot }),

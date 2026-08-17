@@ -15,13 +15,19 @@ The BFF owns:
 
 Prerequisites are Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and the Axis checkout. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
 
-Run `npm run local-dev:up`. The product overlay starts Axis and the BFF at `https://localhost:4173`. Use `local-dev:status`, `local-dev:logs`, `local-dev:recreate`, and `local-dev:down` so the deployment overlay and its confidential registration are always preserved.
+`solution/release.json` is the single stable release authority. Keep its version unchanged during development and update its version and provenance only at an intentional stable publication boundary. `npm run build:solution` builds that stable immutable identity and refuses changed payload bytes under a version that already exists.
+
+Run `npm run local-dev:up`. The product overlay starts Axis and the BFF at `https://localhost:4173`. `local-dev:up`, `local-dev:recreate`, and `test:e2e` derive an immutable SemVer prerelease snapshot from the stable base and the exact committed source revision, record that active snapshot locally, and never edit `solution/release.json` or delete data. Commit changed OpenAPI or solution-package inputs before preparing a new snapshot. Use `local-dev:status`, `local-dev:logs`, `local-dev:recreate`, and `local-dev:down` so the deployment overlay and its confidential registration are always preserved.
+
+Use `npm run local-dev:reset-all -- --yes` only for an explicitly approved disposable-data clean cutover. It keeps the existing publisher signing identity, destroys the product-owned local volumes, and recreates the recorded topology from the committed development snapshot. The removed local data is not recoverable; version changes and normal development never select this path implicitly.
 
 If the Docker deployment still belongs to this product but Axis's `.local/local-dev-topology.json` marker was lost, or the marker still records exactly this product overlay while its containers have drifted, run `npm run local-dev:recover-topology -- --yes`. This recovery reuses the preserved signing key and exact immutable solution artifact, asks Axis to rebuild and wait for only its API through the product overlay, and lets Axis restore the marker on success. It refuses invalid or different recorded topology and missing release state, and never changes the recorded topology; it does not check OpenAPI compatibility, generate release state, start the product, publish or install a solution, or delete volumes. After recovery, return to the normal product-owned commands above.
 
 ## Verification
 
 Run `npm ci`, `npm run restore`, `npm run audit:dependencies`, `npm run check`, `npm run test:unit`, and `npm run test:e2e`. E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
+
+Routine local proof scopes product E2E after the runner separator, for example `npm run test:e2e -- -- -g "installs the signed release"`. Run the complete browser suite only when the diff invalidates both independent journeys or at the owning CI boundary.
 
 When this product owns the recorded Axis deployment topology, run Axis browser evidence through the same trusted wrapper with `npm run test:axis-e2e`. Forward an Axis Playwright selection after the runner separator, for example `npm run test:axis-e2e -- -- e2e/app-frame.pw.ts -g "AT-002"`. Intentional snapshot updates must also name the Axis runner's bounded output directory, for example `npm run test:axis-e2e -- --snapshot-output e2e/app-frame.pw.ts-snapshots -- e2e/app-frame.pw.ts --update-snapshots`. The wrapper preserves the product overlay and supplies its release identity without exposing or reconstructing deployment secrets.
 
