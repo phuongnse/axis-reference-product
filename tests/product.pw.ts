@@ -125,23 +125,8 @@ async function expectNoOAuthArtifacts(page: Page): Promise<void> {
   expect(JSON.stringify(artifacts)).not.toMatch(oauthArtifact);
 }
 
-test('administrator installs the signed release before the applicant submits through the product BFF', async ({
-  page,
-}) => {
-  test.setTimeout(180_000);
+async function createWorkspaceAdministrator(page: Page): Promise<string> {
   const email = uniqueEmail();
-  const productApiRequests: Array<{ url: string; authorization?: string }> = [];
-  page.on('request', (request) => {
-    const url = new URL(request.url());
-    if (url.origin === productUrl.origin && url.pathname.startsWith('/api/')) {
-      productApiRequests.push({ url: request.url(), authorization: request.headers().authorization });
-    }
-  });
-
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Reference applications' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
-
   await page.goto(new URL('/register', axisWebUrl).toString());
   await page.getByLabel('Full name').fill('Alex Rivers');
   await page.getByLabel('Email address').fill(email);
@@ -174,6 +159,11 @@ test('administrator installs the signed release before the applicant submits thr
     organizationName,
   );
 
+  return email;
+}
+
+test('administrator revokes a service identity and its public key', async ({ page }) => {
+  await createWorkspaceAdministrator(page);
   await page.goto(new URL('/service-identities', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Service identities', exact: true })).toBeVisible();
   const serviceIdentityClientId = `reference-e2e-${Date.now()}`;
@@ -201,6 +191,24 @@ test('administrator installs the signed release before the applicant submits thr
     .getByRole('button', { name: 'Revoke identity' })
     .click();
   await expect(identityDialog.getByText('Service identity revoked')).toBeVisible();
+});
+
+test('administrator installs the signed release before the applicant submits through the product BFF', async ({
+  page,
+}) => {
+  const productApiRequests: Array<{ url: string; authorization?: string }> = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.origin === productUrl.origin && url.pathname.startsWith('/api/')) {
+      productApiRequests.push({ url: request.url(), authorization: request.headers().authorization });
+    }
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Reference applications' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+
+  const email = await createWorkspaceAdministrator(page);
 
   await page.goto(new URL('/solutions', axisWebUrl).toString());
   await expect(page.getByRole('heading', { name: 'Solutions', exact: true })).toBeVisible();

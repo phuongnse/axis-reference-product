@@ -81,7 +81,7 @@ export type BusinessObjectDefinitionDetailDto = {
     latestPublishedVersionNumber?: number | null;
     createdAt?: string;
     updatedAt?: string;
-    metadata?: ResourceMetadataDto;
+    metadata: ResourceMetadataDto;
     fields?: Array<BusinessObjectFieldDefinitionDto>;
     latestPublishedVersion?: BusinessObjectDefinitionVersionDto;
     actions?: BusinessObjectDefinitionActionsDto;
@@ -95,7 +95,7 @@ export type BusinessObjectDefinitionListItemDto = {
     revision?: number;
     latestPublishedVersionNumber?: number | null;
     updatedAt?: string;
-    metadata?: ResourceMetadataDto;
+    metadata: ResourceMetadataDto;
 };
 
 export type BusinessObjectDefinitionListItemDtoPagedResult = {
@@ -422,16 +422,7 @@ export type ProductRoleAssignmentDto = {
     roleKey?: string;
     isActive?: boolean;
     revision?: number;
-    metadata?: ResourceMetadataDto;
-};
-
-export type ProductRoleAssignmentResponse = {
-    workspaceId?: string;
-    subject?: SubjectReferenceDto;
-    policyVersionId?: string;
-    roleKey?: string;
-    isActive?: boolean;
-    revision?: number;
+    metadata: ResourceMetadataDto;
 };
 
 export type ProductRoleManagementResponse = {
@@ -493,10 +484,10 @@ export type ResourceActorDto = {
 
 export type ResourceMetadataDto = {
     revision?: number | null;
-    createdBy?: ResourceActorDto;
-    createdAt?: string | null;
-    modifiedBy?: ResourceActorDto;
-    modifiedAt?: string | null;
+    createdBy: ResourceActorDto;
+    createdAt: string;
+    modifiedBy: ResourceActorDto;
+    modifiedAt: string;
 };
 
 export type RevisionRequest = {
@@ -623,10 +614,10 @@ export type RuleDefinitionDetailDto = {
     output?: RuleOutputContractDto;
     condition?: RuleConditionNodeDto;
     versions?: Array<RuleDefinitionVersionDto>;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
     archivedAt?: string | null;
-    metadata?: RuleResourceMetadataDto;
+    metadata: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
@@ -645,8 +636,8 @@ export type RuleDefinitionSummaryDto = {
     activeVersion?: number | null;
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
-    updatedAt?: string | null;
-    metadata?: RuleResourceMetadataDto;
+    updatedAt?: string;
+    metadata: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
@@ -864,17 +855,17 @@ export type RuleReferenceDocumentationDto = {
 };
 
 export type RuleResourceActorDto = {
-    kind?: string;
+    kind: string;
     subjectId?: string | null;
-    displayName?: string;
+    displayName: string;
 };
 
 export type RuleResourceMetadataDto = {
     revision?: number | null;
-    createdBy?: RuleResourceActorDto;
-    createdAt?: string | null;
-    modifiedBy?: RuleResourceActorDto;
-    modifiedAt?: string | null;
+    createdBy: RuleResourceActorDto;
+    createdAt: string;
+    modifiedBy: RuleResourceActorDto;
+    modifiedAt: string;
 };
 
 export type RuleRevisionRequest = {
@@ -948,7 +939,7 @@ export type ServiceIdentityDto = {
     workspaceGrantStatus?: string;
     revision?: number;
     keys?: Array<ServiceIdentityKeyDto>;
-    metadata?: ResourceMetadataDto;
+    metadata: ResourceMetadataDto;
     subject?: SubjectReferenceDto;
 };
 
@@ -1016,7 +1007,7 @@ export type SolutionInstallationStatusDto = {
     components?: Array<SolutionComponentStatusDto>;
     updatedAt?: string;
     revision?: number;
-    metadata?: SolutionResourceMetadataDto;
+    metadata: SolutionResourceMetadataDto;
 };
 
 export type SolutionOperationStatus = 'Pending' | 'Running' | 'Failed' | 'Blocked' | 'Succeeded';
@@ -1034,17 +1025,17 @@ export type SolutionOperationStatusDto = {
 export type SolutionProvisioningStatus = 'Installing' | 'Installed' | 'Failed';
 
 export type SolutionResourceActorDto = {
-    kind?: string;
+    kind: string;
     subjectId?: string | null;
-    displayName?: string;
+    displayName: string;
 };
 
 export type SolutionResourceMetadataDto = {
     revision?: number | null;
-    createdBy?: SolutionResourceActorDto;
-    createdAt?: string | null;
-    modifiedBy?: SolutionResourceActorDto;
-    modifiedAt?: string | null;
+    createdBy: SolutionResourceActorDto;
+    createdAt: string;
+    modifiedBy: SolutionResourceActorDto;
+    modifiedAt: string;
 };
 
 export type SolutionStepStatus = 'Pending' | 'Applying' | 'Confirmed' | 'Failed';
@@ -1066,7 +1057,7 @@ export type SolutionVersionSummaryDto = {
     sourceUri?: string;
     publishedAt?: string;
     components?: Array<SolutionComponentPlanDto>;
-    metadata?: SolutionResourceMetadataDto;
+    metadata: SolutionResourceMetadataDto;
 };
 
 export type SubjectKind = 'Human' | 'Service';
@@ -1135,7 +1126,7 @@ export type WorkspaceInvitationLifecycleDto = {
     createdAt?: string;
     expiresAt?: string;
     revision?: number;
-    metadata?: ResourceMetadataDto;
+    metadata: ResourceMetadataDto;
 };
 
 export type WorkspaceInvitationPageDto = {
@@ -1155,7 +1146,7 @@ export type WorkspaceProductBuilderDto = {
     isProductBuilder?: boolean;
     membershipRevision?: number;
     canChange?: boolean;
-    metadata?: ResourceMetadataDto;
+    metadata: ResourceMetadataDto;
 };
 
 export type RuleAuthoringProjectionDtoWritable = {
@@ -1233,7 +1224,7 @@ export type AssignProductRoleResponses = {
     /**
      * OK
      */
-    200: ProductRoleAssignmentResponse;
+    200: ProductRoleAssignmentDto;
 };
 
 export type AssignProductRoleResponse = AssignProductRoleResponses[keyof AssignProductRoleResponses];
@@ -1277,7 +1268,7 @@ export type RevokeProductRoleResponses = {
     /**
      * OK
      */
-    200: ProductRoleAssignmentResponse;
+    200: ProductRoleAssignmentDto;
 };
 
 export type RevokeProductRoleResponse = RevokeProductRoleResponses[keyof RevokeProductRoleResponses];

@@ -6,6 +6,8 @@ if (!baseURL) throw Error('E2E_BASE_URL is required; run npm run test:e2e.');
 export default defineConfig({
   testDir: './tests',
   testMatch: '**/*.pw.ts',
+  // Real-service acceptance owns one bounded suite budget; tests must not override it locally.
+  timeout: 45_000,
   outputDir: process.env.E2E_OUTPUT_DIR ?? './test-results',
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,

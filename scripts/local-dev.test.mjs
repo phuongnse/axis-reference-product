@@ -96,8 +96,10 @@ test('creates a separate artifact after the canonical release version is bumped'
   });
   const releasePath = join(currentProductRoot, 'solution', 'release.json');
   const release = JSON.parse(await readFile(releasePath, 'utf8'));
-  release.solutionVersion = '0.1.7';
-  release.provenance.buildId = 'reference-product-0.1.7';
+  const [major, minor, patch] = release.solutionVersion.split('.').map(Number);
+  const nextVersion = `${major}.${minor}.${patch + 1}`;
+  release.solutionVersion = nextVersion;
+  release.provenance.buildId = `reference-product-${nextVersion}`;
   await writeFile(releasePath, JSON.stringify(release), 'utf8');
   const second = await prepareSolutionRelease({
     outputRoot,
@@ -108,7 +110,9 @@ test('creates a separate artifact after the canonical release version is bumped'
     second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
     first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
   );
-  assert.match(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, /-0\.1\.7\.dsse\.json$/);
+  assert.ok(
+    second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE.endsWith(`-${nextVersion}.dsse.json`),
+  );
   await stat(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
   await stat(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
 });

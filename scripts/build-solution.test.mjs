@@ -17,6 +17,7 @@ const productRoot = fileURLToPath(new URL('..', import.meta.url));
 
 test('builds deterministic canonical component and payload bytes with a valid DSSE signature', async () => {
   const { privateKey, publicKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const { release } = await loadSolutionSource();
   const first = await buildSolutionPackage({ privateKey, sourceRevision });
   const second = await buildSolutionPackage({ privateKey, sourceRevision });
 
@@ -26,8 +27,8 @@ test('builds deterministic canonical component and payload bytes with a valid DS
     second.components.map((component) => component.contentBytes),
   );
   assert.equal(first.payload.schemaVersion, 1);
-  assert.equal(first.payload.solutionKey, 'reference_application');
-  assert.equal(first.payload.solutionVersion, '0.1.6');
+  assert.equal(first.payload.solutionKey, release.solutionKey);
+  assert.equal(first.payload.solutionVersion, release.solutionVersion);
   assert.equal(
     first.payload.axisOpenApiSha256,
     createHash('sha256')

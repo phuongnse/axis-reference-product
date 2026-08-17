@@ -84,7 +84,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductRoleAssignmentResponse"
+                  "$ref": "#/components/schemas/ProductRoleAssignmentDto"
                 }
               }
             }
@@ -180,7 +180,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductRoleAssignmentResponse"
+                  "$ref": "#/components/schemas/ProductRoleAssignmentDto"
                 }
               }
             }
@@ -5729,6 +5729,9 @@
         "additionalProperties": false
       },
       "BusinessObjectDefinitionDetailDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5784,6 +5787,9 @@
         "additionalProperties": false
       },
       "BusinessObjectDefinitionListItemDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6830,6 +6836,9 @@
         "additionalProperties": { }
       },
       "ProductRoleAssignmentDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "workspaceId": {
@@ -6855,33 +6864,6 @@
           },
           "metadata": {
             "$ref": "#/components/schemas/ResourceMetadataDto"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ProductRoleAssignmentResponse": {
-        "type": "object",
-        "properties": {
-          "workspaceId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subject": {
-            "$ref": "#/components/schemas/SubjectReferenceDto"
-          },
-          "policyVersionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "roleKey": {
-            "type": "string"
-          },
-          "isActive": {
-            "type": "boolean"
-          },
-          "revision": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -7060,6 +7042,12 @@
         "additionalProperties": false
       },
       "ResourceMetadataDto": {
+        "required": [
+          "createdAt",
+          "createdBy",
+          "modifiedAt",
+          "modifiedBy"
+        ],
         "type": "object",
         "properties": {
           "revision": {
@@ -7072,16 +7060,14 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "modifiedBy": {
             "$ref": "#/components/schemas/ResourceActorDto"
           },
           "modifiedAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -7400,6 +7386,9 @@
         "additionalProperties": false
       },
       "RuleDefinitionDetailDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "definitionKey": {
@@ -7456,13 +7445,11 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "archivedAt": {
             "type": "string",
@@ -7497,6 +7484,9 @@
         "type": "string"
       },
       "RuleDefinitionSummaryDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "definitionKey": {
@@ -7544,8 +7534,7 @@
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "metadata": {
             "$ref": "#/components/schemas/RuleResourceMetadataDto"
@@ -8259,9 +8248,14 @@
         "additionalProperties": false
       },
       "RuleResourceActorDto": {
+        "required": [
+          "displayName",
+          "kind"
+        ],
         "type": "object",
         "properties": {
           "kind": {
+            "minLength": 1,
             "type": "string"
           },
           "subjectId": {
@@ -8270,12 +8264,19 @@
             "nullable": true
           },
           "displayName": {
+            "minLength": 1,
             "type": "string"
           }
         },
         "additionalProperties": false
       },
       "RuleResourceMetadataDto": {
+        "required": [
+          "createdAt",
+          "createdBy",
+          "modifiedAt",
+          "modifiedBy"
+        ],
         "type": "object",
         "properties": {
           "revision": {
@@ -8288,16 +8289,14 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "modifiedBy": {
             "$ref": "#/components/schemas/RuleResourceActorDto"
           },
           "modifiedAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -8498,6 +8497,9 @@
         "additionalProperties": false
       },
       "ServiceIdentityDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8672,6 +8674,9 @@
         "additionalProperties": false
       },
       "SolutionInstallationStatusDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8774,9 +8779,14 @@
         "type": "string"
       },
       "SolutionResourceActorDto": {
+        "required": [
+          "displayName",
+          "kind"
+        ],
         "type": "object",
         "properties": {
           "kind": {
+            "minLength": 1,
             "type": "string"
           },
           "subjectId": {
@@ -8785,12 +8795,19 @@
             "nullable": true
           },
           "displayName": {
+            "minLength": 1,
             "type": "string"
           }
         },
         "additionalProperties": false
       },
       "SolutionResourceMetadataDto": {
+        "required": [
+          "createdAt",
+          "createdBy",
+          "modifiedAt",
+          "modifiedBy"
+        ],
         "type": "object",
         "properties": {
           "revision": {
@@ -8803,16 +8820,14 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "modifiedBy": {
             "$ref": "#/components/schemas/SolutionResourceActorDto"
           },
           "modifiedAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -8835,6 +8850,9 @@
         "type": "string"
       },
       "SolutionVersionSummaryDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -9048,6 +9066,9 @@
         "additionalProperties": false
       },
       "WorkspaceInvitationLifecycleDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "invitationId": {
@@ -9125,6 +9146,9 @@
         "type": "string"
       },
       "WorkspaceProductBuilderDto": {
+        "required": [
+          "metadata"
+        ],
         "type": "object",
         "properties": {
           "userId": {
