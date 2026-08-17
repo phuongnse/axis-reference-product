@@ -24,11 +24,12 @@ export const localDevCommands = Object.freeze({
   status: ['status'],
   logs: ['logs', 'reference-product'],
   recreate: ['recreate', 'api', 'reference-product'],
+  'reset-all': ['reset-all', '--yes'],
   e2e: ['e2e', '--build-service', 'reference-product', '--service', 'reference-product-e2e'],
   'axis-e2e': ['e2e', '--service', 'e2e'],
   'recover-topology': ['up', '--build', 'api'],
 });
-const releaseCommands = new Set(['up', 'recreate', 'e2e']);
+const releaseCommands = new Set(['up', 'recreate', 'reset-all', 'e2e']);
 
 function assertAxisE2eArguments(additionalArguments) {
   if (additionalArguments.length === 0 || additionalArguments[0] === '--') return;
@@ -288,11 +289,15 @@ export async function prepareLocalDevInvocation(
     getuid = process.getuid,
     outputRoot = resolve(currentProductRoot, '.axis-solution'),
     sourceRevision,
+    confirmation,
     additionalArguments = [],
   } = {},
 ) {
   if (command === 'recover-topology') {
     throw Error('Use the confirmed topology-recovery preparation path.');
+  }
+  if (command === 'reset-all' && confirmation !== '--yes') {
+    throw Error('reset-all requires the exact confirmation argument --yes.');
   }
   const invocation = buildAxisInvocation(
     command,
@@ -324,7 +329,7 @@ export async function prepareLocalDevInvocation(
       invocation.environment,
       requiresCurrentRelease
         ? await prepareSolutionRelease({
-            allowArtifactCreation: recordedTopology === null,
+            allowArtifactCreation: recordedTopology === null || command === 'reset-all',
             allowKeyGeneration: recordedTopology === null,
             outputRoot,
             productRoot: currentProductRoot,
@@ -410,10 +415,18 @@ async function main() {
     throw Error('Topology recovery requires the exact confirmation argument --yes.');
   }
   if (
+    command === 'reset-all' &&
+    (process.argv.length !== 4 || process.argv[3] !== '--yes')
+  ) {
+    throw Error('reset-all requires the exact confirmation argument --yes.');
+  }
+  if (
     !command ||
     (command === 'recover-topology'
       ? process.argv.length !== 4
-      : command !== 'axis-e2e' && process.argv.length !== 3)
+      : command === 'reset-all'
+        ? process.argv.length !== 4
+        : command !== 'axis-e2e' && process.argv.length !== 3)
   ) {
     throw Error(`Usage: node scripts/local-dev.mjs <${Object.keys(localDevCommands).join('|')}>`);
   }
@@ -427,6 +440,7 @@ async function main() {
       ? await prepareTopologyRecoveryInvocation(axisRoot, { confirmation: process.argv[3] })
       : await prepareLocalDevInvocation(command, axisRoot, {
           sourceRevision: releaseCommands.has(command) ? sourceRevision() : undefined,
+          confirmation: command === 'reset-all' ? process.argv[3] : undefined,
           additionalArguments,
         });
   const result = spawnSync(invocation.executable, invocation.arguments, {

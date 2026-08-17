@@ -13,6 +13,10 @@ import {
 } from './local-dev.mjs';
 
 const sourceRevision = '0123456789abcdef0123456789abcdef01234567';
+const canonicalRelease = JSON.parse(
+  await readFile(join(process.cwd(), 'solution', 'release.json'), 'utf8'),
+);
+const canonicalArtifactName = `${canonicalRelease.solutionKey}-${canonicalRelease.solutionVersion}.dsse.json`;
 
 test('prepares one ignored signed release and reuses its private key', async (t) => {
   const outputRoot = await mkdtemp(
@@ -254,9 +258,39 @@ test('recorded product topology requires restoring missing release state', async
     /immutable solution artifact is missing.*Restore that exact artifact.*do not.*reset the database/s,
   );
   await assert.rejects(
-    () => stat(join(outputRoot, 'reference_application-0.1.6.dsse.json')),
+    () => stat(join(outputRoot, canonicalArtifactName)),
     { code: 'ENOENT' },
   );
+
+  await assert.rejects(
+    () =>
+      prepareLocalDevInvocation('reset-all', axisRoot, {
+        currentProductRoot,
+        getuid: () => 1000,
+        outputRoot,
+        sourceRevision,
+      }),
+    /reset-all requires the exact confirmation argument --yes/,
+  );
+  const keyBefore = await readFile(join(outputRoot, 'release-key.pem'));
+  const reset = await prepareLocalDevInvocation('reset-all', axisRoot, {
+    currentProductRoot,
+    getuid: () => 1000,
+    outputRoot,
+    sourceRevision,
+    confirmation: '--yes',
+  });
+
+  assert.deepEqual(reset.arguments, [
+    join(axisRoot, 'scripts', 'axis.py'),
+    'local-dev',
+    '--compose-overlay',
+    overlay,
+    'reset-all',
+    '--yes',
+  ]);
+  await stat(join(outputRoot, canonicalArtifactName));
+  assert.deepEqual(await readFile(join(outputRoot, 'release-key.pem')), keyBefore);
 });
 
 test('Axis evidence reuses the verified deployed release without rebuilding it from current HEAD', async (t) => {
@@ -496,7 +530,7 @@ test('topology recovery fails closed without creating missing release state', as
   );
   assert.deepEqual(await readFile(keyPath), keyBefore);
   await assert.rejects(
-    () => stat(join(outputRoot, 'reference_application-0.1.6.dsse.json')),
+    () => stat(join(outputRoot, canonicalArtifactName)),
     { code: 'ENOENT' },
   );
 });
