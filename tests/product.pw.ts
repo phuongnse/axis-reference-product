@@ -1,6 +1,6 @@
 import { generateKeyPairSync } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-import releaseSource from '../solution/release.json' with { type: 'json' };
 
 function requiredUrl(name: string): URL {
   const value = process.env[name];
@@ -17,7 +17,21 @@ const axisWebUrl = requiredUrl('E2E_AXIS_WEB_URL');
 const maildevUrl = requiredUrl('E2E_MAILDEV_URL');
 const solutionPackage = process.env.E2E_SOLUTION_PACKAGE;
 if (!solutionPackage) throw Error('E2E_SOLUTION_PACKAGE is required for signed release acceptance.');
-const solutionReleaseName = `${releaseSource.solutionKey} ${releaseSource.solutionVersion}`;
+
+function readSolutionReleaseName(path: string): string {
+  const envelope = JSON.parse(readFileSync(path, 'utf8')) as { payload?: string };
+  if (!envelope.payload) throw Error('E2E_SOLUTION_PACKAGE does not contain a signed payload.');
+  const payload = JSON.parse(Buffer.from(envelope.payload, 'base64url').toString('utf8')) as {
+    solutionKey?: string;
+    solutionVersion?: string;
+  };
+  if (!payload.solutionKey || !payload.solutionVersion) {
+    throw Error('E2E_SOLUTION_PACKAGE does not contain a solution identity.');
+  }
+  return `${payload.solutionKey} ${payload.solutionVersion}`;
+}
+
+const solutionReleaseName = readSolutionReleaseName(solutionPackage);
 const password = 'maple river sunrise';
 const oauthArtifact = /(?:access_token|refresh_token|id_token|authorization_code)/i;
 

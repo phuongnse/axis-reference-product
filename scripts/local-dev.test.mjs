@@ -10,13 +10,40 @@ import {
   prepareSolutionRelease,
   prepareTopologyRecoveryInvocation,
   resolveReferenceProductUid,
+  resolveSourceRevision,
 } from './local-dev.mjs';
+import { developmentSolutionVersion } from './build-solution.mjs';
 
 const sourceRevision = '0123456789abcdef0123456789abcdef01234567';
 const canonicalRelease = JSON.parse(
   await readFile(join(process.cwd(), 'solution', 'release.json'), 'utf8'),
 );
 const canonicalArtifactName = `${canonicalRelease.solutionKey}-${canonicalRelease.solutionVersion}.dsse.json`;
+
+test('requires every solution package input to belong to the resolved commit', () => {
+  const calls = [];
+  const spawn = (command, arguments_) => {
+    calls.push([command, ...arguments_]);
+    return calls.length === 1
+      ? { status: 0, stdout: `${sourceRevision}\n` }
+      : { status: 0, stdout: '?? solution/untracked.json\n' };
+  };
+
+  assert.throws(
+    () => resolveSourceRevision({ currentProductRoot: '/product', spawn }),
+    /Commit the solution package inputs/,
+  );
+  assert.deepEqual(calls[1], [
+    'git',
+    'status',
+    '--porcelain=v1',
+    '--untracked-files=all',
+    '--',
+    'openapi.json',
+    'solution',
+    'scripts/build-solution.mjs',
+  ]);
+});
 
 test('prepares one ignored signed release and reuses its private key', async (t) => {
   const outputRoot = await mkdtemp(
@@ -44,6 +71,46 @@ test('prepares one ignored signed release and reuses its private key', async (t)
   assert.equal((await stat(join(outputRoot, 'release-key.pem'))).mode & 0o777, 0o600);
 });
 
+test('derives separate immutable development snapshots without changing the stable release', async (t) => {
+  const outputRoot = await mkdtemp(
+    join(process.env.TMPDIR ?? '/tmp', 'axis-reference-product-development-'),
+  );
+  t.after(() => rm(outputRoot, { recursive: true, force: true }));
+  const nextRevision = '1123456789abcdef0123456789abcdef01234567';
+
+  const first = await prepareSolutionRelease({
+    development: true,
+    outputRoot,
+    sourceRevision,
+  });
+  const second = await prepareSolutionRelease({
+    development: true,
+    outputRoot,
+    sourceRevision: nextRevision,
+  });
+
+  assert.notEqual(
+    first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+  );
+  await stat(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
+  await stat(second.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE);
+  const state = JSON.parse(await readFile(join(outputRoot, 'local-development.json'), 'utf8'));
+  assert.deepEqual(state, {
+    schemaVersion: 1,
+    solutionKey: canonicalRelease.solutionKey,
+    solutionVersion: developmentSolutionVersion(
+      canonicalRelease.solutionVersion,
+      nextRevision,
+    ),
+    axisOpenApiSha256: createHash('sha256')
+      .update(await readFile(join(process.cwd(), 'openapi.json')))
+      .digest('hex'),
+    sourceRevision: nextRevision,
+  });
+  assert.equal(canonicalRelease.solutionVersion, '0.1.0');
+});
+
 test('preserves an immutable artifact when payload bytes change at the same version', async (t) => {
   const outputRoot = await mkdtemp(
     join(process.env.TMPDIR ?? '/tmp', 'axis-reference-product-release-'),
@@ -58,7 +125,7 @@ test('preserves an immutable artifact when payload bytes change at the same vers
         outputRoot,
         sourceRevision: '1123456789abcdef0123456789abcdef01234567',
       }),
-    /Refusing to replace immutable solution artifact.*Bump .*solutionVersion/s,
+    /Refusing to replace immutable solution artifact.*stable release requires a new intentional solutionVersion/s,
   );
   assert.deepEqual(
     await readFile(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE),
@@ -150,7 +217,7 @@ test('rejects an Axis/product OpenAPI mismatch before preparing local release st
         outputRoot,
         sourceRevision,
       }),
-    /Reference-product OpenAPI is incompatible.*bump the immutable solution release version/s,
+    /Reference-product OpenAPI is incompatible.*commit the package inputs.*prerelease snapshot/s,
   );
   await assert.rejects(() => stat(outputRoot), { code: 'ENOENT' });
 });
@@ -247,20 +314,25 @@ test('recorded product topology requires restoring missing release state', async
   await cp(join(process.cwd(), 'solution'), join(currentProductRoot, 'solution'), {
     recursive: true,
   });
-  await assert.rejects(
-    () =>
-      prepareLocalDevInvocation('up', axisRoot, {
-        currentProductRoot,
-        getuid: () => 1000,
-        outputRoot,
-        sourceRevision,
-      }),
-    /immutable solution artifact is missing.*Restore that exact artifact.*do not.*reset the database/s,
+  const up = await prepareLocalDevInvocation('up', axisRoot, {
+    currentProductRoot,
+    getuid: () => 1000,
+    outputRoot,
+    sourceRevision,
+  });
+  const developmentVersion = developmentSolutionVersion(
+    canonicalRelease.solutionVersion,
+    sourceRevision,
   );
-  await assert.rejects(
-    () => stat(join(outputRoot, canonicalArtifactName)),
-    { code: 'ENOENT' },
+  const developmentArtifact = join(
+    outputRoot,
+    `${canonicalRelease.solutionKey}-${developmentVersion}.dsse.json`,
   );
+  assert.equal(
+    up.environment.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    developmentArtifact,
+  );
+  await stat(developmentArtifact);
 
   await assert.rejects(
     () =>
@@ -289,7 +361,11 @@ test('recorded product topology requires restoring missing release state', async
     'reset-all',
     '--yes',
   ]);
-  await stat(join(outputRoot, canonicalArtifactName));
+  assert.equal(
+    reset.environment.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE,
+    developmentArtifact,
+  );
+  await stat(developmentArtifact);
   assert.deepEqual(await readFile(join(outputRoot, 'release-key.pem')), keyBefore);
 });
 
@@ -321,6 +397,7 @@ test('Axis evidence reuses the verified deployed release without rebuilding it f
   });
 
   const release = await prepareSolutionRelease({
+    development: true,
     outputRoot,
     productRoot: currentProductRoot,
     sourceRevision,
@@ -428,6 +505,7 @@ test('topology recovery accepts an absent or exactly matching marker', async (t)
     recursive: true,
   });
   const release = await prepareSolutionRelease({
+    development: true,
     outputRoot,
     productRoot: currentProductRoot,
     sourceRevision,
@@ -618,6 +696,19 @@ test('builds only the reference product image before its E2E runner', async (t) 
     'reference-product',
     '--service',
     'reference-product-e2e',
+  ]);
+
+  const focused = buildAxisInvocation(
+    'e2e',
+    axisRoot,
+    productRoot,
+    () => 1000,
+    ['--', '-g', 'installs the signed release'],
+  );
+  assert.deepEqual(focused.arguments.slice(-3), [
+    '--',
+    '-g',
+    'installs the signed release',
   ]);
 });
 

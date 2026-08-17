@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import {
   buildSolutionPackage,
+  developmentSolutionVersion,
   loadSolutionSource,
   verifySolutionEnvelope,
   writeImmutableSolutionArtifact,
@@ -17,6 +18,7 @@ import {
 
 const productRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const localEnvironment = resolve(productRoot, '.env.local');
+const localDevelopmentStateName = 'local-development.json';
 
 export const localDevCommands = Object.freeze({
   up: ['up', '--build'],
@@ -31,9 +33,9 @@ export const localDevCommands = Object.freeze({
 });
 const releaseCommands = new Set(['up', 'recreate', 'reset-all', 'e2e']);
 
-function assertAxisE2eArguments(additionalArguments) {
+function assertE2eArguments(command, additionalArguments) {
   if (additionalArguments.length === 0 || additionalArguments[0] === '--') return;
-  if (
+  if (command === 'axis-e2e' &&
     additionalArguments.length >= 3 &&
     additionalArguments[0] === '--snapshot-output' &&
     additionalArguments[1] &&
@@ -42,7 +44,7 @@ function assertAxisE2eArguments(additionalArguments) {
     return;
   }
   throw Error(
-    'axis-e2e accepts only Playwright arguments after `--`, optionally preceded by one `--snapshot-output <path>`.',
+    `${command} accepts only Playwright arguments after \`--\`${command === 'axis-e2e' ? ', optionally preceded by one `--snapshot-output <path>`' : ''}.`,
   );
 }
 
@@ -60,6 +62,7 @@ export function resolveReferenceProductUid(getuid) {
 export async function prepareSolutionRelease({
   allowArtifactCreation = true,
   allowKeyGeneration = true,
+  development = false,
   outputRoot = resolve(productRoot, '.axis-solution'),
   productRoot: currentProductRoot = productRoot,
   sourceRevision,
@@ -91,6 +94,7 @@ export async function prepareSolutionRelease({
   const privateKey = await readFile(keyPath, 'utf8');
   const publicKey = createPublicKey(privateKey);
   const built = await buildSolutionPackage({
+    development,
     privateKey,
     productRoot: currentProductRoot,
     sourceRevision,
@@ -106,6 +110,19 @@ export async function prepareSolutionRelease({
     );
   }
   await writeImmutableSolutionArtifact(packagePath, built, publicKey);
+  if (development) {
+    await writeFile(
+      join(outputRoot, localDevelopmentStateName),
+      `${JSON.stringify({
+        schemaVersion: 1,
+        solutionKey: built.payload.solutionKey,
+        solutionVersion: built.payload.solutionVersion,
+        axisOpenApiSha256: built.payload.axisOpenApiSha256,
+        sourceRevision: built.payload.provenance.sourceRevision,
+      })}\n`,
+      'utf8',
+    );
+  }
   return {
     AXIS_REFERENCE_PRODUCT_PUBLISHER_PUBLIC_KEY: publicKey.export({
       type: 'spki',
@@ -128,9 +145,43 @@ async function readExistingSolutionReleaseEnvironment({
     );
   }
   const { release } = await loadSolutionSource({ productRoot: currentProductRoot });
+  const statePath = join(outputRoot, localDevelopmentStateName);
+  let developmentState = null;
+  if (existsSync(statePath)) {
+    try {
+      developmentState = JSON.parse(await readFile(statePath, 'utf8'));
+    } catch (error) {
+      throw Error(`The local development solution state is invalid: ${statePath}.`, {
+        cause: error,
+      });
+    }
+    const stateKeys = Object.keys(developmentState ?? {});
+    const expectedKeys = [
+      'schemaVersion',
+      'solutionKey',
+      'solutionVersion',
+      'axisOpenApiSha256',
+      'sourceRevision',
+    ];
+    const sourceRevisionIsValid = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(
+      developmentState?.sourceRevision ?? '',
+    );
+    const stateMatches =
+      JSON.stringify(stateKeys) === JSON.stringify(expectedKeys) &&
+      developmentState.schemaVersion === 1 &&
+      developmentState.solutionKey === release.solutionKey &&
+      sourceRevisionIsValid &&
+      developmentState.solutionVersion ===
+        developmentSolutionVersion(release.solutionVersion, developmentState.sourceRevision) &&
+      /^[0-9a-f]{64}$/.test(developmentState.axisOpenApiSha256);
+    if (!stateMatches) {
+      throw Error(`The local development solution state is invalid: ${statePath}.`);
+    }
+  }
+  const solutionVersion = developmentState?.solutionVersion ?? release.solutionVersion;
   const packagePath = join(
     outputRoot,
-    `${release.solutionKey}-${release.solutionVersion}.dsse.json`,
+    `${release.solutionKey}-${solutionVersion}.dsse.json`,
   );
   if (!existsSync(packagePath)) {
     throw Error(
@@ -153,12 +204,18 @@ async function readExistingSolutionReleaseEnvironment({
   const identityMatches =
     payload.schemaVersion === 1 &&
     payload.solutionKey === release.solutionKey &&
-    payload.solutionVersion === release.solutionVersion &&
+    payload.solutionVersion === solutionVersion &&
     payload.publisher?.publisherId === release.publisher.publisherId &&
     payload.publisher?.publisherKeyId === release.publisher.publisherKeyId &&
-    payload.provenance?.buildId === release.provenance.buildId &&
+    payload.provenance?.buildId ===
+      (developmentState
+        ? `reference-product-${developmentState.solutionVersion}`
+        : release.provenance.buildId) &&
     payload.provenance?.builtAt === release.provenance.builtAt &&
-    payload.provenance?.sourceUri === release.provenance.sourceUri;
+    payload.provenance?.sourceUri === release.provenance.sourceUri &&
+    (!developmentState ||
+      (payload.provenance?.sourceRevision === developmentState.sourceRevision &&
+        payload.axisOpenApiSha256 === developmentState.axisOpenApiSha256));
   if (!identityMatches) {
     throw Error(
       `The existing immutable solution artifact does not match the declared release identity: ${packagePath}.`,
@@ -214,7 +271,7 @@ export async function assertAxisOpenApiCompatibility(
     throw Error(
       `Reference-product OpenAPI is incompatible with the current Axis platform ` +
         `(product ${productDigest}, Axis ${axisDigest}). ` +
-        'Sync openapi.json and generated clients from Axis, then bump the immutable solution release version before starting or testing the product.',
+        'Sync openapi.json and generated clients from Axis, then commit the package inputs so local development can derive a new immutable prerelease snapshot.',
     );
   }
   return axisDigest;
@@ -253,7 +310,9 @@ export function buildAxisInvocation(
   if (!commandArguments) {
     throw Error(`Unsupported local-dev command: ${command}`);
   }
-  if (command === 'axis-e2e') assertAxisE2eArguments(additionalArguments);
+  if (command === 'axis-e2e' || command === 'e2e') {
+    assertE2eArguments(command, additionalArguments);
+  }
   const resolvedAxisRoot = resolve(axisRoot);
   const axisScript = resolve(resolvedAxisRoot, 'scripts', 'axis.py');
   if (!existsSync(axisScript)) {
@@ -329,8 +388,9 @@ export async function prepareLocalDevInvocation(
       invocation.environment,
       requiresCurrentRelease
         ? await prepareSolutionRelease({
-            allowArtifactCreation: recordedTopology === null || command === 'reset-all',
+            allowArtifactCreation: true,
             allowKeyGeneration: recordedTopology === null,
+            development: true,
             outputRoot,
             productRoot: currentProductRoot,
             sourceRevision,
@@ -394,20 +454,45 @@ export async function prepareTopologyRecoveryInvocation(
   return invocation;
 }
 
-function sourceRevision() {
-  const configured = process.env.AXIS_SOLUTION_SOURCE_REVISION;
-  if (configured) return configured;
-  const result = spawnSync('git', ['rev-parse', 'HEAD'], {
-    cwd: productRoot,
+export function resolveSourceRevision({
+  configured = process.env.AXIS_SOLUTION_SOURCE_REVISION,
+  currentProductRoot = productRoot,
+  spawn = spawnSync,
+} = {}) {
+  const result = spawn('git', ['rev-parse', 'HEAD'], {
+    cwd: currentProductRoot,
     encoding: 'utf8',
   });
   if (result.status !== 0) throw Error('Could not resolve the reference-product source revision.');
-  return result.stdout.trim();
+  const head = result.stdout.trim();
+  if (configured && configured !== head) {
+    throw Error('AXIS_SOLUTION_SOURCE_REVISION must match the checked-out reference-product commit.');
+  }
+  const committedInputs = spawn(
+    'git',
+    [
+      'status',
+      '--porcelain=v1',
+      '--untracked-files=all',
+      '--',
+      'openapi.json',
+      'solution',
+      'scripts/build-solution.mjs',
+    ],
+    { cwd: currentProductRoot, encoding: 'utf8' },
+  );
+  if (committedInputs.status !== 0 || committedInputs.stdout.trim() !== '') {
+    throw Error(
+      'Commit the solution package inputs before preparing a local development snapshot.',
+    );
+  }
+  return head;
 }
 
 async function main() {
   const command = process.argv[2];
-  const additionalArguments = command === 'axis-e2e' ? process.argv.slice(3) : [];
+  const acceptsE2eArguments = command === 'axis-e2e' || command === 'e2e';
+  const additionalArguments = acceptsE2eArguments ? process.argv.slice(3) : [];
   if (
     command === 'recover-topology' &&
     (process.argv.length !== 4 || process.argv[3] !== '--yes')
@@ -426,7 +511,7 @@ async function main() {
       ? process.argv.length !== 4
       : command === 'reset-all'
         ? process.argv.length !== 4
-        : command !== 'axis-e2e' && process.argv.length !== 3)
+        : !acceptsE2eArguments && process.argv.length !== 3)
   ) {
     throw Error(`Usage: node scripts/local-dev.mjs <${Object.keys(localDevCommands).join('|')}>`);
   }
@@ -439,7 +524,7 @@ async function main() {
     command === 'recover-topology'
       ? await prepareTopologyRecoveryInvocation(axisRoot, { confirmation: process.argv[3] })
       : await prepareLocalDevInvocation(command, axisRoot, {
-          sourceRevision: releaseCommands.has(command) ? sourceRevision() : undefined,
+          sourceRevision: releaseCommands.has(command) ? resolveSourceRevision() : undefined,
           confirmation: command === 'reset-all' ? process.argv[3] : undefined,
           additionalArguments,
         });
