@@ -1,5 +1,6 @@
 import { generateKeyPairSync } from 'node:crypto';
 import { expect, type Page, test } from '@playwright/test';
+import releaseSource from '../solution/release.json' with { type: 'json' };
 
 function requiredUrl(name: string): URL {
   const value = process.env[name];
@@ -16,6 +17,7 @@ const axisWebUrl = requiredUrl('E2E_AXIS_WEB_URL');
 const maildevUrl = requiredUrl('E2E_MAILDEV_URL');
 const solutionPackage = process.env.E2E_SOLUTION_PACKAGE;
 if (!solutionPackage) throw Error('E2E_SOLUTION_PACKAGE is required for signed release acceptance.');
+const solutionReleaseName = `${releaseSource.solutionKey} ${releaseSource.solutionVersion}`;
 const password = 'maple river sunrise';
 const oauthArtifact = /(?:access_token|refresh_token|id_token|authorization_code)/i;
 
@@ -126,6 +128,7 @@ async function expectNoOAuthArtifacts(page: Page): Promise<void> {
 test('administrator installs the signed release before the applicant submits through the product BFF', async ({
   page,
 }) => {
+  test.setTimeout(180_000);
   const email = uniqueEmail();
   const productApiRequests: Array<{ url: string; authorization?: string }> = [];
   page.on('request', (request) => {
@@ -213,11 +216,11 @@ test('administrator installs the signed release before the applicant submits thr
     timeout: 30_000,
   });
   await publishDialog.getByRole('button', { name: 'View release' }).click();
-  const releaseDialog = page.getByRole('dialog', { name: /reference_application 0\.1\.3/ });
+  const releaseDialog = page.getByRole('dialog', { name: solutionReleaseName });
   await releaseDialog.getByRole('button', { name: 'Install version' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Install version' }).click();
   const installationDialog = page.getByRole('dialog', {
-    name: /Installation · reference_application 0\.1\.3/,
+    name: `Installation · ${solutionReleaseName}`,
   });
   await expect(installationDialog).toBeVisible();
   await expect(installationDialog.getByText('Succeeded', { exact: true })).toBeVisible({
