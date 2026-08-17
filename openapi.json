@@ -5556,7 +5556,8 @@
         "enum": [
           "User",
           "ServiceIdentity",
-          "System"
+          "System",
+          "Anonymous"
         ],
         "type": "string"
       },

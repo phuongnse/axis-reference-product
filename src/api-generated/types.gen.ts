@@ -9,7 +9,7 @@ export type ActivateRuleDefinitionVersionRequest = {
     expectedRevision?: number;
 };
 
-export type ActorKind = 'User' | 'ServiceIdentity' | 'System';
+export type ActorKind = 'User' | 'ServiceIdentity' | 'System' | 'Anonymous';
 
 export type AssignProductRoleBody = {
     target?: SubjectReferenceDto;
