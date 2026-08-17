@@ -5552,6 +5552,14 @@
         },
         "additionalProperties": false
       },
+      "ActorKind": {
+        "enum": [
+          "User",
+          "ServiceIdentity",
+          "System"
+        ],
+        "type": "string"
+      },
       "AssignProductRoleBody": {
         "type": "object",
         "properties": {
@@ -5757,6 +5765,9 @@
             "type": "string",
             "format": "date-time"
           },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
+          },
           "fields": {
             "type": "array",
             "items": {
@@ -5800,6 +5811,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
           }
         },
         "additionalProperties": false
@@ -5840,7 +5854,11 @@
           "Key",
           "Status",
           "Version",
-          "Updated"
+          "Revision",
+          "CreatedBy",
+          "CreatedAt",
+          "ModifiedBy",
+          "ModifiedAt"
         ],
         "type": "string"
       },
@@ -6834,6 +6852,9 @@
           "revision": {
             "type": "integer",
             "format": "int32"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
           }
         },
         "additionalProperties": false
@@ -7012,6 +7033,55 @@
         "properties": {
           "email": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResourceActorDto": {
+        "required": [
+          "displayName",
+          "kind"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ActorKind"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResourceMetadataDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/ResourceActorDto"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/ResourceActorDto"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -7399,6 +7469,9 @@
             "format": "date-time",
             "nullable": true
           },
+          "metadata": {
+            "$ref": "#/components/schemas/RuleResourceMetadataDto"
+          },
           "actions": {
             "$ref": "#/components/schemas/RuleDefinitionActionsDto"
           },
@@ -7412,7 +7485,14 @@
         "enum": [
           "Name",
           "Origin",
-          "Status"
+          "Status",
+          "ActiveVersion",
+          "LatestVersion",
+          "Revision",
+          "CreatedBy",
+          "CreatedAt",
+          "ModifiedBy",
+          "ModifiedAt"
         ],
         "type": "string"
       },
@@ -7466,6 +7546,9 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/RuleResourceMetadataDto"
           },
           "actions": {
             "$ref": "#/components/schemas/RuleDefinitionActionsDto"
@@ -8175,6 +8258,50 @@
         },
         "additionalProperties": false
       },
+      "RuleResourceActorDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleResourceMetadataDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/RuleResourceActorDto"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/RuleResourceActorDto"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RuleRevisionRequest": {
         "type": "object",
         "properties": {
@@ -8400,6 +8527,9 @@
               "$ref": "#/components/schemas/ServiceIdentityKeyDto"
             }
           },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
+          },
           "subject": {
             "$ref": "#/components/schemas/SubjectReferenceDto"
           }
@@ -8579,6 +8709,13 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/SolutionResourceMetadataDto"
           }
         },
         "additionalProperties": false
@@ -8635,6 +8772,50 @@
           "Failed"
         ],
         "type": "string"
+      },
+      "SolutionResourceActorDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SolutionResourceMetadataDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/SolutionResourceActorDto"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/SolutionResourceActorDto"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "SolutionStepStatus": {
         "enum": [
@@ -8704,6 +8885,9 @@
             "items": {
               "$ref": "#/components/schemas/SolutionComponentPlanDto"
             }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/SolutionResourceMetadataDto"
           }
         },
         "additionalProperties": false
@@ -8894,6 +9078,9 @@
           "revision": {
             "type": "integer",
             "format": "int32"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
           }
         },
         "additionalProperties": false
@@ -8929,7 +9116,11 @@
           "Role",
           "Created",
           "Expires",
-          "Delivery"
+          "Delivery",
+          "Revision",
+          "CreatedBy",
+          "ModifiedBy",
+          "ModifiedAt"
         ],
         "type": "string"
       },
@@ -8958,6 +9149,9 @@
           },
           "canChange": {
             "type": "boolean"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ResourceMetadataDto"
           }
         },
         "additionalProperties": false

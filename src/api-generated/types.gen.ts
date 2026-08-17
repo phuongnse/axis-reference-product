@@ -9,6 +9,8 @@ export type ActivateRuleDefinitionVersionRequest = {
     expectedRevision?: number;
 };
 
+export type ActorKind = 'User' | 'ServiceIdentity' | 'System';
+
 export type AssignProductRoleBody = {
     target?: SubjectReferenceDto;
     policyVersionId?: string;
@@ -79,6 +81,7 @@ export type BusinessObjectDefinitionDetailDto = {
     latestPublishedVersionNumber?: number | null;
     createdAt?: string;
     updatedAt?: string;
+    metadata?: ResourceMetadataDto;
     fields?: Array<BusinessObjectFieldDefinitionDto>;
     latestPublishedVersion?: BusinessObjectDefinitionVersionDto;
     actions?: BusinessObjectDefinitionActionsDto;
@@ -92,6 +95,7 @@ export type BusinessObjectDefinitionListItemDto = {
     revision?: number;
     latestPublishedVersionNumber?: number | null;
     updatedAt?: string;
+    metadata?: ResourceMetadataDto;
 };
 
 export type BusinessObjectDefinitionListItemDtoPagedResult = {
@@ -101,7 +105,7 @@ export type BusinessObjectDefinitionListItemDtoPagedResult = {
     pageSize: number;
 };
 
-export type BusinessObjectDefinitionSortField = 'Name' | 'Key' | 'Status' | 'Version' | 'Updated';
+export type BusinessObjectDefinitionSortField = 'Name' | 'Key' | 'Status' | 'Version' | 'Revision' | 'CreatedBy' | 'CreatedAt' | 'ModifiedBy' | 'ModifiedAt';
 
 export type BusinessObjectDefinitionStatus = 'Unpublished' | 'Published';
 
@@ -418,6 +422,7 @@ export type ProductRoleAssignmentDto = {
     roleKey?: string;
     isActive?: boolean;
     revision?: number;
+    metadata?: ResourceMetadataDto;
 };
 
 export type ProductRoleAssignmentResponse = {
@@ -478,6 +483,20 @@ export type RegisterUserRequest = {
 
 export type ResendVerificationRequest = {
     email?: string;
+};
+
+export type ResourceActorDto = {
+    kind: ActorKind;
+    subjectId?: string | null;
+    displayName: string;
+};
+
+export type ResourceMetadataDto = {
+    revision?: number | null;
+    createdBy?: ResourceActorDto;
+    createdAt?: string | null;
+    modifiedBy?: ResourceActorDto;
+    modifiedAt?: string | null;
 };
 
 export type RevisionRequest = {
@@ -607,11 +626,12 @@ export type RuleDefinitionDetailDto = {
     createdAt?: string | null;
     updatedAt?: string | null;
     archivedAt?: string | null;
+    metadata?: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
 
-export type RuleDefinitionSortField = 'Name' | 'Origin' | 'Status';
+export type RuleDefinitionSortField = 'Name' | 'Origin' | 'Status' | 'ActiveVersion' | 'LatestVersion' | 'Revision' | 'CreatedBy' | 'CreatedAt' | 'ModifiedBy' | 'ModifiedAt';
 
 export type RuleDefinitionSummaryDto = {
     definitionKey?: string;
@@ -626,6 +646,7 @@ export type RuleDefinitionSummaryDto = {
     inputs?: Array<RuleInputDefinitionDto>;
     output?: RuleOutputContractDto;
     updatedAt?: string | null;
+    metadata?: RuleResourceMetadataDto;
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
@@ -842,6 +863,20 @@ export type RuleReferenceDocumentationDto = {
     };
 };
 
+export type RuleResourceActorDto = {
+    kind?: string;
+    subjectId?: string | null;
+    displayName?: string;
+};
+
+export type RuleResourceMetadataDto = {
+    revision?: number | null;
+    createdBy?: RuleResourceActorDto;
+    createdAt?: string | null;
+    modifiedBy?: RuleResourceActorDto;
+    modifiedAt?: string | null;
+};
+
 export type RuleRevisionRequest = {
     expectedRevision?: number;
 };
@@ -913,6 +948,7 @@ export type ServiceIdentityDto = {
     workspaceGrantStatus?: string;
     revision?: number;
     keys?: Array<ServiceIdentityKeyDto>;
+    metadata?: ResourceMetadataDto;
     subject?: SubjectReferenceDto;
 };
 
@@ -979,6 +1015,8 @@ export type SolutionInstallationStatusDto = {
     complianceStatus?: SolutionComplianceStatus;
     components?: Array<SolutionComponentStatusDto>;
     updatedAt?: string;
+    revision?: number;
+    metadata?: SolutionResourceMetadataDto;
 };
 
 export type SolutionOperationStatus = 'Pending' | 'Running' | 'Failed' | 'Blocked' | 'Succeeded';
@@ -994,6 +1032,20 @@ export type SolutionOperationStatusDto = {
 };
 
 export type SolutionProvisioningStatus = 'Installing' | 'Installed' | 'Failed';
+
+export type SolutionResourceActorDto = {
+    kind?: string;
+    subjectId?: string | null;
+    displayName?: string;
+};
+
+export type SolutionResourceMetadataDto = {
+    revision?: number | null;
+    createdBy?: SolutionResourceActorDto;
+    createdAt?: string | null;
+    modifiedBy?: SolutionResourceActorDto;
+    modifiedAt?: string | null;
+};
 
 export type SolutionStepStatus = 'Pending' | 'Applying' | 'Confirmed' | 'Failed';
 
@@ -1014,6 +1066,7 @@ export type SolutionVersionSummaryDto = {
     sourceUri?: string;
     publishedAt?: string;
     components?: Array<SolutionComponentPlanDto>;
+    metadata?: SolutionResourceMetadataDto;
 };
 
 export type SubjectKind = 'Human' | 'Service';
@@ -1082,6 +1135,7 @@ export type WorkspaceInvitationLifecycleDto = {
     createdAt?: string;
     expiresAt?: string;
     revision?: number;
+    metadata?: ResourceMetadataDto;
 };
 
 export type WorkspaceInvitationPageDto = {
@@ -1091,7 +1145,7 @@ export type WorkspaceInvitationPageDto = {
     totalCount?: number;
 };
 
-export type WorkspaceInvitationSortField = 'Email' | 'Status' | 'Role' | 'Created' | 'Expires' | 'Delivery';
+export type WorkspaceInvitationSortField = 'Email' | 'Status' | 'Role' | 'Created' | 'Expires' | 'Delivery' | 'Revision' | 'CreatedBy' | 'ModifiedBy' | 'ModifiedAt';
 
 export type WorkspaceProductBuilderDto = {
     userId?: string;
@@ -1101,6 +1155,7 @@ export type WorkspaceProductBuilderDto = {
     isProductBuilder?: boolean;
     membershipRevision?: number;
     canChange?: boolean;
+    metadata?: ResourceMetadataDto;
 };
 
 export type RuleAuthoringProjectionDtoWritable = {
