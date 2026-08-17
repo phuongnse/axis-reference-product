@@ -27,7 +27,7 @@ test('builds deterministic canonical component and payload bytes with a valid DS
   );
   assert.equal(first.payload.schemaVersion, 1);
   assert.equal(first.payload.solutionKey, 'reference_application');
-  assert.equal(first.payload.solutionVersion, '0.1.5');
+  assert.equal(first.payload.solutionVersion, '0.1.6');
   assert.equal(
     first.payload.axisOpenApiSha256,
     createHash('sha256')
