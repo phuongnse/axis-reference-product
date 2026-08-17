@@ -101,6 +101,8 @@ export type BusinessObjectDefinitionListItemDtoPagedResult = {
     pageSize: number;
 };
 
+export type BusinessObjectDefinitionSortField = 'Name' | 'Key' | 'Status' | 'Version' | 'Updated';
+
 export type BusinessObjectDefinitionStatus = 'Unpublished' | 'Published';
 
 export type BusinessObjectDefinitionVersionChoiceFieldConfigurationDto = {
@@ -254,6 +256,8 @@ export type ChangeWorkspaceInvitationRequest = {
 export type ChangeWorkspaceProductBuilderRequest = {
     expectedRevision?: number;
 };
+
+export type CollectionSortDirection = 'Ascending' | 'Descending';
 
 export type CompleteRuleAuthoringRequest = {
     text?: string | null;
@@ -606,6 +610,8 @@ export type RuleDefinitionDetailDto = {
     actions?: RuleDefinitionActionsDto;
     documentation?: RuleReferenceDocumentationDto;
 };
+
+export type RuleDefinitionSortField = 'Name' | 'Origin' | 'Status';
 
 export type RuleDefinitionSummaryDto = {
     definitionKey?: string;
@@ -1085,6 +1091,8 @@ export type WorkspaceInvitationPageDto = {
     totalCount?: number;
 };
 
+export type WorkspaceInvitationSortField = 'Email' | 'Status' | 'Role' | 'Created' | 'Expires' | 'Delivery';
+
 export type WorkspaceProductBuilderDto = {
     userId?: string;
     displayName?: string;
@@ -1495,6 +1503,8 @@ export type ListBusinessObjectDefinitionsData = {
         pageSize?: number;
         query?: string;
         language?: string;
+        sortBy?: BusinessObjectDefinitionSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/business-object-definitions';
 };
@@ -2045,6 +2055,8 @@ export type ListWorkspaceInvitationsData = {
     query: {
         page: number;
         pageSize: number;
+        sortBy?: WorkspaceInvitationSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/workspace-invitations';
 };
@@ -2595,6 +2607,8 @@ export type ListRuleDefinitionsData = {
         status?: RuleLifecycleStatus;
         query?: string;
         language?: string;
+        sortBy?: RuleDefinitionSortField;
+        sortDirection?: CollectionSortDirection;
     };
     url: '/api/rules';
 };

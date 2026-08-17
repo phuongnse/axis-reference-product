@@ -865,6 +865,20 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/BusinessObjectDefinitionSortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CollectionSortDirection"
+            }
           }
         ],
         "responses": {
@@ -2013,6 +2027,20 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/WorkspaceInvitationSortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CollectionSortDirection"
+            }
           }
         ],
         "responses": {
@@ -3101,6 +3129,20 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RuleDefinitionSortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CollectionSortDirection"
             }
           }
         ],
@@ -5792,6 +5834,16 @@
         },
         "additionalProperties": false
       },
+      "BusinessObjectDefinitionSortField": {
+        "enum": [
+          "Name",
+          "Key",
+          "Status",
+          "Version",
+          "Updated"
+        ],
+        "type": "string"
+      },
       "BusinessObjectDefinitionStatus": {
         "enum": [
           "Unpublished",
@@ -6353,6 +6405,13 @@
           }
         },
         "additionalProperties": false
+      },
+      "CollectionSortDirection": {
+        "enum": [
+          "Ascending",
+          "Descending"
+        ],
+        "type": "string"
       },
       "CompleteRuleAuthoringRequest": {
         "type": "object",
@@ -7348,6 +7407,14 @@
           }
         },
         "additionalProperties": false
+      },
+      "RuleDefinitionSortField": {
+        "enum": [
+          "Name",
+          "Origin",
+          "Status"
+        ],
+        "type": "string"
       },
       "RuleDefinitionSummaryDto": {
         "type": "object",
@@ -8854,6 +8921,17 @@
           }
         },
         "additionalProperties": false
+      },
+      "WorkspaceInvitationSortField": {
+        "enum": [
+          "Email",
+          "Status",
+          "Role",
+          "Created",
+          "Expires",
+          "Delivery"
+        ],
+        "type": "string"
       },
       "WorkspaceProductBuilderDto": {
         "type": "object",
