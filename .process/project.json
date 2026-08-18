@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "project": "axis-reference-product",
+  "lifecycle": {
+    "requiredProfiles": [
+      "development",
+      "review"
+    ]
+  },
+  "profiles": {
+    "development": [
+      {
+        "id": "unit",
+        "run": [
+          "npm",
+          "run",
+          "test:unit"
+        ],
+        "timeoutSeconds": 900
+      }
+    ],
+    "review": [
+      {
+        "id": "build-and-test",
+        "run": [
+          "npm",
+          "run",
+          "check"
+        ],
+        "timeoutSeconds": 1800
+      },
+      {
+        "id": "unit",
+        "run": [
+          "npm",
+          "run",
+          "test:unit"
+        ],
+        "timeoutSeconds": 900
+      }
+    ]
+  }
+}
