@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "project": "axis-reference-product",
   "lifecycle": {
     "requiredProfiles": [
@@ -10,34 +10,130 @@
   "profiles": {
     "development": [
       {
-        "id": "unit",
+        "id": "frontend-unit",
         "run": [
-          "npm",
+          "node",
+          "node_modules/vitest/vitest.mjs",
           "run",
-          "test:unit"
+          "--config",
+          "vitest.config.ts"
+        ],
+        "timeoutSeconds": 900
+      },
+      {
+        "id": "script-unit",
+        "run": [
+          "node",
+          "--test",
+          "scripts/architecture.test.mjs",
+          "scripts/build-solution.test.mjs",
+          "scripts/local-dev.test.mjs"
         ],
         "timeoutSeconds": 900
       }
     ],
     "review": [
       {
-        "id": "build-and-test",
+        "id": "generate-api",
         "run": [
-          "npm",
-          "run",
-          "check"
+          "node",
+          "node_modules/@hey-api/openapi-ts/bin/run.js"
         ],
-        "timeoutSeconds": 1800
+        "timeoutSeconds": 300
       },
       {
-        "id": "unit",
+        "id": "typecheck",
         "run": [
-          "npm",
-          "run",
-          "test:unit"
+          "node",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
         ],
         "timeoutSeconds": 900
+      },
+      {
+        "id": "frontend-build",
+        "run": [
+          "node",
+          "node_modules/vite/bin/vite.js",
+          "build"
+        ],
+        "timeoutSeconds": 900
+      },
+      {
+        "id": "dotnet-test",
+        "run": [
+          "dotnet",
+          "test",
+          "server/Axis.ReferenceProduct.Bff.Tests/Axis.ReferenceProduct.Bff.Tests.csproj",
+          "--no-restore",
+          "--disable-build-servers"
+        ],
+        "timeoutSeconds": 1800
       }
     ]
+  },
+  "environment": {
+    "defaultProfile": "development",
+    "foregroundOnly": true,
+    "managedTools": [],
+    "profiles": {
+      "development": [
+        "git-runtime",
+        "node-runtime"
+      ],
+      "review": [
+        "dotnet-sdk",
+        "git-runtime",
+        "node-runtime"
+      ]
+    },
+    "requirements": [
+      {
+        "id": "dotnet-sdk",
+        "description": ".NET SDK 10.0.302 installed by the host or CI toolchain setup",
+        "probe": {
+          "run": [
+            "dotnet",
+            "--version"
+          ],
+          "timeoutSeconds": 15,
+          "readOnly": true,
+          "outputStream": "stdout",
+          "outputRegex": "^10\\.0\\.302$"
+        },
+        "remediation": "Install .NET SDK 10.0.302 from the official Microsoft distribution, then rerun doctor."
+      },
+      {
+        "id": "git-runtime",
+        "description": "Git command-line client required for lifecycle checkpoints and source provenance",
+        "probe": {
+          "run": [
+            "git",
+            "--version"
+          ],
+          "timeoutSeconds": 15,
+          "readOnly": true,
+          "outputStream": "stdout",
+          "outputRegex": "^git version 2\\.[0-9]+\\.[0-9]+"
+        },
+        "remediation": "Install a supported Git 2.x command-line client, then rerun doctor."
+      },
+      {
+        "id": "node-runtime",
+        "description": "Node.js 24.18.0 installed by the host or CI toolchain setup",
+        "probe": {
+          "run": [
+            "node",
+            "--version"
+          ],
+          "timeoutSeconds": 15,
+          "readOnly": true,
+          "outputStream": "stdout",
+          "outputRegex": "^v24\\.18\\.0$"
+        },
+        "remediation": "Install Node.js 24.18.0 from the official Node.js distribution, then rerun doctor."
+      }
+    ],
+    "setupActions": []
   }
 }

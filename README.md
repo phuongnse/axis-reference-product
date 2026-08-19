@@ -13,7 +13,7 @@ The BFF owns:
 
 ## Local development
 
-Prerequisites are Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and the Axis checkout. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
+Prerequisites are Python `3.14`, Git 2.x, Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and an exact Axis checkout used only by the local-development adapter. Production code, verification profiles, build outputs, and release artifacts consume committed public contracts and never import sibling Axis source. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
 
 `solution/release.json` is the single stable release authority. Keep its version unchanged during development and update its version and provenance only at an intentional stable publication boundary. `npm run build:solution` builds that stable immutable identity and refuses changed payload bytes under a version that already exists.
 
@@ -25,7 +25,16 @@ If the Docker deployment still belongs to this product but Axis's `.local/local-
 
 ## Verification
 
-Run `npm ci`, `npm run restore`, `npm run audit:dependencies`, `npm run check`, `npm run test:unit`, and `npm run test:e2e`. E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
+Create an isolated process environment and install the exact public process graph without source checkouts:
+
+```text
+python -m venv .process-venv
+.process-venv/bin/python -m pip install --require-hashes -r requirements/process.txt
+```
+
+On Windows, use `.process-venv\\Scripts\\python.exe` for the second command. Activate the environment with the native command for your shell before invoking `processctl`. Then run `processctl doctor --project-root . --profile development` and `processctl doctor --project-root . --profile review`. Dependency installation remains an explicit repository prerequisite: run `npm ci` and `npm run restore` before the finite profiles.
+
+Use `processctl verify --project-root . --profile development` for the unit proof, then `processctl verify --project-root . --profile review` for the required supplemental generation, type, build, and .NET proof. The required profile pair runs each check once. Both profiles invoke native `node` and `dotnet` executables directly, so the same shell-free contract works on Windows, Linux, and macOS. They never start Docker, watchers, local services, or E2E. Continue to run `npm run audit:dependencies` and `npm run test:e2e` at their owning boundaries; E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
 
 Routine local proof scopes product E2E after the runner separator, for example `npm run test:e2e -- -- -g "installs the signed release"`. Run the complete browser suite only when the diff invalidates both independent journeys or at the owning CI boundary.
 

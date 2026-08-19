@@ -21,8 +21,10 @@ identity, or product behavior.
   refresh tokens, authorization codes, or the confidential client secret.
 - Preserve mandatory PAR, Authorization Code with PKCE, opaque Redis-backed sessions,
   refresh concurrency, antiforgery, and the finite forwarding allowlist.
-- Depend only on committed Axis public contracts. Cross-repository work uses immutable
-  checkpoints or versions, never sibling internal source.
+- Production code and release artifacts depend only on committed Axis public contracts.
+  Cross-repository work uses immutable checkpoints or versions, never sibling internal
+  source. The explicitly documented local-development adapter may invoke an exact Axis
+  checkout through `AXIS_PLATFORM_ROOT`; that checkout is not a build or release input.
 - Keep solution release identity immutable. Version changes are intentional publication
   decisions; development snapshots and destructive data reset are separate actions.
 - Never run reset-all, replace signing identity, change credentials, or mutate persisted
