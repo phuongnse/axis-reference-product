@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "process": {
-    "version": "0.1.1",
-    "digest": "sha256:8f4fbc6647dda79eb071079dbe0632ff2c3c8e24c2e0d137b6b27c17920ddad7"
+    "version": "0.1.0",
+    "digest": "sha256:4a4f3899993e316a5c6f5ad348b1ff1bf5ee5bde3021fd4a13308d7e7c2c06cd"
   },
   "skills": [
     "assess-design",
@@ -11,11 +11,14 @@
     "change-api",
     "cross-repo-change",
     "define-change-contract",
+    "design-module",
     "evolve-process",
     "finish-change",
     "govern-ui",
     "implement-change",
+    "implement-module",
     "implement-use-case",
+    "integrate-mcp",
     "maintain-docs",
     "plan-change",
     "publish-change",

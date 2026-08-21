@@ -15,6 +15,12 @@ The BFF owns:
 
 Prerequisites are Python `3.14`, Git 2.x, Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and an exact Axis checkout used only by the local-development adapter. Production code, verification profiles, build outputs, and release artifacts consume committed public contracts and never import sibling Axis source. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
 
+The repository also consumes the public engineering-process package in an isolated
+Python 3.14 environment. Create and activate `.process-venv`, install
+`requirements/process.txt` with `python -m pip install --require-hashes`, and run
+`processctl doctor --project-root .`. `requirements/process.in` owns the direct public
+pin; `requirements/process.txt` is the generated complete hash graph.
+
 `solution/release.json` is the single stable release authority. Keep its version unchanged during development and update its version and provenance only at an intentional stable publication boundary. `npm run build:solution` builds that stable immutable identity and refuses changed payload bytes under a version that already exists.
 
 Run `npm run local-dev:up`. The product overlay starts Axis and the BFF at `https://localhost:4173`. `local-dev:up`, `local-dev:recreate`, and `test:e2e` derive an immutable SemVer prerelease snapshot from the stable base and the exact committed source revision, record that active snapshot locally, and never edit `solution/release.json` or delete data. Commit changed OpenAPI or solution-package inputs before preparing a new snapshot. Use `local-dev:status`, `local-dev:logs`, `local-dev:recreate`, and `local-dev:down` so the deployment overlay and its confidential registration are always preserved.
@@ -41,5 +47,16 @@ Routine local proof scopes product E2E after the runner separator, for example `
 When this product owns the recorded Axis deployment topology, run Axis browser evidence through the same trusted wrapper with `npm run test:axis-e2e`. Forward an Axis Playwright selection after the runner separator, for example `npm run test:axis-e2e -- -- e2e/app-frame.pw.ts -g "AT-002"`. Intentional snapshot updates must also name the Axis runner's bounded output directory, for example `npm run test:axis-e2e -- --snapshot-output e2e/app-frame.pw.ts-snapshots -- e2e/app-frame.pw.ts --update-snapshots`. The wrapper preserves the product overlay and supplies its release identity without exposing or reconstructing deployment secrets.
 
 Dependency installation is fail-closed: npm install scripts are restricted to exact reviewed package versions, NuGet restores use committed lock files and fail on published vulnerability advisories, and production/E2E container bases are digest-pinned. Renovate is the only automated version proposer; pull-request CI and the daily dependency-security workflow verify the locked graphs. The direct BFF dependencies use their published license expressions: Duende Access Token Management is Apache-2.0; Microsoft Data Protection Redis, StackExchange.Redis, and YARP are MIT.
+
+For engineering-process updates, Renovate uses pip-compile and the exact host-allowlisted
+command `python .process/adopt-process.py --project-root . --requirements-lock
+requirements/process.txt`. Before opening its draft, that runner installs the target
+public package and materializes the direct pin, compiled lock, process lock, managed
+skills and templates, and any repository-owned target-version migration. CI runs the
+target package's `processctl adoption check`. Renovate polling—not the publisher—creates
+or updates the PR and never auto-merges it. After CI and independent review, merging
+that complete PR applies the process; no post-merge command or synchronization is
+allowed. If the Renovate host has not allowlisted the literal command, the partial
+update must fail rather than advance only the package pin.
 
 When an approved .NET package change intentionally updates the restore graph, run `npm run sync:dotnet-lock` and commit the resulting `packages.lock.json` files with the manifest change. Ordinary restore and CI use locked mode and never rewrite that graph.
