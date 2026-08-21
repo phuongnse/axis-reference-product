@@ -1,0 +1,23 @@
+# Keep text byte-stable across Windows, macOS, and Linux checkouts.
+* text=auto eol=lf
+
+# Binary assets must never be normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tgz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.nupkg binary
+*.snk binary

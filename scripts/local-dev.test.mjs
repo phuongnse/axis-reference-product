@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash, generateKeyPairSync } from 'node:crypto';
 import { cp, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import {
@@ -13,6 +14,8 @@ import {
   resolveSourceRevision,
 } from './local-dev.mjs';
 import { developmentSolutionVersion } from './build-solution.mjs';
+
+process.env.TMPDIR ??= tmpdir();
 
 const sourceRevision = '0123456789abcdef0123456789abcdef01234567';
 const canonicalRelease = JSON.parse(

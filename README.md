@@ -13,7 +13,13 @@ The BFF owns:
 
 ## Local development
 
-Prerequisites are Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and the Axis checkout. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
+Prerequisites are Python `3.14`, Git 2.x, Node `24.18.0`, npm `11.16.0`, .NET SDK `10.0.302`, Docker, and an exact Axis checkout used only by the local-development adapter. Production code, verification profiles, build outputs, and release artifacts consume committed public contracts and never import sibling Axis source. Copy `.env.example` to the ignored `.env.local`, set `AXIS_PLATFORM_ROOT`, and replace the example client secret with at least 32 cryptographically random characters. The same secret is injected into the Axis client catalog and the product BFF; it is never committed.
+
+The repository also consumes the public engineering-process package in an isolated
+Python 3.14 environment. Create and activate `.process-venv`, install
+`requirements/process.txt` with `python -m pip install --require-hashes`, and run
+`processctl doctor --project-root .`. `requirements/process.in` owns the direct public
+pin; `requirements/process.txt` is the generated complete hash graph.
 
 `solution/release.json` is the single stable release authority. Keep its version unchanged during development and update its version and provenance only at an intentional stable publication boundary. `npm run build:solution` builds that stable immutable identity and refuses changed payload bytes under a version that already exists.
 
@@ -25,12 +31,32 @@ If the Docker deployment still belongs to this product but Axis's `.local/local-
 
 ## Verification
 
-Run `npm ci`, `npm run restore`, `npm run audit:dependencies`, `npm run check`, `npm run test:unit`, and `npm run test:e2e`. E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
+Create an isolated process environment and install the exact public process graph without source checkouts:
+
+```text
+python -m venv .process-venv
+.process-venv/bin/python -m pip install --require-hashes -r requirements/process.txt
+```
+
+On Windows, use `.process-venv\\Scripts\\python.exe` for the second command. Activate the environment with the native command for your shell before invoking `processctl`. Then run `processctl doctor --project-root . --profile development` and `processctl doctor --project-root . --profile review`. Dependency installation remains an explicit repository prerequisite: run `npm ci` and `npm run restore` before the finite profiles.
+
+Use `processctl verify --project-root . --profile development` for the unit proof, then `processctl verify --project-root . --profile review` for the required supplemental generation, type, build, and .NET proof. The required profile pair runs each check once. Both profiles invoke native `node` and `dotnet` executables directly, so the same shell-free contract works on Windows, Linux, and macOS. They never start Docker, watchers, local services, or E2E. Continue to run `npm run audit:dependencies` and `npm run test:e2e` at their owning boundaries; E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
 
 Routine local proof scopes product E2E after the runner separator, for example `npm run test:e2e -- -- -g "installs the signed release"`. Run the complete browser suite only when the diff invalidates both independent journeys or at the owning CI boundary.
 
 When this product owns the recorded Axis deployment topology, run Axis browser evidence through the same trusted wrapper with `npm run test:axis-e2e`. Forward an Axis Playwright selection after the runner separator, for example `npm run test:axis-e2e -- -- e2e/app-frame.pw.ts -g "AT-002"`. Intentional snapshot updates must also name the Axis runner's bounded output directory, for example `npm run test:axis-e2e -- --snapshot-output e2e/app-frame.pw.ts-snapshots -- e2e/app-frame.pw.ts --update-snapshots`. The wrapper preserves the product overlay and supplies its release identity without exposing or reconstructing deployment secrets.
 
 Dependency installation is fail-closed: npm install scripts are restricted to exact reviewed package versions, NuGet restores use committed lock files and fail on published vulnerability advisories, and production/E2E container bases are digest-pinned. Renovate is the only automated version proposer; pull-request CI and the daily dependency-security workflow verify the locked graphs. The direct BFF dependencies use their published license expressions: Duende Access Token Management is Apache-2.0; Microsoft Data Protection Redis, StackExchange.Redis, and YARP are MIT.
+
+For engineering-process updates, Renovate uses pip-compile and the exact host-allowlisted
+command `python .process/adopt-process.py --project-root . --requirements-lock
+requirements/process.txt`. Before opening its draft, that runner installs the target
+public package and materializes the direct pin, compiled lock, process lock, managed
+skills and templates, and any repository-owned target-version migration. CI runs the
+target package's `processctl adoption check`. Renovate polling—not the publisher—creates
+or updates the PR and never auto-merges it. After CI and independent review, merging
+that complete PR applies the process; no post-merge command or synchronization is
+allowed. If the Renovate host has not allowlisted the literal command, the partial
+update must fail rather than advance only the package pin.
 
 When an approved .NET package change intentionally updates the restore graph, run `npm run sync:dotnet-lock` and commit the resulting `packages.lock.json` files with the manifest change. Ordinary restore and CI use locked mode and never rewrite that graph.
