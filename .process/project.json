@@ -99,7 +99,7 @@
           "timeoutSeconds": 15,
           "readOnly": true,
           "outputStream": "stdout",
-          "outputRegex": "^10\\.0\\.302$"
+          "outputRegex": "^10\\.0\\.302\\r?$"
         },
         "remediation": "Install .NET SDK 10.0.302 from the official Microsoft distribution, then rerun doctor."
       },
@@ -129,7 +129,7 @@
           "timeoutSeconds": 15,
           "readOnly": true,
           "outputStream": "stdout",
-          "outputRegex": "^v24\\.18\\.0$"
+          "outputRegex": "^v24\\.18\\.0\\r?$"
         },
         "remediation": "Install Node.js 24.18.0 from the official Node.js distribution, then rerun doctor."
       }
