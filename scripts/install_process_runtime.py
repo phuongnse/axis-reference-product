@@ -40,15 +40,18 @@ AttemptRunner = Callable[[Sequence[str], Path, dict[str, str]], Attempt]
 
 
 def _contained_lock(project_root: Path, requirements_lock: Path) -> Path:
+    lexical_root = Path(os.path.abspath(project_root))
     root = project_root.resolve(strict=True)
     candidate = requirements_lock
     if not candidate.is_absolute():
-        candidate = root / candidate
+        candidate = lexical_root / candidate
+    else:
+        candidate = Path(os.path.abspath(candidate))
     try:
-        relative = candidate.absolute().relative_to(root)
+        relative = candidate.relative_to(lexical_root)
     except ValueError as error:
         raise InstallError("requirements lock escapes the project root") from error
-    current = root
+    current = lexical_root
     for part in relative.parts:
         current = current / part
         if current.is_symlink():
@@ -185,7 +188,7 @@ def install_process_runtime(
     sleeper: Callable[[float], None] = time.sleep,
 ) -> None:
     root = project_root.resolve(strict=True)
-    lock_path = _contained_lock(root, requirements_lock)
+    lock_path = _contained_lock(project_root, requirements_lock)
     version = _read_pin(lock_path)
     executable = Path(python_executable)
     if not executable.is_file():
