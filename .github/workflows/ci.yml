@@ -50,10 +50,10 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        run: >-
-          python scripts/install_process_runtime.py
-          --project-root .
-          --requirements-lock requirements/process.txt
+        uses: phuongnse/engineering-process@7daf17c7b6ea0e4f0f6a3c34e2232f5739d519b4 # v0.3.0 candidate
+        with:
+          project-root: .
+          requirements-lock: requirements/process.txt
 
       - name: Install locked project dependencies
         run: |
@@ -97,10 +97,10 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        run: >-
-          python scripts/install_process_runtime.py
-          --project-root .
-          --requirements-lock requirements/process.txt
+        uses: phuongnse/engineering-process@7daf17c7b6ea0e4f0f6a3c34e2232f5739d519b4 # v0.3.0 candidate
+        with:
+          project-root: .
+          requirements-lock: requirements/process.txt
 
       - name: Validate process distribution
         run: |
