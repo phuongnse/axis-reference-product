@@ -57,4 +57,12 @@ test("process updates materialize one complete non-automerge candidate", () => {
   const workflow = read(".github/workflows/ci.yml");
   assert.match(workflow, /processctl adoption check/);
   assert.match(workflow, /automation\/renovate\/engineering-process/);
+  assert.equal(
+    workflow.match(/python scripts\/install_process_runtime\.py/g)?.length,
+    2,
+  );
+  assert.doesNotMatch(
+    workflow,
+    /python -m pip install --require-hashes -r requirements\/process\.txt/,
+  );
 });
