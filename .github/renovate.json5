@@ -4,6 +4,7 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests"
   ],
+  "enabled": true,
   "dependencyDashboard": true,
   "configMigration": true,
   "automerge": false,
