@@ -26,7 +26,7 @@
           "node",
           "--test",
           "scripts/architecture.test.mjs",
-          "scripts/build-frontend.test.mjs",
+          "scripts/build-contract.test.mjs",
           "scripts/build-solution.test.mjs",
           "scripts/local-dev.test.mjs"
         ],
@@ -55,7 +55,8 @@
         "id": "frontend-build",
         "run": [
           "node",
-          "scripts/build-frontend.mjs"
+          "node_modules/vite/bin/vite.js",
+          "build"
         ],
         "timeoutSeconds": 900
       },

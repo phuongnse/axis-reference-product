@@ -71,6 +71,16 @@ test('prepares one ignored signed release and reuses its private key', async (t)
     JSON.parse(await readFile(first.AXIS_REFERENCE_PRODUCT_SOLUTION_PACKAGE, 'utf8')).payloadType,
     'application/vnd.axis.solution.v1+json',
   );
+});
+
+test('restricts the local signing key to owner read/write on POSIX hosts', {
+  skip: process.platform === 'win32',
+}, async (t) => {
+  const outputRoot = await mkdtemp(join(tmpdir(), 'axis-reference-product-key-mode-'));
+  t.after(() => rm(outputRoot, { recursive: true, force: true }));
+
+  await prepareSolutionRelease({ outputRoot, sourceRevision });
+
   assert.equal((await stat(join(outputRoot, 'release-key.pem'))).mode & 0o777, 0o600);
 });
 
