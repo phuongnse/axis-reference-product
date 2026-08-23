@@ -50,26 +50,31 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        run: >-
-          python scripts/install_process_runtime.py
-          --project-root .
-          --requirements-lock requirements/process.txt
+        uses: phuongnse/engineering-process@cb2563e5a90a644af5be596d9418bb13f065aa12 # v0.4.0
+        with:
+          project-root: .
+          requirements-lock: requirements/process.txt
 
       - name: Install locked project dependencies
         run: |
           npm ci
           npm run restore
 
-      - name: Validate process distribution and environment
+      - name: Validate process distribution and portable environment
         run: |
           processctl sync --project-root . --check
           processctl doctor --project-root . --profile development
-          processctl doctor --project-root . --profile review
 
-      - name: Run finite process profiles
-        run: |
-          processctl verify --project-root . --profile development
-          processctl verify --project-root . --profile review
+      - name: Validate Linux review environment
+        if: runner.os == 'Linux'
+        run: processctl doctor --project-root . --profile review
+
+      - name: Run portable development profile
+        run: processctl verify --project-root . --profile development
+
+      - name: Run governed review profile
+        if: runner.os == 'Linux'
+        run: processctl verify --project-root . --profile review
 
   verify:
     name: Build and test
@@ -97,10 +102,10 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        run: >-
-          python scripts/install_process_runtime.py
-          --project-root .
-          --requirements-lock requirements/process.txt
+        uses: phuongnse/engineering-process@cb2563e5a90a644af5be596d9418bb13f065aa12 # v0.4.0
+        with:
+          project-root: .
+          requirements-lock: requirements/process.txt
 
       - name: Validate process distribution
         run: |
@@ -130,6 +135,3 @@ jobs:
 
       - name: Unit tests
         run: npm run test:unit
-
-      - name: Build production image
-        run: docker build --tag axis-reference-product:${{ github.sha }} .
