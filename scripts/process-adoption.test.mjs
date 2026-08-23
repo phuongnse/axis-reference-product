@@ -6,9 +6,10 @@ import test from "node:test";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const read = (relative) => readFileSync(new URL(relative, `${new URL("..", import.meta.url)}/`), "utf8");
 
-test("process updates materialize one complete non-automerge candidate", () => {
+test("process updates are reserved for the pre-publication lifecycle host", () => {
   const renovate = JSON.parse(read(".github/renovate.json5"));
 
+  assert.equal(renovate.enabled, true);
   assert.equal(renovate.automerge, false);
   assert.equal(renovate.draftPR, true);
   assert.equal(renovate.branchPrefix, "automation/renovate/");
@@ -40,6 +41,7 @@ test("process updates materialize one complete non-automerge candidate", () => {
     (candidate) => candidate.matchPackageNames?.includes("engineering-process"),
   );
   assert.ok(rule);
+  assert.equal(rule.enabled, false);
   assert.equal(rule.automerge, false);
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
@@ -65,7 +67,8 @@ test("process updates materialize one complete non-automerge candidate", () => {
   const workflow = read(".github/workflows/ci.yml");
   const security = read(".github/workflows/dependency-security.yml");
   assert.match(workflow, /processctl adoption check/);
-  assert.match(workflow, /automation\/renovate\/engineering-process/);
+  assert.match(workflow, /automation\/process\/engineering-process/);
+  assert.doesNotMatch(workflow, /automation\/renovate\/engineering-process/);
   assert.equal(
     workflow.match(/uses: phuongnse\/engineering-process@[0-9a-f]{40}/g)?.length,
     2,
