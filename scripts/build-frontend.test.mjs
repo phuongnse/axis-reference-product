@@ -41,12 +41,25 @@ test('stops esbuild without masking a failed frontend build', async () => {
 
 test('package and production image use the same minimal frontend build entrypoint', async () => {
   const packageManifest = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
+  const processManifest = JSON.parse(await readFile(resolve(root, '.process/project.json'), 'utf8'));
   const dockerfile = await readFile(resolve(root, 'Dockerfile'), 'utf8');
+  const workflow = await readFile(resolve(root, '.github/workflows/ci.yml'), 'utf8');
   const copyInstruction = `COPY ${buildEntrypoint} ./${buildEntrypoint}`;
   const buildInstruction = 'RUN npm ci && npm run generate:api && npm run build';
+  const imageCheck = processManifest.profiles.review.find(({ id }) => id === 'production-image');
 
   assert.equal(packageManifest.scripts.build, `tsc --noEmit && node ${buildEntrypoint}`);
   assert.ok(dockerfile.includes(copyInstruction));
   assert.ok(dockerfile.indexOf(copyInstruction) < dockerfile.indexOf(buildInstruction));
   assert.doesNotMatch(dockerfile, /^COPY scripts\/ \.\/scripts\/$/mu);
+  assert.deepEqual(imageCheck.run, [
+    'docker',
+    'build',
+    '--tag',
+    'axis-reference-product:process-review',
+    '.',
+  ]);
+  assert.ok(processManifest.environment.profiles.review.includes('docker-runtime'));
+  assert.match(workflow, /- name: Run governed review profile\n\s+if: runner\.os == 'Linux'\n\s+run: processctl verify --project-root \. --profile review/u);
+  assert.doesNotMatch(workflow, /run: docker build/u);
 });

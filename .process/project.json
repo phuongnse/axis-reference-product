@@ -69,6 +69,17 @@
           "--disable-build-servers"
         ],
         "timeoutSeconds": 1800
+      },
+      {
+        "id": "production-image",
+        "run": [
+          "docker",
+          "build",
+          "--tag",
+          "axis-reference-product:process-review",
+          "."
+        ],
+        "timeoutSeconds": 1800
       }
     ]
   },
@@ -82,12 +93,30 @@
         "node-runtime"
       ],
       "review": [
+        "docker-runtime",
         "dotnet-sdk",
         "git-runtime",
         "node-runtime"
       ]
     },
     "requirements": [
+      {
+        "id": "docker-runtime",
+        "description": "Docker daemon required to build the Linux production image during review",
+        "probe": {
+          "run": [
+            "docker",
+            "version",
+            "--format",
+            "{{.Server.Version}}"
+          ],
+          "timeoutSeconds": 15,
+          "readOnly": true,
+          "outputStream": "stdout",
+          "outputRegex": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+].*)?\\r?$"
+        },
+        "remediation": "Install and start a Docker daemon on the Linux review host, then rerun doctor."
+      },
       {
         "id": "dotnet-sdk",
         "description": ".NET SDK 10.0.302 installed by the host or CI toolchain setup",
