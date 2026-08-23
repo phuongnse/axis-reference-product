@@ -51,23 +51,24 @@ When this product owns the recorded Axis deployment topology, run Axis browser e
 
 Dependency installation is fail-closed: npm install scripts are restricted to exact reviewed package versions, NuGet restores use committed lock files and fail on published vulnerability advisories, and production/E2E container bases are digest-pinned. Renovate is the only automated version proposer; pull-request CI and the daily dependency-security workflow verify the locked graphs. The direct BFF dependencies use their published license expressions: Duende Access Token Management is Apache-2.0; Microsoft Data Protection Redis, StackExchange.Redis, and YARP are MIT.
 
-For engineering-process updates, Renovate uses pip-compile and the exact host-allowlisted
-command `python .process/adopt-process.py --project-root . --requirements-lock
-requirements/process.txt`. Before opening its draft, that runner installs the target
-public package and materializes the direct pin, compiled lock, process lock, managed
-skills and templates, and any repository-owned target-version migration. CI runs the
-target package's `processctl adoption check`. Renovate polling—not the publisher—creates
-or updates the PR and never auto-merges it. After CI and independent review, merging
-that complete PR applies the process; no post-merge command or synchronization is
-allowed. If the Renovate host has not allowlisted the literal command, the partial
-update must fail rather than advance only the package pin.
+For engineering-process updates, the consumer-selected lifecycle host prepares an
+unpublished local checkpoint and runs the exact command `python
+.process/adopt-process.py --project-root . --requirements-lock
+requirements/process.txt`. That runner installs the target public package and
+materializes the direct pin, compiled lock, process lock, managed skills and
+templates, and any repository-owned target-version migration. The host runs the
+target package's `processctl adoption check`, every required project profile, and a
+fresh independent semantic agent or human review. Findings repeat implementation,
+verification, and review. Only after `change finish` and
+`publication validate-source` may automation push and create the PR; the configured
+human owner alone merges it. No post-merge command or synchronization is allowed. If
+the host cannot run the literal adoption command, the partial update must fail rather
+than advance only the package pin.
 The same adoption group updates the full-commit GitHub Action reference and the
 Python authority together, so a merged candidate cannot combine process artifacts
 from different release checkpoints.
-The `automation/renovate/engineering-process-authority` branch is bot-owned: humans
-and agents never push project cleanup or conflict resolution to it. This initial
-combined cutover uses a normal reviewed `refactor/*` branch; every later authority
-update remains fully generated so Renovate can update it without an Edited/Blocked
-branch state.
+The process-authority package rule is disabled in Renovate. Authority branches are
+published only by the lifecycle host after completion; no human or automation actor
+edits a published authority checkpoint, and only the configured human owner merges.
 
 When an approved .NET package change intentionally updates the restore graph, run `npm run sync:dotnet-lock` and commit the resulting `packages.lock.json` files with the manifest change. Ordinary restore and CI use locked mode and never rewrite that graph.
