@@ -50,7 +50,7 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        uses: phuongnse/engineering-process@b963597418226da02b31dbbdc3a09c23d1a6f9c8 # v0.3.0
+        uses: phuongnse/engineering-process@cb2563e5a90a644af5be596d9418bb13f065aa12 # v0.4.0
         with:
           project-root: .
           requirements-lock: requirements/process.txt
@@ -102,7 +102,7 @@ jobs:
           cache-dependency-path: server/**/packages.lock.json
 
       - name: Install published process runtime
-        uses: phuongnse/engineering-process@b963597418226da02b31dbbdc3a09c23d1a6f9c8 # v0.3.0
+        uses: phuongnse/engineering-process@cb2563e5a90a644af5be596d9418bb13f065aa12 # v0.4.0
         with:
           project-root: .
           requirements-lock: requirements/process.txt

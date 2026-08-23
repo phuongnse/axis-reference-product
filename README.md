@@ -64,5 +64,10 @@ update must fail rather than advance only the package pin.
 The same adoption group updates the full-commit GitHub Action reference and the
 Python authority together, so a merged candidate cannot combine process artifacts
 from different release checkpoints.
+The `automation/renovate/engineering-process-authority` branch is bot-owned: humans
+and agents never push project cleanup or conflict resolution to it. This initial
+combined cutover uses a normal reviewed `refactor/*` branch; every later authority
+update remains fully generated so Renovate can update it without an Edited/Blocked
+branch state.
 
 When an approved .NET package change intentionally updates the restore graph, run `npm run sync:dotnet-lock` and commit the resulting `packages.lock.json` files with the manifest change. Ordinary restore and CI use locked mode and never rewrite that graph.
