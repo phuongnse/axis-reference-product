@@ -24,6 +24,8 @@ test("process updates materialize one complete non-automerge candidate", () => {
   for (const required of [
     ".agents/skills/**",
     ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/workflows/ci.yml",
+    ".github/workflows/dependency-security.yml",
     ".process/adopt-process.py",
     ".process/adopt-process-windows-job.py",
     ".process/adoption-migrations/**",
@@ -35,15 +37,21 @@ test("process updates materialize one complete non-automerge candidate", () => {
     assert.ok(renovate.postUpgradeTasks.fileFilters.includes(required), required);
   }
   const rule = renovate.packageRules.find(
-    (candidate) => candidate.matchPackageNames?.[0] === "engineering-process",
+    (candidate) => candidate.matchPackageNames?.includes("engineering-process"),
   );
   assert.ok(rule);
   assert.equal(rule.automerge, false);
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
   assert.deepEqual(rule.matchFileNames, [
+    ".github/workflows/ci.yml",
+    ".github/workflows/dependency-security.yml",
     "requirements/process.in",
     "requirements/process.txt",
+  ]);
+  assert.deepEqual(rule.matchPackageNames, [
+    "engineering-process",
+    "phuongnse/engineering-process",
   ]);
 
   assert.match(
@@ -55,12 +63,16 @@ test("process updates materialize one complete non-automerge candidate", () => {
   assert.ok(existsSync(`${root}/.process/adopt-process.py`));
   assert.ok(existsSync(`${root}/.process/adopt-process-windows-job.py`));
   const workflow = read(".github/workflows/ci.yml");
+  const security = read(".github/workflows/dependency-security.yml");
   assert.match(workflow, /processctl adoption check/);
   assert.match(workflow, /automation\/renovate\/engineering-process/);
   assert.equal(
-    workflow.match(/python scripts\/install_process_runtime\.py/g)?.length,
+    workflow.match(/uses: phuongnse\/engineering-process@[0-9a-f]{40}/g)?.length,
     2,
   );
+  assert.match(security, /uses: phuongnse\/engineering-process@[0-9a-f]{40}/);
+  assert.doesNotMatch(`${workflow}\n${security}`, /scripts\/install_process_runtime\.py/);
+  assert.equal(existsSync(`${root}/scripts/install_process_runtime.py`), false);
   assert.doesNotMatch(
     workflow,
     /python -m pip install --require-hashes -r requirements\/process\.txt/,
