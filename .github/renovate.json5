@@ -56,30 +56,6 @@
     "vulnerabilityFixStrategy": "lowest"
   },
   "prBodyTemplate": "<!-- engineering-process:pr-description:start -->\n## Summary\n\nRenovate proposes one locked dependency update for the reference product.\n\n{{{table}}}\n\n## Contract and scope\n\nDependency automation follows the repository-owned manifests and process authority pin.\n\n## Impact and risk\n\nThe complete candidate remains a draft until CI and independent review approve its exact checkpoint.\n\n## Verification\n\nProject checks and process adoption validation run against the fully materialized branch.\n\n## Independent review\n\nA separate reviewer must approve the exact verified checkpoint before merge.\n\n## Requirements and rules followed\n\n- [ ] **Scope and contract** — accepted scope is implemented without unapproved expansion. [status: pending]\n- [ ] **Verification evidence** — required current profiles pass on the published checkpoint. [status: pending]\n- [ ] **Independent review** — a separate reviewer approved the published checkpoint with no open required finding. [status: pending]\n<!-- engineering-process:pr-description:end -->",
-  "postUpgradeTasks": {
-    "commands": [
-      "python .process/adopt-process.py --project-root . --requirements-lock requirements/process.txt"
-    ],
-    "executionMode": "branch",
-    "fileFilters": [
-      ".agents/.gitattributes",
-      ".agents/skills/**",
-      ".github/PULL_REQUEST_TEMPLATE.md",
-      ".github/workflows/ci.yml",
-      ".github/workflows/dependency-security.yml",
-      ".process/adopt-process.py",
-      ".process/adopt-process-windows-job.py",
-      ".process/adoption-migrations/**",
-      ".process/process.lock",
-      ".process/project.json",
-      "AGENTS.md",
-      "requirements/process.in",
-      "requirements/process.txt"
-    ],
-    "installTools": {
-      "python": {}
-    }
-  },
   "packageRules": [
     {
       "description": "Reserve engineering-process adoption for the pre-publication lifecycle host.",
