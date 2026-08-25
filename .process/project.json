@@ -28,7 +28,8 @@
           "scripts/architecture.test.mjs",
           "scripts/build-contract.test.mjs",
           "scripts/build-solution.test.mjs",
-          "scripts/local-dev.test.mjs"
+          "scripts/local-dev.test.mjs",
+          "scripts/process-adoption.test.mjs"
         ],
         "timeoutSeconds": 900
       }

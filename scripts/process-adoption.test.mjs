@@ -18,25 +18,7 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
   assert.deepEqual(renovate["pip-compile"].managerFilePatterns, [
     "/^requirements\\/process\\.txt$/",
   ]);
-  assert.deepEqual(renovate.postUpgradeTasks.commands, [
-    "python .process/adopt-process.py --project-root . --requirements-lock requirements/process.txt",
-  ]);
-  assert.equal(renovate.postUpgradeTasks.executionMode, "branch");
-  for (const required of [
-    ".agents/skills/**",
-    ".github/PULL_REQUEST_TEMPLATE.md",
-    ".github/workflows/ci.yml",
-    ".github/workflows/dependency-security.yml",
-    ".process/adopt-process.py",
-    ".process/adopt-process-windows-job.py",
-    ".process/adoption-migrations/**",
-    ".process/process.lock",
-    ".process/project.json",
-    "requirements/process.in",
-    "requirements/process.txt",
-  ]) {
-    assert.ok(renovate.postUpgradeTasks.fileFilters.includes(required), required);
-  }
+  assert.equal("postUpgradeTasks" in renovate, false);
   const rule = renovate.packageRules.find(
     (candidate) => candidate.matchPackageNames?.includes("engineering-process"),
   );
@@ -66,6 +48,16 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
   assert.ok(existsSync(`${root}/.process/adopt-process-windows-job.py`));
   const workflow = read(".github/workflows/ci.yml");
   const security = read(".github/workflows/dependency-security.yml");
+  const policyJob = workflow
+    .split("  policy-verification:\n", 2)[1]
+    .split("\n  process-contract:", 1)[0];
+  assert.match(
+    policyJob,
+    /uses: phuongnse\/renovate-ops\/\.github\/workflows\/policy-verification\.yml@2152dab51edd6c84163a71b48f50e6ad042eb331/,
+  );
+  assert.match(policyJob, /permissions:\n      contents: read\n      pull-requests: read/);
+  assert.doesNotMatch(policyJob, /(?:contents|pull-requests): write/);
+  assert.doesNotMatch(workflow, /independent-review\.yml/);
   assert.match(workflow, /processctl adoption check/);
   assert.match(workflow, /automation\/process\/engineering-process/);
   assert.doesNotMatch(workflow, /automation\/renovate\/engineering-process/);
