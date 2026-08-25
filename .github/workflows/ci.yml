@@ -14,11 +14,12 @@ permissions:
   contents: read
 
 jobs:
-  independent-review:
-    name: independent-review
+  policy-verification:
+    name: policy-verification
     permissions:
       contents: read
-    uses: phuongnse/renovate-ops/.github/workflows/independent-review.yml@48a644b081ea9d098796432750f892e2e3f44614
+      pull-requests: read
+    uses: phuongnse/renovate-ops/.github/workflows/policy-verification.yml@2152dab51edd6c84163a71b48f50e6ad042eb331
 
   process-contract:
     name: Process contract (${{ matrix.os }})

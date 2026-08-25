@@ -5,6 +5,20 @@ import test from "node:test";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const read = (relative) => readFileSync(new URL(relative, `${new URL("..", import.meta.url)}/`), "utf8");
+const expectedPolicyJob =
+  "  policy-verification:\n" +
+  "    name: policy-verification\n" +
+  "    permissions:\n" +
+  "      contents: read\n" +
+  "      pull-requests: read\n" +
+  "    uses: phuongnse/renovate-ops/.github/workflows/" +
+  "policy-verification.yml@2152dab51edd6c84163a71b48f50e6ad042eb331\n";
+const extractPolicyJob = (workflow) => {
+  const marker = "  policy-verification:\n";
+  const nextJob = "\n  process-contract:";
+  if (!workflow.includes(marker) || !workflow.includes(nextJob)) return null;
+  return marker + workflow.split(marker, 2)[1].split(nextJob, 1)[0];
+};
 
 test("process updates are reserved for the pre-publication lifecycle host", () => {
   const renovate = JSON.parse(read(".github/renovate.json5"));
@@ -18,25 +32,7 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
   assert.deepEqual(renovate["pip-compile"].managerFilePatterns, [
     "/^requirements\\/process\\.txt$/",
   ]);
-  assert.deepEqual(renovate.postUpgradeTasks.commands, [
-    "python .process/adopt-process.py --project-root . --requirements-lock requirements/process.txt",
-  ]);
-  assert.equal(renovate.postUpgradeTasks.executionMode, "branch");
-  for (const required of [
-    ".agents/skills/**",
-    ".github/PULL_REQUEST_TEMPLATE.md",
-    ".github/workflows/ci.yml",
-    ".github/workflows/dependency-security.yml",
-    ".process/adopt-process.py",
-    ".process/adopt-process-windows-job.py",
-    ".process/adoption-migrations/**",
-    ".process/process.lock",
-    ".process/project.json",
-    "requirements/process.in",
-    "requirements/process.txt",
-  ]) {
-    assert.ok(renovate.postUpgradeTasks.fileFilters.includes(required), required);
-  }
+  assert.equal("postUpgradeTasks" in renovate, false);
   const rule = renovate.packageRules.find(
     (candidate) => candidate.matchPackageNames?.includes("engineering-process"),
   );
@@ -66,6 +62,8 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
   assert.ok(existsSync(`${root}/.process/adopt-process-windows-job.py`));
   const workflow = read(".github/workflows/ci.yml");
   const security = read(".github/workflows/dependency-security.yml");
+  assert.equal(extractPolicyJob(workflow), expectedPolicyJob);
+  assert.doesNotMatch(workflow, /independent-review\.yml/);
   assert.match(workflow, /processctl adoption check/);
   assert.match(workflow, /automation\/process\/engineering-process/);
   assert.doesNotMatch(workflow, /automation\/renovate\/engineering-process/);
@@ -80,4 +78,31 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
     workflow,
     /python -m pip install --require-hashes -r requirements\/process\.txt/,
   );
+});
+
+test("policy caller rejects trust-root and permission mutations", () => {
+  const workflow = read(".github/workflows/ci.yml");
+  const mutations = {
+    "untrusted owner": workflow.replace(
+      "phuongnse/renovate-ops/",
+      "attacker/renovate-ops/",
+    ),
+    "changed revision": workflow.replace(
+      "2152dab51edd6c84163a71b48f50e6ad042eb331",
+      "2152dab51edd6c84163a71b48f50e6ad042eb330",
+    ),
+    "write permissions": workflow.replace(
+      "contents: read\n      pull-requests: read",
+      "contents: write\n      pull-requests: write",
+    ),
+    "extra permission": workflow.replace(
+      "pull-requests: read\n    uses:",
+      "pull-requests: read\n      issues: write\n    uses:",
+    ),
+  };
+
+  assert.equal(extractPolicyJob(workflow), expectedPolicyJob);
+  for (const [name, mutation] of Object.entries(mutations)) {
+    assert.notEqual(extractPolicyJob(mutation), expectedPolicyJob, name);
+  }
 });
