@@ -20,7 +20,7 @@ const extractPolicyJob = (workflow) => {
   return marker + workflow.split(marker, 2)[1].split(nextJob, 1)[0];
 };
 
-test("process updates are reserved for the pre-publication lifecycle host", () => {
+test("process updates are materialized by the managed runner", () => {
   const renovate = JSON.parse(read(".github/renovate.json5"));
 
   assert.equal(renovate.enabled, true);
@@ -37,20 +37,22 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
     (candidate) => candidate.matchPackageNames?.includes("engineering-process"),
   );
   assert.ok(rule);
-  assert.equal(rule.enabled, false);
+  assert.equal(rule.enabled, true);
   assert.equal(rule.automerge, false);
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
   assert.deepEqual(rule.matchFileNames, [
-    ".github/workflows/ci.yml",
-    ".github/workflows/dependency-security.yml",
     "requirements/process.in",
     "requirements/process.txt",
   ]);
   assert.deepEqual(rule.matchPackageNames, [
     "engineering-process",
-    "phuongnse/engineering-process",
   ]);
+  assert.deepEqual(rule.postUpgradeTasks.commands, [
+    "python .process/adopt-process.py --project-root . --requirements-lock requirements/process.txt",
+  ]);
+  assert.equal(rule.postUpgradeTasks.executionMode, "update");
+  assert.ok(rule.postUpgradeTasks.fileFilters.includes(".agents/skills/**"));
 
   assert.match(
     read("requirements/process.in"),
@@ -59,25 +61,18 @@ test("process updates are reserved for the pre-publication lifecycle host", () =
   assert.match(read("requirements/process.txt"), /pip-compile /);
   assert.match(read("requirements/process.txt"), /--generate-hashes/);
   assert.ok(existsSync(`${root}/.process/adopt-process.py`));
-  assert.ok(existsSync(`${root}/.process/adopt-process-windows-job.py`));
   const workflow = read(".github/workflows/ci.yml");
   const security = read(".github/workflows/dependency-security.yml");
   assert.equal(extractPolicyJob(workflow), expectedPolicyJob);
   assert.doesNotMatch(workflow, /independent-review\.yml/);
   assert.match(workflow, /processctl adoption check/);
-  assert.match(workflow, /automation\/process\/engineering-process/);
-  assert.doesNotMatch(workflow, /automation\/renovate\/engineering-process/);
-  assert.equal(
-    workflow.match(/uses: phuongnse\/engineering-process@[0-9a-f]{40}/g)?.length,
-    2,
-  );
-  assert.match(security, /uses: phuongnse\/engineering-process@[0-9a-f]{40}/);
+  assert.match(workflow, /automation\/renovate\/engineering-process/);
+  assert.equal(workflow.match(/python -m pip install/g)?.length, 2);
+  assert.equal(workflow.match(/--require-hashes/g)?.length, 2);
+  assert.match(security, /python -m pip install/);
+  assert.match(security, /--require-hashes/);
   assert.doesNotMatch(`${workflow}\n${security}`, /scripts\/install_process_runtime\.py/);
   assert.equal(existsSync(`${root}/scripts/install_process_runtime.py`), false);
-  assert.doesNotMatch(
-    workflow,
-    /python -m pip install --require-hashes -r requirements\/process\.txt/,
-  );
 });
 
 test("policy caller rejects trust-root and permission mutations", () => {
