@@ -12,7 +12,7 @@ const expectedPolicyJob =
   "      contents: read\n" +
   "      pull-requests: read\n" +
   "    uses: phuongnse/renovate-ops/.github/workflows/" +
-  "policy-verification.yml@2152dab51edd6c84163a71b48f50e6ad042eb331\n";
+  "policy-verification.yml@1e3d0d333b62ec92c94ea5c355bbb0cd73024b78\n";
 const extractPolicyJob = (workflow) => {
   const marker = "  policy-verification:\n";
   const nextJob = "\n  process-contract:";
@@ -88,8 +88,8 @@ test("policy caller rejects trust-root and permission mutations", () => {
       "attacker/renovate-ops/",
     ),
     "changed revision": workflow.replace(
-      "2152dab51edd6c84163a71b48f50e6ad042eb331",
-      "2152dab51edd6c84163a71b48f50e6ad042eb330",
+      "1e3d0d333b62ec92c94ea5c355bbb0cd73024b78",
+      "1e3d0d333b62ec92c94ea5c355bbb0cd73024b79",
     ),
     "write permissions": workflow.replace(
       "contents: read\n      pull-requests: read",
