@@ -53,6 +53,12 @@ test("process updates are materialized by the managed runner", () => {
   ]);
   assert.equal(rule.postUpgradeTasks.executionMode, "update");
   assert.ok(rule.postUpgradeTasks.fileFilters.includes(".agents/skills/**"));
+  const majorApprovalRule = renovate.packageRules.find(
+    (candidate) => candidate.matchUpdateTypes?.includes("major")
+      && candidate.dependencyDashboardApproval === true,
+  );
+  assert.ok(majorApprovalRule);
+  assert.ok(majorApprovalRule.matchPackageNames.includes("!engineering-process"));
 
   assert.match(
     read("requirements/process.in"),
