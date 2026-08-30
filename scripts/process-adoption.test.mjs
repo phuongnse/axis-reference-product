@@ -8,6 +8,7 @@ const read = (relative) => readFileSync(new URL(relative, `${new URL("..", impor
 const expectedPolicyJob =
   "  policy-verification:\n" +
   "    name: policy-verification\n" +
+  "    if: github.event_name == 'pull_request'\n" +
   "    permissions:\n" +
   "      contents: read\n" +
   "      pull-requests: read\n" +
@@ -102,6 +103,10 @@ test("policy caller rejects trust-root and permission mutations", () => {
     "extra permission": workflow.replace(
       "pull-requests: read\n    uses:",
       "pull-requests: read\n      issues: write\n    uses:",
+    ),
+    "push event": workflow.replace(
+      "    if: github.event_name == 'pull_request'\n",
+      "",
     ),
   };
 
