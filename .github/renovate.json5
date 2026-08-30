@@ -7,7 +7,6 @@
   "enabled": true,
   "dependencyDashboard": true,
   "configMigration": true,
-  "automerge": false,
   "timezone": "Asia/Ho_Chi_Minh",
   "schedule": [
     "before 5am on monday"
@@ -67,7 +66,7 @@
         "engineering-process"
       ],
       "enabled": true,
-      "automerge": false,
+      "draftPR": true,
       "groupName": "engineering-process",
       "groupSlug": "engineering-process",
       "schedule": [
@@ -146,8 +145,7 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "dependencyDashboardApproval": true,
-      "automerge": false
+      "dependencyDashboardApproval": true
     }
   ]
 }

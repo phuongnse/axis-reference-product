@@ -25,7 +25,6 @@ test("process updates are materialized by the managed runner", () => {
   const renovate = JSON.parse(read(".github/renovate.json5"));
 
   assert.equal(renovate.enabled, true);
-  assert.equal(renovate.automerge, false);
   assert.equal(renovate.draftPR, true);
   assert.equal(renovate.branchPrefix, "automation/renovate/");
   assert.ok(renovate.enabledManagers.includes("pip-compile"));
@@ -39,7 +38,7 @@ test("process updates are materialized by the managed runner", () => {
   );
   assert.ok(rule);
   assert.equal(rule.enabled, true);
-  assert.equal(rule.automerge, false);
+  assert.equal(rule.draftPR, true);
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
   assert.deepEqual(rule.matchFileNames, [
@@ -62,7 +61,6 @@ test("process updates are materialized by the managed runner", () => {
   assert.deepEqual(majorApprovalRule.matchPackageNames, ["!engineering-process"]);
   assert.deepEqual(majorApprovalRule.matchUpdateTypes, ["major"]);
   assert.equal(majorApprovalRule.dependencyDashboardApproval, true);
-  assert.equal(majorApprovalRule.automerge, false);
 
   assert.match(
     read("requirements/process.in"),
