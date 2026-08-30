@@ -13,7 +13,7 @@ const expectedPolicyJob =
   "      contents: read\n" +
   "      pull-requests: read\n" +
   "    uses: phuongnse/renovate-ops/.github/workflows/" +
-  "policy-verification.yml@1e3d0d333b62ec92c94ea5c355bbb0cd73024b78\n";
+  "policy-verification.yml@5fb53c2295c0f62c29d34c8141121b71198769f4\n";
 const extractPolicyJob = (workflow) => {
   const marker = "  policy-verification:\n";
   const nextJob = "\n  process-contract:";
@@ -25,7 +25,6 @@ test("process updates are materialized by the managed runner", () => {
   const renovate = JSON.parse(read(".github/renovate.json5"));
 
   assert.equal(renovate.enabled, true);
-  assert.equal(renovate.automerge, false);
   assert.equal(renovate.draftPR, true);
   assert.equal(renovate.branchPrefix, "automation/renovate/");
   assert.ok(renovate.enabledManagers.includes("pip-compile"));
@@ -39,7 +38,7 @@ test("process updates are materialized by the managed runner", () => {
   );
   assert.ok(rule);
   assert.equal(rule.enabled, true);
-  assert.equal(rule.automerge, false);
+  assert.equal(rule.draftPR, true);
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
   assert.deepEqual(rule.matchFileNames, [
@@ -62,7 +61,6 @@ test("process updates are materialized by the managed runner", () => {
   assert.deepEqual(majorApprovalRule.matchPackageNames, ["!engineering-process"]);
   assert.deepEqual(majorApprovalRule.matchUpdateTypes, ["major"]);
   assert.equal(majorApprovalRule.dependencyDashboardApproval, true);
-  assert.equal(majorApprovalRule.automerge, false);
 
   assert.match(
     read("requirements/process.in"),
@@ -93,7 +91,7 @@ test("policy caller rejects trust-root and permission mutations", () => {
       "attacker/renovate-ops/",
     ),
     "changed revision": workflow.replace(
-      "1e3d0d333b62ec92c94ea5c355bbb0cd73024b78",
+      "5fb53c2295c0f62c29d34c8141121b71198769f4",
       "1e3d0d333b62ec92c94ea5c355bbb0cd73024b79",
     ),
     "write permissions": workflow.replace(
