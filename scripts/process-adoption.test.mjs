@@ -58,7 +58,10 @@ test("process updates are materialized by the managed runner", () => {
       && candidate.dependencyDashboardApproval === true,
   );
   assert.ok(majorApprovalRule);
-  assert.ok(majorApprovalRule.matchPackageNames.includes("!engineering-process"));
+  assert.deepEqual(majorApprovalRule.matchPackageNames, ["!engineering-process"]);
+  assert.deepEqual(majorApprovalRule.matchUpdateTypes, ["major"]);
+  assert.equal(majorApprovalRule.dependencyDashboardApproval, true);
+  assert.equal(majorApprovalRule.automerge, false);
 
   assert.match(
     read("requirements/process.in"),
