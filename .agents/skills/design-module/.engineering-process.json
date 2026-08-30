@@ -1,7 +1,7 @@
 {
-  "digest": "sha256:734e32d387053677804b0849672c191d26f6d016468e77a1c96f9610aa58a8a8",
+  "digest": "sha256:07ebb8c411aa97af6ee3e0761e143d91d368f183ea24f0f83e56f1930d724bcf",
   "distribution": "engineering-process",
   "schemaVersion": 1,
   "skill": "design-module",
-  "version": "0.4.0"
+  "version": "0.9.0"
 }
