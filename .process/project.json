@@ -1,6 +1,4 @@
 {
-  "schemaVersion": 3,
-  "project": "axis-reference-product",
   "lifecycle": {
     "requiredProfiles": [
       "development",
@@ -85,86 +83,6 @@
       }
     ]
   },
-  "environment": {
-    "defaultProfile": "development",
-    "foregroundOnly": true,
-    "managedTools": [],
-    "profiles": {
-      "development": [
-        "git-runtime",
-        "node-runtime"
-      ],
-      "review": [
-        "docker-runtime",
-        "dotnet-sdk",
-        "git-runtime",
-        "node-runtime"
-      ]
-    },
-    "requirements": [
-      {
-        "id": "docker-runtime",
-        "description": "Docker daemon required to build the Linux production image during review",
-        "probe": {
-          "run": [
-            "docker",
-            "version",
-            "--format",
-            "{{.Server.Version}}"
-          ],
-          "timeoutSeconds": 15,
-          "readOnly": true,
-          "outputStream": "stdout",
-          "outputRegex": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+].*)?\\r?$"
-        },
-        "remediation": "Install and start a Docker daemon on the Linux review host, then rerun doctor."
-      },
-      {
-        "id": "dotnet-sdk",
-        "description": ".NET SDK 10.0.302 installed by the host or CI toolchain setup",
-        "probe": {
-          "run": [
-            "dotnet",
-            "--version"
-          ],
-          "timeoutSeconds": 15,
-          "readOnly": true,
-          "outputStream": "stdout",
-          "outputRegex": "^10\\.0\\.302\\r?$"
-        },
-        "remediation": "Install .NET SDK 10.0.302 from the official Microsoft distribution, then rerun doctor."
-      },
-      {
-        "id": "git-runtime",
-        "description": "Git command-line client required for lifecycle checkpoints and source provenance",
-        "probe": {
-          "run": [
-            "git",
-            "--version"
-          ],
-          "timeoutSeconds": 15,
-          "readOnly": true,
-          "outputStream": "stdout",
-          "outputRegex": "^git version 2\\.[0-9]+\\.[0-9]+"
-        },
-        "remediation": "Install a supported Git 2.x command-line client, then rerun doctor."
-      },
-      {
-        "id": "node-runtime",
-        "description": "Node.js 24.18.0 installed by the host or CI toolchain setup",
-        "probe": {
-          "run": [
-            "node",
-            "--version"
-          ],
-          "timeoutSeconds": 15,
-          "readOnly": true,
-          "outputStream": "stdout",
-          "outputRegex": "^v24\\.18\\.0\\r?$"
-        },
-        "remediation": "Install Node.js 24.18.0 from the official Node.js distribution, then rerun doctor."
-      }
-    ],
-    "setupActions": []
-  }
+  "project": "axis-reference-product",
+  "schemaVersion": 5
 }
