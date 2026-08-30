@@ -20,9 +20,8 @@ Python 3.14 environment. Create and activate `.process-venv`, install
 `requirements/process.txt` with `python -m pip install --require-hashes`, and run
 `processctl doctor --project-root .`. `requirements/process.in` owns the direct public
 pin; `requirements/process.txt` is the generated complete hash graph.
-CI invokes the producer-owned `phuongnse/engineering-process` action pinned to the
-governed release commit; this repository owns no installer implementation or retry
-algorithm.
+CI installs the producer package directly from that exact hash lock; this repository
+owns no installer implementation or retry algorithm.
 
 `solution/release.json` is the single stable release authority. Keep its version unchanged during development and update its version and provenance only at an intentional stable publication boundary. `npm run build:solution` builds that stable immutable identity and refuses changed payload bytes under a version that already exists.
 

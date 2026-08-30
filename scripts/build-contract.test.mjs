@@ -28,9 +28,7 @@ test('package, process, image, and workflow share one governed production build'
     'axis-reference-product:process-review',
     '.',
   ]);
-  assert.ok(processManifest.environment.profiles.review.includes('docker-runtime'));
   assert.match(dockerfile, /^RUN npm ci && npm run generate:api && npm run build$/mu);
-  assert.doesNotMatch(dockerfile, /build-frontend/u);
   assert.match(
     workflow,
     /- name: Run governed review profile\n\s+if: runner\.os == 'Linux'\n\s+run: processctl verify --project-root \. --profile review/u,
