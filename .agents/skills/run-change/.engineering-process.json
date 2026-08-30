@@ -1,7 +1,6 @@
 {
-  "digest": "sha256:734e32d387053677804b0849672c191d26f6d016468e77a1c96f9610aa58a8a8",
-  "distribution": "engineering-process",
+  "digest": "sha256:0401639a0ce862d355975d031f501ca34fb4450d9e7cb3b1f2c77eae2e5f2adc",
+  "managedBy": "engineering-process",
   "schemaVersion": 1,
-  "skill": "run-change",
-  "version": "0.4.0"
+  "version": "1.0.1"
 }

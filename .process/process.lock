@@ -1,31 +1,39 @@
 {
-  "schemaVersion": 1,
+  "managedFiles": [
+    ".agents/skills/finish-change/.engineering-process.json",
+    ".agents/skills/finish-change/SKILL.md",
+    ".agents/skills/implement-change/.engineering-process.json",
+    ".agents/skills/implement-change/SKILL.md",
+    ".agents/skills/improve-process/.engineering-process.json",
+    ".agents/skills/improve-process/SKILL.md",
+    ".agents/skills/plan-change/.engineering-process.json",
+    ".agents/skills/plan-change/SKILL.md",
+    ".agents/skills/review-change/.engineering-process.json",
+    ".agents/skills/review-change/SKILL.md",
+    ".agents/skills/run-change/.engineering-process.json",
+    ".agents/skills/run-change/SKILL.md",
+    ".agents/skills/start-change/.engineering-process.json",
+    ".agents/skills/start-change/SKILL.md",
+    ".agents/skills/verify-change/.engineering-process.json",
+    ".agents/skills/verify-change/SKILL.md",
+    ".process/adopt-process-windows-job.py",
+    ".process/adopt-process.py"
+  ],
   "process": {
-    "version": "0.4.0",
-    "digest": "sha256:734e32d387053677804b0849672c191d26f6d016468e77a1c96f9610aa58a8a8"
+    "digest": "sha256:5f14c357da5cde1e7e7a2a6c3ba70bbe216fcf15a442e1cd338c3ee07eac3d9b",
+    "package": "engineering-process",
+    "version": "1.0.1"
   },
+  "requirementsDigest": "sha256:8754fe7d5ab569859e7a776d51673f203f03ca009d0434c21bc5b19850cf896e",
+  "schemaVersion": 2,
   "skills": [
-    "assess-design",
-    "build-frontend",
-    "build-frontend-foundation",
-    "change-api",
-    "cross-repo-change",
-    "define-change-contract",
-    "design-module",
-    "evolve-process",
     "finish-change",
-    "govern-ui",
     "implement-change",
-    "implement-module",
-    "implement-use-case",
-    "integrate-mcp",
-    "maintain-docs",
+    "improve-process",
     "plan-change",
-    "publish-change",
     "review-change",
     "run-change",
-    "run-project-command",
-    "specify-use-case",
+    "start-change",
     "verify-change"
   ]
 }
