@@ -140,6 +140,9 @@
     },
     {
       "description": "Require dashboard approval before proposing major updates.",
+      "matchPackageNames": [
+        "!engineering-process"
+      ],
       "matchUpdateTypes": [
         "major"
       ],
