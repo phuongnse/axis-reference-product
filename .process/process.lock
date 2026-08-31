@@ -24,7 +24,7 @@
     "package": "engineering-process",
     "version": "1.0.1"
   },
-  "requirementsDigest": "sha256:8754fe7d5ab569859e7a776d51673f203f03ca009d0434c21bc5b19850cf896e",
+  "requirementsDigest": "sha256:3f964303de7fc484c113d3776ce43d8ddf8f85997928d5d13d9d80e9884c8acb",
   "schemaVersion": 2,
   "skills": [
     "finish-change",
