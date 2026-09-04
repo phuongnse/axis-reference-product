@@ -7,13 +7,13 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const read = (relative) => readFileSync(new URL(relative, `${new URL("..", import.meta.url)}/`), "utf8");
 const expectedPolicyJob =
   "  policy-verification:\n" +
-  "    name: policy-verification\n" +
+  "    name: Policy verification\n" +
   "    if: github.event_name == 'pull_request'\n" +
   "    permissions:\n" +
   "      contents: read\n" +
   "      pull-requests: read\n" +
   "    uses: phuongnse/renovate-ops/.github/workflows/" +
-  "policy-verification.yml@5fb53c2295c0f62c29d34c8141121b71198769f4\n";
+  "policy-verification.yml@38d952b8c94604df10fadc48b6c830a144ea1137\n";
 const extractPolicyJob = (workflow) => {
   const marker = "  policy-verification:\n";
   const nextJob = "\n  process-contract:";
@@ -91,7 +91,7 @@ test("policy caller rejects trust-root and permission mutations", () => {
       "attacker/renovate-ops/",
     ),
     "changed revision": workflow.replace(
-      "5fb53c2295c0f62c29d34c8141121b71198769f4",
+      "38d952b8c94604df10fadc48b6c830a144ea1137",
       "1e3d0d333b62ec92c94ea5c355bbb0cd73024b79",
     ),
     "write permissions": workflow.replace(
