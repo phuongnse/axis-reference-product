@@ -43,7 +43,7 @@ wrappers documented in README.md when the affected acceptance boundary requires 
 <!-- engineering-process:start -->
 ## Engineering process
 
-For non-trivial delivery work, enter through the managed run-change skill and follow
+For non-trivial delivery work, enter through the managed deliver-change skill and follow
 the processctl lifecycle: start, plan, implement, verify, independent review, finish.
 
 This repository owns product decisions, domain rules, exact argument-array commands,
