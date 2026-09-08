@@ -42,7 +42,7 @@ python -m venv .process-venv
 
 On Windows, use `.process-venv\\Scripts\\python.exe` for the second command. Activate the environment with the native command for your shell before invoking `processctl`. Then run `processctl doctor --project-root . --profile development` and `processctl doctor --project-root . --profile review`. Dependency installation remains an explicit repository prerequisite: run `npm ci` and `npm run restore` before the finite profiles.
 
-Use `processctl verify --project-root . --profile development` for the unit proof, then `processctl verify --project-root . --profile review` for the required supplemental generation, type, build, and .NET proof. The required profile pair runs each check once. Both profiles invoke native `node` and `dotnet` executables directly, so the same shell-free contract works on Windows, Linux, and macOS. They never start Docker, watchers, local services, or E2E. Continue to run `npm run audit:dependencies` and `npm run test:e2e` at their owning boundaries; E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
+Use `processctl verify --project-root . --profile development` for the unit proof, then `processctl verify --project-root . --profile review` for the required supplemental generation, type, build, and .NET proof. The required profile pair runs each check once. The profiles invoke native executables directly. Development runs on Windows, Linux, and macOS; review also requires a running Docker Engine for its production-image build, as on the Linux CI runner. Neither profile starts watchers, local application services, or E2E. Continue to run `npm run audit:dependencies` and `npm run test:e2e` at their owning boundaries; E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
 
 Routine local proof scopes product E2E after the runner separator, for example `npm run test:e2e -- -- -g "installs the signed release"`. Run the complete browser suite only when the diff invalidates both independent journeys or at the owning CI boundary.
 
@@ -50,24 +50,20 @@ When this product owns the recorded Axis deployment topology, run Axis browser e
 
 Dependency installation is fail-closed: npm install scripts are restricted to exact reviewed package versions, NuGet restores use committed lock files and fail on published vulnerability advisories, and production/E2E container bases are digest-pinned. Renovate is the only automated version proposer; pull-request CI and the daily dependency-security workflow verify the locked graphs. The direct BFF dependencies use their published license expressions: Duende Access Token Management is Apache-2.0; Microsoft Data Protection Redis, StackExchange.Redis, and YARP are MIT.
 
-For engineering-process updates, the consumer-selected lifecycle host prepares an
-unpublished local checkpoint and runs the exact command `python
-.process/adopt-process.py --project-root . --requirements-lock
-requirements/process.txt`. That runner installs the target public package and
-materializes the direct pin, compiled lock, process lock, managed skills and
-templates, and any repository-owned target-version migration. The host runs the
-target package's `processctl adoption check`, every required project profile, and a
-fresh independent semantic agent or human review. Findings repeat implementation,
-verification, and review. Only after `change finish` and
-`publication validate-source` may automation push and create the PR; the configured
-human owner alone merges it. No post-merge command or synchronization is allowed. If
-the host cannot run the literal adoption command, the partial update must fail rather
-than advance only the package pin.
-The same adoption group updates the full-commit GitHub Action reference and the
-Python authority together, so a merged candidate cannot combine process artifacts
-from different release checkpoints.
-The process-authority package rule is disabled in Renovate. Authority branches are
-published only by the lifecycle host after completion; no human or automation actor
-edits a published authority checkpoint, and only the configured human owner merges.
+For engineering-process updates, Renovate proposes the complete target release in a
+single draft PR. Its materialization command is `python .process/adopt-process.py
+--project-root . --requirements-lock requirements/process.txt`; the public package
+owns the hash-locked managed assets. A supported consumer can adopt the latest release
+directly without merging every intermediate release.
+
+The consumer-selected lifecycle host takes that draft through the managed
+`deliver-change` lifecycle. Install the target public hash lock, run its
+`processctl adoption check`, migrate any consumer-owned references, and run every
+required project profile. A fresh independent reviewer assesses the complete
+candidate. Resolve findings through implementation, verification and review, then
+run `change finish`, replace draft PR placeholders with the actual evidence, and
+validate the ready description against the consumer-selected standard. The configured
+human owner authorizes merge after current required CI passes. Adoption is complete
+in the reviewed PR; no post-merge synchronization is required.
 
 When an approved .NET package change intentionally updates the restore graph, run `npm run sync:dotnet-lock` and commit the resulting `packages.lock.json` files with the manifest change. Ordinary restore and CI use locked mode and never rewrite that graph.
