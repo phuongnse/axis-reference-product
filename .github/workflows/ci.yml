@@ -69,11 +69,7 @@ jobs:
       - name: Validate process distribution and portable environment
         run: |
           processctl adoption check --project-root . --requirements-lock requirements/process.txt
-          processctl doctor --project-root . --profile development
-
-      - name: Validate Linux review environment
-        if: runner.os == 'Linux'
-        run: processctl doctor --project-root . --profile review
+          processctl doctor --project-root .
 
       - name: Run portable development profile
         run: processctl verify --project-root . --profile development

@@ -40,7 +40,7 @@ python -m venv .process-venv
 .process-venv/bin/python -m pip install --require-hashes -r requirements/process.txt
 ```
 
-On Windows, use `.process-venv\\Scripts\\python.exe` for the second command. Activate the environment with the native command for your shell before invoking `processctl`. Then run `processctl doctor --project-root . --profile development` and `processctl doctor --project-root . --profile review`. Dependency installation remains an explicit repository prerequisite: run `npm ci` and `npm run restore` before the finite profiles.
+On Windows, use `.process-venv\\Scripts\\python.exe` for the second command. Activate the environment with the native command for your shell before invoking `processctl`. Then run `processctl doctor --project-root .`. Dependency installation remains an explicit repository prerequisite: run `npm ci` and `npm run restore` before the finite profiles.
 
 Use `processctl verify --project-root . --profile development` for the unit proof, then `processctl verify --project-root . --profile review` for the required supplemental generation, type, build, and .NET proof. The required profile pair runs each check once. The profiles invoke native executables directly. Development runs on Windows, Linux, and macOS; review also requires a running Docker Engine for its production-image build, as on the Linux CI runner. Neither profile starts watchers, local application services, or E2E. Continue to run `npm run audit:dependencies` and `npm run test:e2e` at their owning boundaries; E2E runs in the repository-owned Playwright image with the Axis development CA imported into the browser trust store.
 
