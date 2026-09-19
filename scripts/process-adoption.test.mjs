@@ -39,6 +39,7 @@ test("process updates are materialized by the managed runner", () => {
   assert.ok(rule);
   assert.equal(rule.enabled, true);
   assert.equal(rule.draftPR, true);
+  assert.equal(rule.recreateWhen, "always");
   assert.deepEqual(rule.schedule, ["at any time"]);
   assert.equal(rule.prPriority, 100);
   assert.deepEqual(rule.matchFileNames, [
